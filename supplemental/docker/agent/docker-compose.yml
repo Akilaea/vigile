@@ -4,16 +4,16 @@
 # Env vars: https://beszel.dev/guide/environment-variables
 
 services:
-  beszel-agent:
+  vigile-agent:
     image: henrygd/beszel-agent
-    container_name: beszel-agent
+    container_name: vigile-agent
     restart: unless-stopped
     network_mode: host
     volumes:
-      - ./beszel_agent_data:/var/lib/beszel-agent
+      - ./vigile_agent_data:/var/lib/vigile-agent
       - /var/run/docker.sock:/var/run/docker.sock:ro
       # monitor other disks / partitions by mounting a folder in /extra-filesystems
-      # - /mnt/disk1/.beszel:/extra-filesystems/disk1:ro
+      # - /mnt/disk1/.vigile:/extra-filesystems/disk1:ro
     environment:
       LISTEN: 45876
       KEY: "<public key>"

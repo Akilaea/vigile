@@ -3,8 +3,8 @@ pb_data
 data
 temp
 .vscode
-beszel_data
-beszel_data*
+vigile_data
+vigile_data*
 dist
 *.exe
 internal/cmd/hub/hub

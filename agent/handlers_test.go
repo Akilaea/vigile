@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/fxamacker/cbor/v2"
-	"github.com/henrygd/beszel/agent/zfs"
-	"github.com/henrygd/beszel/internal/common"
-	"github.com/henrygd/beszel/internal/entities/smart"
+	"github.com/Akilaea/vigile/agent/zfs"
+	"github.com/Akilaea/vigile/internal/common"
+	"github.com/Akilaea/vigile/internal/entities/smart"
 	"github.com/stretchr/testify/assert"
 )
 

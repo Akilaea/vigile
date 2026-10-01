@@ -8,7 +8,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/entities/system"
 )
 
 // validSSID omits non-UTF-8 SSIDs: 802.11 permits arbitrary octets, but CBOR

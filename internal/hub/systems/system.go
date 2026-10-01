@@ -13,19 +13,19 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/henrygd/beszel/internal/common"
-	"github.com/henrygd/beszel/internal/hub/transport"
-	"github.com/henrygd/beszel/internal/hub/utils"
-	"github.com/henrygd/beszel/internal/hub/ws"
+	"github.com/Akilaea/vigile/internal/common"
+	"github.com/Akilaea/vigile/internal/hub/transport"
+	"github.com/Akilaea/vigile/internal/hub/utils"
+	"github.com/Akilaea/vigile/internal/hub/ws"
 
-	"github.com/henrygd/beszel/internal/entities/container"
-	"github.com/henrygd/beszel/internal/entities/monitor"
-	"github.com/henrygd/beszel/internal/entities/smart"
-	"github.com/henrygd/beszel/internal/entities/system"
-	"github.com/henrygd/beszel/internal/entities/systemd"
-	"github.com/henrygd/beszel/internal/entities/zfs"
+	"github.com/Akilaea/vigile/internal/entities/container"
+	"github.com/Akilaea/vigile/internal/entities/monitor"
+	"github.com/Akilaea/vigile/internal/entities/smart"
+	"github.com/Akilaea/vigile/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/entities/systemd"
+	"github.com/Akilaea/vigile/internal/entities/zfs"
 
-	"github.com/henrygd/beszel"
+	"github.com/Akilaea/vigile"
 
 	"github.com/blang/semver"
 	"github.com/fxamacker/cbor/v2"
@@ -841,7 +841,7 @@ func (sys *System) FetchSystemdLogsFromAgent(serviceName string) (string, error)
 func (sys *System) FetchSmartDataFromAgent() (smart.SmartDataResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
-	if sys.getAgentVersion().LT(beszel.MinVersionAgentResponse) {
+	if sys.getAgentVersion().LT(vigile.MinVersionAgentResponse) {
 		var data map[string]smart.SmartData
 		err := sys.request(ctx, common.GetSmartData, nil, &data)
 		return smart.SmartDataResponse{Data: data}, err
@@ -893,7 +893,7 @@ func (sys *System) fetchDataViaSSH(options common.DataRequestOptions) (*system.C
 		// reset in case of retry after a partial decode
 		*data = system.CombinedData{}
 
-		if sys.getAgentVersion().GTE(beszel.MinVersionAgentResponse) && stdinErr == nil {
+		if sys.getAgentVersion().GTE(vigile.MinVersionAgentResponse) && stdinErr == nil {
 			req := common.HubRequest[any]{Action: common.GetData, Data: options}
 			_ = cbor.NewEncoder(stdin).Encode(req)
 			_ = stdin.Close()
@@ -909,7 +909,7 @@ func (sys *System) fetchDataViaSSH(options common.DataRequestOptions) (*system.C
 		}
 
 		var decodeErr error
-		if sys.getAgentVersion().GTE(beszel.MinVersionCbor) {
+		if sys.getAgentVersion().GTE(vigile.MinVersionCbor) {
 			decodeErr = cbor.NewDecoder(stdout).Decode(data)
 		} else {
 			decodeErr = json.NewDecoder(stdout).Decode(data)

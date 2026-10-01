@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/henrygd/beszel/internal/entities/monitor"
-	"github.com/henrygd/beszel/internal/hub/systems"
+	"github.com/Akilaea/vigile/internal/entities/monitor"
+	"github.com/Akilaea/vigile/internal/hub/systems"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/types"
 )

@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/fxamacker/cbor/v2"
-	"github.com/henrygd/beszel/internal/entities/container"
+	"github.com/Akilaea/vigile/internal/entities/container"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

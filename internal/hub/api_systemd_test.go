@@ -10,8 +10,8 @@ import (
 
 	"github.com/fxamacker/cbor/v2"
 	"github.com/gliderlabs/ssh"
-	"github.com/henrygd/beszel/internal/common"
-	beszelTests "github.com/henrygd/beszel/internal/tests"
+	"github.com/Akilaea/vigile/internal/common"
+	vigileTests "github.com/Akilaea/vigile/internal/tests"
 	"github.com/stretchr/testify/require"
 )
 
@@ -19,9 +19,9 @@ func systemdInfoTestHandler(t *testing.T) (http.Handler, string, string, string,
 	t.Helper()
 	hub, handler := firstUserTestMux(t)
 	t.Cleanup(hub.Cleanup)
-	owner, err := beszelTests.CreateUserWithRole(hub, "owner@example.com", "password123", "user")
+	owner, err := vigileTests.CreateUserWithRole(hub, "owner@example.com", "password123", "user")
 	require.NoError(t, err)
-	other, err := beszelTests.CreateUserWithRole(hub, "other@example.com", "password123", "user")
+	other, err := vigileTests.CreateUserWithRole(hub, "other@example.com", "password123", "user")
 	require.NoError(t, err)
 	ownerToken, err := owner.NewAuthToken()
 	require.NoError(t, err)
@@ -29,7 +29,7 @@ func systemdInfoTestHandler(t *testing.T) (http.Handler, string, string, string,
 	require.NoError(t, err)
 
 	var requests atomic.Int32
-	agent := &ssh.Server{Version: "beszel_0.20.0", Handler: func(s ssh.Session) {
+	agent := &ssh.Server{Version: "vigile_0.20.0", Handler: func(s ssh.Session) {
 		var request common.HubRequest[common.SystemdInfoRequest]
 		if err := cbor.NewDecoder(s).Decode(&request); err != nil {
 			t.Error(err)
@@ -54,23 +54,23 @@ func systemdInfoTestHandler(t *testing.T) (http.Handler, string, string, string,
 	go func() { _ = agent.Serve(listener) }()
 	host, port, err := net.SplitHostPort(listener.Addr().String())
 	require.NoError(t, err)
-	record, err := beszelTests.CreateRecord(hub, "systems", map[string]any{
+	record, err := vigileTests.CreateRecord(hub, "systems", map[string]any{
 		"name": "test-system", "host": host, "port": port, "users": []string{owner.Id},
 	})
 	require.NoError(t, err)
 	system, err := hub.GetSystemManager().GetSystem(record.Id)
 	require.NoError(t, err)
 	system.StopUpdater()
-	_, err = beszelTests.CreateRecord(hub, "systemd_services", map[string]any{
+	_, err = vigileTests.CreateRecord(hub, "systemd_services", map[string]any{
 		"system": record.Id, "name": "private.service", "state": 0, "sub": 1,
 	})
 	require.NoError(t, err)
-	return handler, "/api/beszel/systemd/info?system=" + record.Id + "&service=private.service", ownerToken, otherToken, &requests
+	return handler, "/api/vigile/systemd/info?system=" + record.Id + "&service=private.service", ownerToken, otherToken, &requests
 }
 
 func TestSystemdInfoCachePolicy(t *testing.T) {
 	t.Setenv("SHARE_ALL_SYSTEMS", "false")
-	t.Setenv("BESZEL_HUB_SHARE_ALL_SYSTEMS", "false")
+	t.Setenv("VIGILE_HUB_SHARE_ALL_SYSTEMS", "false")
 	handler, path, owner, other, requests := systemdInfoTestHandler(t)
 	for _, tc := range []struct {
 		name, token, shareAll string
@@ -83,7 +83,7 @@ func TestSystemdInfoCachePolicy(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Setenv("SHARE_ALL_SYSTEMS", tc.shareAll)
-			t.Setenv("BESZEL_HUB_SHARE_ALL_SYSTEMS", tc.shareAll)
+			t.Setenv("VIGILE_HUB_SHARE_ALL_SYSTEMS", tc.shareAll)
 			req := httptest.NewRequest(http.MethodGet, path, nil)
 			req.Header.Set("Authorization", tc.token)
 			recorder := httptest.NewRecorder()

@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	beszelTests "github.com/henrygd/beszel/internal/tests"
+	vigileTests "github.com/Akilaea/vigile/internal/tests"
 
-	"github.com/henrygd/beszel/internal/migrations"
+	"github.com/Akilaea/vigile/internal/migrations"
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
@@ -50,9 +50,9 @@ func (r *gatedReader) Read(p []byte) (int, error) {
 	return n, nil
 }
 
-func firstUserTestMux(t *testing.T) (*beszelTests.TestHub, http.Handler) {
+func firstUserTestMux(t *testing.T) (*vigileTests.TestHub, http.Handler) {
 	t.Helper()
-	hub, err := beszelTests.NewTestHub(t.TempDir())
+	hub, err := vigileTests.NewTestHub(t.TempDir())
 	require.NoError(t, err)
 	_ = hub.StartHub()
 
@@ -76,7 +76,7 @@ func postFirstUser(handler http.Handler, email string) *httptest.ResponseRecorde
 		"email":    email,
 		"password": "password123",
 	})
-	req := httptest.NewRequest(http.MethodPost, "/api/beszel/create-user", bytes.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/api/vigile/create-user", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	recorder := httptest.NewRecorder()
 	handler.ServeHTTP(recorder, req)
@@ -84,35 +84,35 @@ func postFirstUser(handler http.Handler, email string) *httptest.ResponseRecorde
 }
 
 func TestApiRoutesAuthentication(t *testing.T) {
-	hub, user := beszelTests.GetHubWithUser(t)
+	hub, user := vigileTests.GetHubWithUser(t)
 	defer hub.Cleanup()
 
 	userToken, err := user.NewAuthToken()
 	require.NoError(t, err, "Failed to create auth token")
 
 	// Create test user and get auth token
-	user2, err := beszelTests.CreateUser(hub, "testuser@example.com", "password123")
+	user2, err := vigileTests.CreateUser(hub, "testuser@example.com", "password123")
 	require.NoError(t, err, "Failed to create test user")
 	user2Token, err := user2.NewAuthToken()
 	require.NoError(t, err, "Failed to create user2 auth token")
 
-	adminUser, err := beszelTests.CreateUserWithRole(hub, "admin@example.com", "password123", "admin")
+	adminUser, err := vigileTests.CreateUserWithRole(hub, "admin@example.com", "password123", "admin")
 	require.NoError(t, err, "Failed to create admin user")
 	adminUserToken, err := adminUser.NewAuthToken()
 	require.NoError(t, err, "Failed to create admin auth token")
 
-	readOnlyUser, err := beszelTests.CreateUserWithRole(hub, "readonly@example.com", "password123", "readonly")
+	readOnlyUser, err := vigileTests.CreateUserWithRole(hub, "readonly@example.com", "password123", "readonly")
 	require.NoError(t, err, "Failed to create readonly user")
 	readOnlyUserToken, err := readOnlyUser.NewAuthToken()
 	require.NoError(t, err, "Failed to create readonly user auth token")
 
-	superuser, err := beszelTests.CreateSuperuser(hub, "superuser@example.com", "password123")
+	superuser, err := vigileTests.CreateSuperuser(hub, "superuser@example.com", "password123")
 	require.NoError(t, err, "Failed to create superuser")
 	superuserToken, err := superuser.NewAuthToken()
 	require.NoError(t, err, "Failed to create superuser auth token")
 
 	// Create test system
-	system, err := beszelTests.CreateRecord(hub, "systems", map[string]any{
+	system, err := vigileTests.CreateRecord(hub, "systems", map[string]any{
 		"name":  "test-system",
 		"users": []string{user.Id, readOnlyUser.Id},
 		"host":  "127.0.0.1",
@@ -123,12 +123,12 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		return hub.TestApp
 	}
 
-	scenarios := []beszelTests.ApiScenario{
+	scenarios := []vigileTests.ApiScenario{
 		// Auth Protected Routes - Should require authentication
 		{
 			Name:            "GET /config-yaml - no auth should fail",
 			Method:          http.MethodGet,
-			URL:             "/api/beszel/config-yaml",
+			URL:             "/api/vigile/config-yaml",
 			ExpectedStatus:  401,
 			ExpectedContent: []string{"requires valid"},
 			TestAppFactory:  testAppFactory,
@@ -136,7 +136,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /config-yaml - with user auth should fail",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/config-yaml",
+			URL:    "/api/vigile/config-yaml",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -147,7 +147,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /config-yaml - with admin auth should succeed",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/config-yaml",
+			URL:    "/api/vigile/config-yaml",
 			Headers: map[string]string{
 				"Authorization": adminUserToken,
 			},
@@ -158,7 +158,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:            "GET /heartbeat-status - no auth should fail",
 			Method:          http.MethodGet,
-			URL:             "/api/beszel/heartbeat-status",
+			URL:             "/api/vigile/heartbeat-status",
 			ExpectedStatus:  401,
 			ExpectedContent: []string{"requires valid"},
 			TestAppFactory:  testAppFactory,
@@ -166,7 +166,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /heartbeat-status - with user auth should fail",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/heartbeat-status",
+			URL:    "/api/vigile/heartbeat-status",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -177,7 +177,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /heartbeat-status - with admin auth should succeed",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/heartbeat-status",
+			URL:    "/api/vigile/heartbeat-status",
 			Headers: map[string]string{
 				"Authorization": adminUserToken,
 			},
@@ -188,7 +188,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "POST /test-heartbeat - with user auth should fail",
 			Method: http.MethodPost,
-			URL:    "/api/beszel/test-heartbeat",
+			URL:    "/api/vigile/test-heartbeat",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -199,7 +199,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "POST /test-heartbeat - with admin auth should report disabled state",
 			Method: http.MethodPost,
-			URL:    "/api/beszel/test-heartbeat",
+			URL:    "/api/vigile/test-heartbeat",
 			Headers: map[string]string{
 				"Authorization": adminUserToken,
 			},
@@ -210,7 +210,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:            "GET /universal-token - no auth should fail",
 			Method:          http.MethodGet,
-			URL:             "/api/beszel/universal-token",
+			URL:             "/api/vigile/universal-token",
 			ExpectedStatus:  401,
 			ExpectedContent: []string{"requires valid"},
 			TestAppFactory:  testAppFactory,
@@ -218,7 +218,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /universal-token - with auth should succeed",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/universal-token",
+			URL:    "/api/vigile/universal-token",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -229,7 +229,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /universal-token - enable permanent should succeed",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/universal-token?enable=1&permanent=1&token=permanent-token-123",
+			URL:    "/api/vigile/universal-token?enable=1&permanent=1&token=permanent-token-123",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -240,7 +240,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /universal-token - superuser should fail",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/universal-token",
+			URL:    "/api/vigile/universal-token",
 			Headers: map[string]string{
 				"Authorization": superuserToken,
 			},
@@ -253,7 +253,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /universal-token - with readonly auth should fail",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/universal-token",
+			URL:    "/api/vigile/universal-token",
 			Headers: map[string]string{
 				"Authorization": readOnlyUserToken,
 			},
@@ -264,7 +264,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "POST /smart/refresh - missing system should fail 400 with user auth",
 			Method: http.MethodPost,
-			URL:    "/api/beszel/smart/refresh",
+			URL:    "/api/vigile/smart/refresh",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -275,7 +275,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "POST /smart/refresh - with readonly auth should fail",
 			Method: http.MethodPost,
-			URL:    fmt.Sprintf("/api/beszel/smart/refresh?system=%s", system.Id),
+			URL:    fmt.Sprintf("/api/vigile/smart/refresh?system=%s", system.Id),
 			Headers: map[string]string{
 				"Authorization": readOnlyUserToken,
 			},
@@ -286,7 +286,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "POST /smart/refresh - non-user system should fail",
 			Method: http.MethodPost,
-			URL:    fmt.Sprintf("/api/beszel/smart/refresh?system=%s", system.Id),
+			URL:    fmt.Sprintf("/api/vigile/smart/refresh?system=%s", system.Id),
 			Headers: map[string]string{
 				"Authorization": user2Token,
 			},
@@ -297,7 +297,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "POST /smart/refresh - good user should pass validation",
 			Method: http.MethodPost,
-			URL:    fmt.Sprintf("/api/beszel/smart/refresh?system=%s", system.Id),
+			URL:    fmt.Sprintf("/api/vigile/smart/refresh?system=%s", system.Id),
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -308,7 +308,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:            "POST /user-alerts - no auth should fail",
 			Method:          http.MethodPost,
-			URL:             "/api/beszel/user-alerts",
+			URL:             "/api/vigile/user-alerts",
 			ExpectedStatus:  401,
 			ExpectedContent: []string{"requires valid"},
 			TestAppFactory:  testAppFactory,
@@ -322,7 +322,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "POST /user-alerts - with auth should succeed",
 			Method: http.MethodPost,
-			URL:    "/api/beszel/user-alerts",
+			URL:    "/api/vigile/user-alerts",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -339,7 +339,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "POST /user-alerts - readonly user can create own alert",
 			Method: http.MethodPost,
-			URL:    "/api/beszel/user-alerts",
+			URL:    "/api/vigile/user-alerts",
 			Headers: map[string]string{
 				"Authorization": readOnlyUserToken,
 			},
@@ -357,7 +357,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:            "DELETE /user-alerts - no auth should fail",
 			Method:          http.MethodDelete,
-			URL:             "/api/beszel/user-alerts",
+			URL:             "/api/vigile/user-alerts",
 			ExpectedStatus:  401,
 			ExpectedContent: []string{"requires valid"},
 			TestAppFactory:  testAppFactory,
@@ -369,7 +369,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "DELETE /user-alerts - with auth should succeed",
 			Method: http.MethodDelete,
-			URL:    "/api/beszel/user-alerts",
+			URL:    "/api/vigile/user-alerts",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -382,7 +382,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 			}),
 			BeforeTestFunc: func(t testing.TB, app *pbTests.TestApp, e *core.ServeEvent) {
 				// Create an alert to delete
-				beszelTests.CreateRecord(app, "alerts", map[string]any{
+				vigileTests.CreateRecord(app, "alerts", map[string]any{
 					"name":   "CPU",
 					"system": system.Id,
 					"user":   user.Id,
@@ -394,7 +394,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "DELETE /user-alerts - readonly user can delete own alert",
 			Method: http.MethodDelete,
-			URL:    "/api/beszel/user-alerts",
+			URL:    "/api/vigile/user-alerts",
 			Headers: map[string]string{
 				"Authorization": readOnlyUserToken,
 			},
@@ -405,7 +405,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 				"name": "CPU", "systems": []string{system.Id},
 			}),
 			BeforeTestFunc: func(t testing.TB, app *pbTests.TestApp, e *core.ServeEvent) {
-				beszelTests.CreateRecord(app, "alerts", map[string]any{
+				vigileTests.CreateRecord(app, "alerts", map[string]any{
 					"name": "CPU", "system": system.Id, "user": readOnlyUser.Id, "value": 80,
 				})
 			},
@@ -417,7 +417,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:            "GET /containers/logs - no auth should fail",
 			Method:          http.MethodGet,
-			URL:             "/api/beszel/containers/logs?system=test-system&container=abababababab",
+			URL:             "/api/vigile/containers/logs?system=test-system&container=abababababab",
 			ExpectedStatus:  401,
 			ExpectedContent: []string{"requires valid"},
 			TestAppFactory:  testAppFactory,
@@ -425,7 +425,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:            "GET /containers/logs - request for valid non-user system should fail",
 			Method:          http.MethodGet,
-			URL:             fmt.Sprintf("/api/beszel/containers/logs?system=%s&container=abababababab", system.Id),
+			URL:             fmt.Sprintf("/api/vigile/containers/logs?system=%s&container=abababababab", system.Id),
 			ExpectedStatus:  404,
 			ExpectedContent: []string{"The requested resource wasn't found."},
 			TestAppFactory:  testAppFactory,
@@ -436,7 +436,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:            "GET /containers/info - request for valid non-user system should fail",
 			Method:          http.MethodGet,
-			URL:             fmt.Sprintf("/api/beszel/containers/info?system=%s&container=abababababab", system.Id),
+			URL:             fmt.Sprintf("/api/vigile/containers/info?system=%s&container=abababababab", system.Id),
 			ExpectedStatus:  404,
 			ExpectedContent: []string{"The requested resource wasn't found."},
 			TestAppFactory:  testAppFactory,
@@ -447,7 +447,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:            "GET /containers/info - SHARE_ALL_SYSTEMS allows non-member user",
 			Method:          http.MethodGet,
-			URL:             fmt.Sprintf("/api/beszel/containers/info?system=%s&container=abababababab", system.Id),
+			URL:             fmt.Sprintf("/api/vigile/containers/info?system=%s&container=abababababab", system.Id),
 			ExpectedStatus:  500,
 			ExpectedContent: []string{"Something went wrong while processing your request."},
 			TestAppFactory:  testAppFactory,
@@ -464,7 +464,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /containers/logs - with auth but missing system param should fail",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/containers/logs?container=abababababab",
+			URL:    "/api/vigile/containers/logs?container=abababababab",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -475,7 +475,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /containers/logs - with auth but missing container param should fail",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/containers/logs?system=test-system",
+			URL:    "/api/vigile/containers/logs?system=test-system",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -486,7 +486,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /containers/logs - with auth but invalid system should fail",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/containers/logs?system=invalid-system&container=0123456789ab",
+			URL:    "/api/vigile/containers/logs?system=invalid-system&container=0123456789ab",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -497,7 +497,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /containers/logs - traversal container should fail validation",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/containers/logs?system=" + system.Id + "&container=..%2F..%2Fversion",
+			URL:    "/api/vigile/containers/logs?system=" + system.Id + "&container=..%2F..%2Fversion",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -508,7 +508,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /containers/info - traversal container should fail validation",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/containers/info?system=" + system.Id + "&container=../../version?x=",
+			URL:    "/api/vigile/containers/info?system=" + system.Id + "&container=../../version?x=",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -519,7 +519,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /containers/info - non-hex container should fail validation",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/containers/info?system=" + system.Id + "&container=container_name",
+			URL:    "/api/vigile/containers/info?system=" + system.Id + "&container=container_name",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -530,7 +530,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /containers/logs - good user should pass validation",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/containers/logs?system=" + system.Id + "&container=0123456789ab",
+			URL:    "/api/vigile/containers/logs?system=" + system.Id + "&container=0123456789ab",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -541,7 +541,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /containers/info - good user should pass validation",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/containers/info?system=" + system.Id + "&container=0123456789ab",
+			URL:    "/api/vigile/containers/info?system=" + system.Id + "&container=0123456789ab",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -553,7 +553,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:            "GET /package-updates - no auth should fail",
 			Method:          http.MethodGet,
-			URL:             fmt.Sprintf("/api/beszel/package-updates?system=%s", system.Id),
+			URL:             fmt.Sprintf("/api/vigile/package-updates?system=%s", system.Id),
 			ExpectedStatus:  401,
 			ExpectedContent: []string{"requires valid"},
 			TestAppFactory:  testAppFactory,
@@ -561,7 +561,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /package-updates - missing system param should fail",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/package-updates",
+			URL:    "/api/vigile/package-updates",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -572,7 +572,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /package-updates - invalid system should fail",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/package-updates?system=invalid-system",
+			URL:    "/api/vigile/package-updates?system=invalid-system",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -583,7 +583,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:            "GET /package-updates - request for valid non-user system should fail",
 			Method:          http.MethodGet,
-			URL:             fmt.Sprintf("/api/beszel/package-updates?system=%s", system.Id),
+			URL:             fmt.Sprintf("/api/vigile/package-updates?system=%s", system.Id),
 			ExpectedStatus:  404,
 			ExpectedContent: []string{"The requested resource wasn't found."},
 			TestAppFactory:  testAppFactory,
@@ -594,7 +594,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /package-updates - good user should pass validation",
 			Method: http.MethodGet,
-			URL:    fmt.Sprintf("/api/beszel/package-updates?system=%s", system.Id),
+			URL:    fmt.Sprintf("/api/vigile/package-updates?system=%s", system.Id),
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -606,7 +606,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:            "GET /systemd/info - no auth should fail",
 			Method:          http.MethodGet,
-			URL:             fmt.Sprintf("/api/beszel/systemd/info?system=%s&service=nginx.service", system.Id),
+			URL:             fmt.Sprintf("/api/vigile/systemd/info?system=%s&service=nginx.service", system.Id),
 			ExpectedStatus:  401,
 			ExpectedContent: []string{"requires valid"},
 			TestAppFactory:  testAppFactory,
@@ -614,7 +614,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:            "GET /systemd/info - request for valid non-user system should fail",
 			Method:          http.MethodGet,
-			URL:             fmt.Sprintf("/api/beszel/systemd/info?system=%s&service=nginx.service", system.Id),
+			URL:             fmt.Sprintf("/api/vigile/systemd/info?system=%s&service=nginx.service", system.Id),
 			ExpectedStatus:  404,
 			ExpectedContent: []string{"The requested resource wasn't found."},
 			TestAppFactory:  testAppFactory,
@@ -625,7 +625,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /systemd/info - with auth but missing system param should fail",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/systemd/info?service=nginx.service",
+			URL:    "/api/vigile/systemd/info?service=nginx.service",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -636,7 +636,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /systemd/info - with auth but missing service param should fail",
 			Method: http.MethodGet,
-			URL:    fmt.Sprintf("/api/beszel/systemd/info?system=%s", system.Id),
+			URL:    fmt.Sprintf("/api/vigile/systemd/info?system=%s", system.Id),
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -647,7 +647,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /systemd/info - with auth but invalid system should fail",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/systemd/info?system=invalid-system&service=nginx.service",
+			URL:    "/api/vigile/systemd/info?system=invalid-system&service=nginx.service",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -658,7 +658,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /systemd/info - service not in systemd_services collection should fail",
 			Method: http.MethodGet,
-			URL:    fmt.Sprintf("/api/beszel/systemd/info?system=%s&service=notregistered.service", system.Id),
+			URL:    fmt.Sprintf("/api/vigile/systemd/info?system=%s&service=notregistered.service", system.Id),
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -669,7 +669,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /systemd/info - with auth and existing service record should pass validation",
 			Method: http.MethodGet,
-			URL:    fmt.Sprintf("/api/beszel/systemd/info?system=%s&service=nginx.service", system.Id),
+			URL:    fmt.Sprintf("/api/vigile/systemd/info?system=%s&service=nginx.service", system.Id),
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -677,7 +677,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 			ExpectedContent: []string{"Something went wrong while processing your request."},
 			TestAppFactory:  testAppFactory,
 			BeforeTestFunc: func(t testing.TB, app *pbTests.TestApp, e *core.ServeEvent) {
-				beszelTests.CreateRecord(app, "systemd_services", map[string]any{
+				vigileTests.CreateRecord(app, "systemd_services", map[string]any{
 					"system": system.Id,
 					"name":   "nginx.service",
 					"state":  0,
@@ -688,7 +688,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /systemd/logs - old agent without capability returns empty logs",
 			Method: http.MethodGet,
-			URL:    fmt.Sprintf("/api/beszel/systemd/logs?system=%s&service=nginx.service", system.Id),
+			URL:    fmt.Sprintf("/api/vigile/systemd/logs?system=%s&service=nginx.service", system.Id),
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -696,7 +696,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 			ExpectedContent: []string{`"logs":""`},
 			TestAppFactory:  testAppFactory,
 			BeforeTestFunc: func(t testing.TB, app *pbTests.TestApp, e *core.ServeEvent) {
-				beszelTests.CreateRecord(app, "systemd_services", map[string]any{
+				vigileTests.CreateRecord(app, "systemd_services", map[string]any{
 					"system": system.Id,
 					"name":   "nginx.service",
 					"state":  0,
@@ -709,7 +709,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:            "GET /getkey - no auth should fail",
 			Method:          http.MethodGet,
-			URL:             "/api/beszel/getkey",
+			URL:             "/api/vigile/getkey",
 			ExpectedStatus:  401,
 			ExpectedContent: []string{"requires valid"},
 			TestAppFactory:  testAppFactory,
@@ -717,7 +717,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /getkey - with auth should also succeed",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/getkey",
+			URL:    "/api/vigile/getkey",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -728,7 +728,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /info - should return the same as /getkey",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/info",
+			URL:    "/api/vigile/info",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -739,7 +739,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:            "GET /first-run - no auth should succeed",
 			Method:          http.MethodGet,
-			URL:             "/api/beszel/first-run",
+			URL:             "/api/vigile/first-run",
 			ExpectedStatus:  200,
 			ExpectedContent: []string{"\"firstRun\":false"},
 			TestAppFactory:  testAppFactory,
@@ -747,7 +747,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "GET /first-run - with auth should also succeed",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/first-run",
+			URL:    "/api/vigile/first-run",
 			Headers: map[string]string{
 				"Authorization": userToken,
 			},
@@ -758,7 +758,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:            "GET /agent-connect - no auth should succeed (websocket upgrade fails but route is accessible)",
 			Method:          http.MethodGet,
-			URL:             "/api/beszel/agent-connect",
+			URL:             "/api/vigile/agent-connect",
 			ExpectedStatus:  400,
 			ExpectedContent: []string{},
 			TestAppFactory:  testAppFactory,
@@ -766,7 +766,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "POST /test-notification - invalid auth token should fail",
 			Method: http.MethodPost,
-			URL:    "/api/beszel/test-notification",
+			URL:    "/api/vigile/test-notification",
 			Body: jsonReader(map[string]any{
 				"url": "generic://127.0.0.1",
 			}),
@@ -780,7 +780,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		{
 			Name:   "POST /user-alerts - invalid auth token should fail",
 			Method: http.MethodPost,
-			URL:    "/api/beszel/user-alerts",
+			URL:    "/api/vigile/user-alerts",
 			Headers: map[string]string{
 				"Authorization": "invalid-token",
 			},
@@ -800,7 +800,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 		// {
 		// 	Name:               "GET /update - shouldn't exist without CHECK_UPDATES env var",
 		// 	Method:             http.MethodGet,
-		// 	URL:                "/api/beszel/update",
+		// 	URL:                "/api/vigile/update",
 		// 	NotExpectedContent: []string{"v:", "\"v\":"},
 		// 	ExpectedStatus: 502,
 		// 	TestAppFactory: testAppFactory,
@@ -814,7 +814,7 @@ func TestApiRoutesAuthentication(t *testing.T) {
 
 func TestFirstUserCreation(t *testing.T) {
 	t.Run("CreateUserEndpoint available when no users exist", func(t *testing.T) {
-		hub, _ := beszelTests.NewTestHub(t.TempDir())
+		hub, _ := vigileTests.NewTestHub(t.TempDir())
 		defer hub.Cleanup()
 
 		hub.StartHub()
@@ -823,11 +823,11 @@ func TestFirstUserCreation(t *testing.T) {
 			return hub.TestApp
 		}
 
-		scenarios := []beszelTests.ApiScenario{
+		scenarios := []vigileTests.ApiScenario{
 			{
 				Name:   "POST /create-user - should be available when no users exist",
 				Method: http.MethodPost,
-				URL:    "/api/beszel/create-user",
+				URL:    "/api/vigile/create-user",
 				Body: jsonReader(map[string]any{
 					"email":    "firstuser@example.com",
 					"password": "password123",
@@ -857,7 +857,7 @@ func TestFirstUserCreation(t *testing.T) {
 			{
 				Name:   "POST /create-user - should not be available when users exist",
 				Method: http.MethodPost,
-				URL:    "/api/beszel/create-user",
+				URL:    "/api/vigile/create-user",
 				Body: jsonReader(map[string]any{
 					"email":    "firstuser@example.com",
 					"password": "password123",
@@ -874,10 +874,10 @@ func TestFirstUserCreation(t *testing.T) {
 	})
 
 	t.Run("CreateUserEndpoint not available when USER_EMAIL, USER_PASSWORD are set", func(t *testing.T) {
-		t.Setenv("BESZEL_HUB_USER_EMAIL", "me@example.com")
-		t.Setenv("BESZEL_HUB_USER_PASSWORD", "password123")
+		t.Setenv("VIGILE_HUB_USER_EMAIL", "me@example.com")
+		t.Setenv("VIGILE_HUB_USER_PASSWORD", "password123")
 
-		hub, _ := beszelTests.NewTestHub(t.TempDir())
+		hub, _ := vigileTests.NewTestHub(t.TempDir())
 		defer hub.Cleanup()
 
 		hub.StartHub()
@@ -886,10 +886,10 @@ func TestFirstUserCreation(t *testing.T) {
 			return hub.TestApp
 		}
 
-		scenario := beszelTests.ApiScenario{
+		scenario := vigileTests.ApiScenario{
 			Name:            "POST /create-user - should not be available when USER_EMAIL, USER_PASSWORD are set",
 			Method:          http.MethodPost,
-			URL:             "/api/beszel/create-user",
+			URL:             "/api/vigile/create-user",
 			ExpectedStatus:  404,
 			ExpectedContent: []string{"wasn't found"},
 			TestAppFactory:  testAppFactory,
@@ -961,7 +961,7 @@ func TestFirstUserBootstrapAtomicity(t *testing.T) {
 			started: make(chan struct{}),
 			release: make(chan struct{}),
 		}
-		parkedRequest := httptest.NewRequest(http.MethodPost, "/api/beszel/create-user", gated)
+		parkedRequest := httptest.NewRequest(http.MethodPost, "/api/vigile/create-user", gated)
 		parkedRequest.Header.Set("Content-Type", "application/json")
 		parkedRecorder := httptest.NewRecorder()
 		parkedDone := make(chan struct{})
@@ -1002,7 +1002,7 @@ func TestFirstUserBootstrapAtomicity(t *testing.T) {
 
 func TestCreateUserEndpointAvailability(t *testing.T) {
 	t.Run("CreateUserEndpoint available when no users exist", func(t *testing.T) {
-		hub, _ := beszelTests.NewTestHub(t.TempDir())
+		hub, _ := vigileTests.NewTestHub(t.TempDir())
 		defer hub.Cleanup()
 
 		// Ensure no users exist
@@ -1016,10 +1016,10 @@ func TestCreateUserEndpointAvailability(t *testing.T) {
 			return hub.TestApp
 		}
 
-		scenario := beszelTests.ApiScenario{
+		scenario := vigileTests.ApiScenario{
 			Name:   "POST /create-user - should be available when no users exist",
 			Method: http.MethodPost,
-			URL:    "/api/beszel/create-user",
+			URL:    "/api/vigile/create-user",
 			Body: jsonReader(map[string]any{
 				"email":    "firstuser@example.com",
 				"password": "password123",
@@ -1038,11 +1038,11 @@ func TestCreateUserEndpointAvailability(t *testing.T) {
 	})
 
 	t.Run("CreateUserEndpoint not available when users exist", func(t *testing.T) {
-		hub, _ := beszelTests.NewTestHub(t.TempDir())
+		hub, _ := vigileTests.NewTestHub(t.TempDir())
 		defer hub.Cleanup()
 
 		// Create a user first
-		_, err := beszelTests.CreateUser(hub, "existing@example.com", "password")
+		_, err := vigileTests.CreateUser(hub, "existing@example.com", "password")
 		require.NoError(t, err)
 
 		hub.StartHub()
@@ -1051,10 +1051,10 @@ func TestCreateUserEndpointAvailability(t *testing.T) {
 			return hub.TestApp
 		}
 
-		scenario := beszelTests.ApiScenario{
+		scenario := vigileTests.ApiScenario{
 			Name:   "POST /create-user - should not be available when users exist",
 			Method: http.MethodPost,
-			URL:    "/api/beszel/create-user",
+			URL:    "/api/vigile/create-user",
 			Body: jsonReader(map[string]any{
 				"email":    "another@example.com",
 				"password": "password123",
@@ -1069,7 +1069,7 @@ func TestCreateUserEndpointAvailability(t *testing.T) {
 }
 
 func TestAutoLoginMiddleware(t *testing.T) {
-	var hubs []*beszelTests.TestHub
+	var hubs []*vigileTests.TestHub
 
 	defer func() {
 		for _, hub := range hubs {
@@ -1080,17 +1080,17 @@ func TestAutoLoginMiddleware(t *testing.T) {
 	t.Setenv("AUTO_LOGIN", "user@test.com")
 
 	testAppFactory := func(t testing.TB) *pbTests.TestApp {
-		hub, _ := beszelTests.NewTestHub(t.TempDir())
+		hub, _ := vigileTests.NewTestHub(t.TempDir())
 		hubs = append(hubs, hub)
 		hub.StartHub()
 		return hub.TestApp
 	}
 
-	scenarios := []beszelTests.ApiScenario{
+	scenarios := []vigileTests.ApiScenario{
 		{
 			Name:            "GET /getkey - without auto login should fail",
 			Method:          http.MethodGet,
-			URL:             "/api/beszel/getkey",
+			URL:             "/api/vigile/getkey",
 			ExpectedStatus:  401,
 			ExpectedContent: []string{"requires valid"},
 			TestAppFactory:  testAppFactory,
@@ -1098,7 +1098,7 @@ func TestAutoLoginMiddleware(t *testing.T) {
 		{
 			Name:            "GET /getkey - with auto login should fail if no matching user",
 			Method:          http.MethodGet,
-			URL:             "/api/beszel/getkey",
+			URL:             "/api/vigile/getkey",
 			ExpectedStatus:  401,
 			ExpectedContent: []string{"requires valid"},
 			TestAppFactory:  testAppFactory,
@@ -1106,12 +1106,12 @@ func TestAutoLoginMiddleware(t *testing.T) {
 		{
 			Name:            "GET /getkey - with auto login should succeed",
 			Method:          http.MethodGet,
-			URL:             "/api/beszel/getkey",
+			URL:             "/api/vigile/getkey",
 			ExpectedStatus:  200,
 			ExpectedContent: []string{"\"key\":", "\"v\":"},
 			TestAppFactory:  testAppFactory,
 			BeforeTestFunc: func(t testing.TB, app *pbTests.TestApp, e *core.ServeEvent) {
-				beszelTests.CreateUser(app, "user@test.com", "password123")
+				vigileTests.CreateUser(app, "user@test.com", "password123")
 			},
 		},
 	}
@@ -1122,7 +1122,7 @@ func TestAutoLoginMiddleware(t *testing.T) {
 }
 
 func TestTrustedHeaderMiddleware(t *testing.T) {
-	var hubs []*beszelTests.TestHub
+	var hubs []*vigileTests.TestHub
 
 	defer func() {
 		for _, hub := range hubs {
@@ -1130,20 +1130,20 @@ func TestTrustedHeaderMiddleware(t *testing.T) {
 		}
 	}()
 
-	t.Setenv("TRUSTED_AUTH_HEADER", "X-Beszel-Trusted")
+	t.Setenv("TRUSTED_AUTH_HEADER", "X-Vigile-Trusted")
 
 	testAppFactory := func(t testing.TB) *pbTests.TestApp {
-		hub, _ := beszelTests.NewTestHub(t.TempDir())
+		hub, _ := vigileTests.NewTestHub(t.TempDir())
 		hubs = append(hubs, hub)
 		hub.StartHub()
 		return hub.TestApp
 	}
 
-	scenarios := []beszelTests.ApiScenario{
+	scenarios := []vigileTests.ApiScenario{
 		{
 			Name:            "GET /getkey - without trusted header should fail",
 			Method:          http.MethodGet,
-			URL:             "/api/beszel/getkey",
+			URL:             "/api/vigile/getkey",
 			ExpectedStatus:  401,
 			ExpectedContent: []string{"requires valid"},
 			TestAppFactory:  testAppFactory,
@@ -1151,9 +1151,9 @@ func TestTrustedHeaderMiddleware(t *testing.T) {
 		{
 			Name:   "GET /getkey - with trusted header should fail if no matching user",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/getkey",
+			URL:    "/api/vigile/getkey",
 			Headers: map[string]string{
-				"X-Beszel-Trusted": "user@test.com",
+				"X-Vigile-Trusted": "user@test.com",
 			},
 			ExpectedStatus:  401,
 			ExpectedContent: []string{"requires valid"},
@@ -1162,15 +1162,15 @@ func TestTrustedHeaderMiddleware(t *testing.T) {
 		{
 			Name:   "GET /getkey - with trusted header should succeed",
 			Method: http.MethodGet,
-			URL:    "/api/beszel/getkey",
+			URL:    "/api/vigile/getkey",
 			Headers: map[string]string{
-				"X-Beszel-Trusted": "user@test.com",
+				"X-Vigile-Trusted": "user@test.com",
 			},
 			ExpectedStatus:  200,
 			ExpectedContent: []string{"\"key\":", "\"v\":"},
 			TestAppFactory:  testAppFactory,
 			BeforeTestFunc: func(t testing.TB, app *pbTests.TestApp, e *core.ServeEvent) {
-				beszelTests.CreateUser(app, "user@test.com", "password123")
+				vigileTests.CreateUser(app, "user@test.com", "password123")
 			},
 		},
 	}
@@ -1181,7 +1181,7 @@ func TestTrustedHeaderMiddleware(t *testing.T) {
 }
 
 func TestTrustedHeaderProxyAllowlist(t *testing.T) {
-	var hubs []*beszelTests.TestHub
+	var hubs []*vigileTests.TestHub
 
 	defer func() {
 		for _, hub := range hubs {
@@ -1190,7 +1190,7 @@ func TestTrustedHeaderProxyAllowlist(t *testing.T) {
 	}()
 
 	testAppFactory := func(t testing.TB) *pbTests.TestApp {
-		hub, _ := beszelTests.NewTestHub(t.TempDir())
+		hub, _ := vigileTests.NewTestHub(t.TempDir())
 		hubs = append(hubs, hub)
 		hub.StartHub()
 		return hub.TestApp
@@ -1231,21 +1231,21 @@ func TestTrustedHeaderProxyAllowlist(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			t.Setenv("TRUSTED_AUTH_HEADER", "X-Beszel-Trusted")
+			t.Setenv("TRUSTED_AUTH_HEADER", "X-Vigile-Trusted")
 			t.Setenv("TRUSTED_PROXY_IPS", tc.proxies)
 
-			scenario := beszelTests.ApiScenario{
+			scenario := vigileTests.ApiScenario{
 				Name:   "GET /getkey - with trusted header",
 				Method: http.MethodGet,
-				URL:    "/api/beszel/getkey",
+				URL:    "/api/vigile/getkey",
 				Headers: map[string]string{
-					"X-Beszel-Trusted": "user@test.com",
+					"X-Vigile-Trusted": "user@test.com",
 				},
 				ExpectedStatus:  tc.expectedStatus,
 				ExpectedContent: tc.expectedContent,
 				TestAppFactory:  testAppFactory,
 				BeforeTestFunc: func(t testing.TB, app *pbTests.TestApp, e *core.ServeEvent) {
-					beszelTests.CreateUser(app, "user@test.com", "password123")
+					vigileTests.CreateUser(app, "user@test.com", "password123")
 				},
 			}
 			scenario.Test(t)
@@ -1256,12 +1256,12 @@ func TestTrustedHeaderProxyAllowlist(t *testing.T) {
 func TestUpdateEndpoint(t *testing.T) {
 	t.Setenv("CHECK_UPDATES", "true")
 
-	hub, _ := beszelTests.NewTestHub(t.TempDir())
+	hub, _ := vigileTests.NewTestHub(t.TempDir())
 	defer hub.Cleanup()
 	hub.StartHub()
 
 	// Create test user and get auth token
-	// user, err := beszelTests.CreateUser(hub, "testuser@example.com", "password123")
+	// user, err := vigileTests.CreateUser(hub, "testuser@example.com", "password123")
 	// require.NoError(t, err, "Failed to create test user")
 	// userToken, err := user.NewAuthToken()
 
@@ -1269,11 +1269,11 @@ func TestUpdateEndpoint(t *testing.T) {
 		return hub.TestApp
 	}
 
-	scenarios := []beszelTests.ApiScenario{
+	scenarios := []vigileTests.ApiScenario{
 		{
 			Name:            "update endpoint shouldn't work without auth",
 			Method:          http.MethodGet,
-			URL:             "/api/beszel/update",
+			URL:             "/api/vigile/update",
 			ExpectedStatus:  401,
 			ExpectedContent: []string{"requires valid"},
 			TestAppFactory:  testAppFactory,
@@ -1282,7 +1282,7 @@ func TestUpdateEndpoint(t *testing.T) {
 		// {
 		// 	Name:   "GET /update - with valid auth should succeed",
 		// 	Method: http.MethodGet,
-		// 	URL:    "/api/beszel/update",
+		// 	URL:    "/api/vigile/update",
 		// 	Headers: map[string]string{
 		// 		"Authorization": userToken,
 		// 	},

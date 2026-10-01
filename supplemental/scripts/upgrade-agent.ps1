@@ -21,24 +21,24 @@ function Test-CommandExists {
     return (Get-Command $Command -ErrorAction SilentlyContinue)
 }
 
-# Function to find beszel-agent in common installation locations
-function Find-BeszelAgent {
+# Function to find vigile-agent in common installation locations
+function Find-VigileAgent {
     # First check if it's in PATH
-    $agentCmd = Get-Command "beszel-agent" -ErrorAction SilentlyContinue
+    $agentCmd = Get-Command "vigile-agent" -ErrorAction SilentlyContinue
     if ($agentCmd) {
         return $agentCmd.Source
     }
     
     # Common installation paths to check
     $commonPaths = @(
-        "$env:USERPROFILE\scoop\apps\beszel-agent\current\beszel-agent.exe",
-        "$env:ProgramData\scoop\apps\beszel-agent\current\beszel-agent.exe",
-        "$env:LOCALAPPDATA\Microsoft\WinGet\Packages\henrygd.beszel-agent*\beszel-agent.exe",
-        "$env:ProgramFiles\WinGet\Packages\henrygd.beszel-agent*\beszel-agent.exe",
-        "${env:ProgramFiles(x86)}\WinGet\Packages\henrygd.beszel-agent*\beszel-agent.exe",
-        "$env:ProgramFiles\beszel-agent\beszel-agent.exe",
-        "$env:ProgramFiles(x86)\beszel-agent\beszel-agent.exe",
-        "$env:SystemDrive\Users\*\scoop\apps\beszel-agent\current\beszel-agent.exe"
+        "$env:USERPROFILE\scoop\apps\vigile-agent\current\vigile-agent.exe",
+        "$env:ProgramData\scoop\apps\vigile-agent\current\vigile-agent.exe",
+        "$env:LOCALAPPDATA\Microsoft\WinGet\Packages\henrygd.beszel-agent*\vigile-agent.exe",
+        "$env:ProgramFiles\WinGet\Packages\henrygd.beszel-agent*\vigile-agent.exe",
+        "${env:ProgramFiles(x86)}\WinGet\Packages\henrygd.beszel-agent*\vigile-agent.exe",
+        "$env:ProgramFiles\vigile-agent\vigile-agent.exe",
+        "$env:ProgramFiles(x86)\vigile-agent\vigile-agent.exe",
+        "$env:SystemDrive\Users\*\scoop\apps\vigile-agent\current\vigile-agent.exe"
     )
     
     foreach ($path in $commonPaths) {
@@ -97,21 +97,21 @@ function Find-NSSM {
 
 #region Upgrade Functions
 
-# Function to upgrade beszel-agent with Scoop
-function Upgrade-BeszelAgentWithScoop {
-    Write-Host "Upgrading beszel-agent with Scoop..."
-    scoop update beszel-agent
+# Function to upgrade vigile-agent with Scoop
+function Upgrade-VigileAgentWithScoop {
+    Write-Host "Upgrading vigile-agent with Scoop..."
+    scoop update vigile-agent
     
-    if (-not (Test-CommandExists "beszel-agent")) {
-        throw "Failed to upgrade beszel-agent with Scoop"
+    if (-not (Test-CommandExists "vigile-agent")) {
+        throw "Failed to upgrade vigile-agent with Scoop"
     }
     
-    return $(Join-Path -Path $(scoop prefix beszel-agent) -ChildPath "beszel-agent.exe")
+    return $(Join-Path -Path $(scoop prefix vigile-agent) -ChildPath "vigile-agent.exe")
 }
 
-# Function to upgrade beszel-agent with WinGet
-function Upgrade-BeszelAgentWithWinGet {
-    Write-Host "Upgrading beszel-agent with WinGet..."
+# Function to upgrade vigile-agent with WinGet
+function Upgrade-VigileAgentWithWinGet {
+    Write-Host "Upgrading vigile-agent with WinGet..."
     
     # Temporarily change ErrorActionPreference to allow WinGet to complete and show output
     $originalErrorActionPreference = $ErrorActionPreference
@@ -135,17 +135,17 @@ function Upgrade-BeszelAgentWithWinGet {
         Write-Host "WinGet exit code: $wingetExitCode" -ForegroundColor Yellow
     }
     
-    # Refresh PATH environment variable to make beszel-agent available in current session
+    # Refresh PATH environment variable to make vigile-agent available in current session
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
     
-    # Find the path to the beszel-agent executable
-    $agentPath = (Get-Command beszel-agent -ErrorAction SilentlyContinue).Source
+    # Find the path to the vigile-agent executable
+    $agentPath = (Get-Command vigile-agent -ErrorAction SilentlyContinue).Source
     
     if (-not $agentPath) {
         # Try to find it using our search function
-        $agentPath = Find-BeszelAgent
+        $agentPath = Find-VigileAgent
         if (-not $agentPath) {
-            throw "Could not find beszel-agent executable path after upgrade"
+            throw "Could not find vigile-agent executable path after upgrade"
         }
     }
     
@@ -167,9 +167,9 @@ function Get-ServiceConfiguration {
     }
     
     # Check if service exists
-    $existingService = Get-Service -Name "beszel-agent" -ErrorAction SilentlyContinue
+    $existingService = Get-Service -Name "vigile-agent" -ErrorAction SilentlyContinue
     if (-not $existingService) {
-        throw "beszel-agent service does not exist. Please run the installation script first."
+        throw "vigile-agent service does not exist. Please run the installation script first."
     }
     
     # Get current service configuration
@@ -177,13 +177,13 @@ function Get-ServiceConfiguration {
     
     try {
         # Get current application path
-        $currentPath = & $nssmCommand get beszel-agent Application
+        $currentPath = & $nssmCommand get vigile-agent Application
         if ($LASTEXITCODE -eq 0) {
             $config.CurrentPath = $currentPath.Trim()
         }
         
         # Get environment variables
-        $envVars = & $nssmCommand get beszel-agent AppEnvironmentExtra
+        $envVars = & $nssmCommand get vigile-agent AppEnvironmentExtra
         if ($LASTEXITCODE -eq 0 -and $envVars) {
             $config.EnvironmentVars = $envVars
         }
@@ -206,7 +206,7 @@ function Update-ServicePath {
         [string]$NSSMPath = ""
     )
     
-    Write-Host "Updating beszel-agent service path..."
+    Write-Host "Updating vigile-agent service path..."
     
     # Determine the NSSM executable to use
     $nssmCommand = "nssm"
@@ -218,24 +218,24 @@ function Update-ServicePath {
     }
     
     # Update the application path
-    & $nssmCommand set beszel-agent Application $NewAgentPath
+    & $nssmCommand set vigile-agent Application $NewAgentPath
     if ($LASTEXITCODE -ne 0) {
-        throw "Failed to update beszel-agent service path"
+        throw "Failed to update vigile-agent service path"
     }
     
     Write-Host "Service path updated to: $NewAgentPath"
     
     # Start the service
-    Start-BeszelAgentService -NSSMPath $nssmCommand
+    Start-VigileAgentService -NSSMPath $nssmCommand
 }
 
 # Function to start and monitor the service
-function Start-BeszelAgentService {
+function Start-VigileAgentService {
     param (
         [string]$NSSMPath = ""
     )
     
-    Write-Host "Starting beszel-agent service..."
+    Write-Host "Starting vigile-agent service..."
     
     # Determine the NSSM executable to use
     $nssmCommand = "nssm"
@@ -245,7 +245,7 @@ function Start-BeszelAgentService {
         throw "NSSM is not available in PATH and no valid NSSMPath was provided"
     }
     
-    & $nssmCommand start beszel-agent
+    & $nssmCommand start vigile-agent
     $startResult = $LASTEXITCODE
     
     # Only enter the status check loop if the NSSM start command failed
@@ -262,11 +262,11 @@ function Start-BeszelAgentService {
             Start-Sleep -Seconds 1
             $elapsedTime += 1
 
-            $serviceStatus = & $nssmCommand status beszel-agent
+            $serviceStatus = & $nssmCommand status vigile-agent
             
             if ($serviceStatus -eq "SERVICE_RUNNING") {
                 $serviceStarted = $true
-                Write-Host "Success! The beszel-agent service is now running." -ForegroundColor Green
+                Write-Host "Success! The vigile-agent service is now running." -ForegroundColor Green
             }
             elseif ($serviceStatus -like "*PENDING*") {
                 Write-Host "Service is still starting (status: $serviceStatus)... waiting" -ForegroundColor Yellow
@@ -280,11 +280,11 @@ function Start-BeszelAgentService {
         
         if (-not $serviceStarted) {
             Write-Host "Service did not reach running state." -ForegroundColor Yellow
-            Write-Host "You can check status manually with 'nssm status beszel-agent'" -ForegroundColor Yellow
+            Write-Host "You can check status manually with 'nssm status vigile-agent'" -ForegroundColor Yellow
         }
     } else {
         # NSSM start command was successful
-        Write-Host "Success! The beszel-agent service is running properly." -ForegroundColor Green
+        Write-Host "Success! The vigile-agent service is running properly." -ForegroundColor Green
     }
 }
 
@@ -296,13 +296,13 @@ function Start-BeszelAgentService {
 $isAdmin = Test-Admin
 
 try {
-    Write-Host "Beszel Agent Upgrade Script" -ForegroundColor Cyan
+    Write-Host "Vigile Agent Upgrade Script" -ForegroundColor Cyan
     Write-Host "===========================" -ForegroundColor Cyan
     
     # First: Check if service exists (doesn't require admin)
-    $existingService = Get-Service -Name "beszel-agent" -ErrorAction SilentlyContinue
+    $existingService = Get-Service -Name "vigile-agent" -ErrorAction SilentlyContinue
     if (-not $existingService) {
-        Write-Host "ERROR: beszel-agent service does not exist." -ForegroundColor Red
+        Write-Host "ERROR: vigile-agent service does not exist." -ForegroundColor Red
         Write-Host "Please run the installation script first before attempting to upgrade." -ForegroundColor Red
         exit 1
     }
@@ -323,23 +323,23 @@ try {
     $currentConfig = Get-ServiceConfiguration -NSSMPath $nssmPath
     
     # Stop the service before upgrade
-    Write-Host "Stopping beszel-agent service..."
-    & $nssmPath stop beszel-agent
+    Write-Host "Stopping vigile-agent service..."
+    & $nssmPath stop vigile-agent
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Warning: Failed to stop service, continuing anyway..." -ForegroundColor Yellow
     }
     
     # Upgrade the agent (doesn't require admin)
-    Write-Host "Upgrading beszel-agent..."
+    Write-Host "Upgrading vigile-agent..."
     $newAgentPath = $null
     
     if (Test-CommandExists "scoop") {
         Write-Host "Using Scoop for upgrade..."
-        $newAgentPath = Upgrade-BeszelAgentWithScoop
+        $newAgentPath = Upgrade-VigileAgentWithScoop
     }
     elseif (Test-CommandExists "winget") {
         Write-Host "Using WinGet for upgrade..."
-        $newAgentPath = Upgrade-BeszelAgentWithWinGet
+        $newAgentPath = Upgrade-VigileAgentWithWinGet
     }
     else {
         Write-Host "ERROR: Neither Scoop nor WinGet is available for upgrading." -ForegroundColor Red
@@ -347,9 +347,9 @@ try {
     }
     
     if (-not $newAgentPath) {
-        $newAgentPath = Find-BeszelAgent
+        $newAgentPath = Find-VigileAgent
         if (-not $newAgentPath) {
-            throw "Could not find beszel-agent executable after upgrade."
+            throw "Could not find vigile-agent executable after upgrade."
         }
     }
     
@@ -358,7 +358,7 @@ try {
     # Check if the path has changed
     if ($currentConfig.CurrentPath -eq $newAgentPath) {
         Write-Host "Agent path has not changed. Restarting service..." -ForegroundColor Green
-        Start-BeszelAgentService -NSSMPath $nssmPath
+        Start-VigileAgentService -NSSMPath $nssmPath
         Write-Host "Upgrade completed successfully!" -ForegroundColor Green
         exit 0
     }
@@ -390,7 +390,7 @@ try {
         
         Write-Host ""
         Write-Host "Upgrade completed successfully!" -ForegroundColor Green
-        Write-Host "The beszel-agent service has been updated to use the new executable path." -ForegroundColor Green
+        Write-Host "The vigile-agent service has been updated to use the new executable path." -ForegroundColor Green
         
         # Pause to see results if this is an elevated window
         if ($Elevated) {

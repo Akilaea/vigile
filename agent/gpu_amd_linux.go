@@ -13,8 +13,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/henrygd/beszel/agent/utils"
-	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/Akilaea/vigile/agent/utils"
+	"github.com/Akilaea/vigile/internal/entities/system"
 )
 
 var amdgpuNameCache = struct {

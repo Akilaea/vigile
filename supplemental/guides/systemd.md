@@ -6,7 +6,7 @@ This is useful if you want to run the hub or agent in the background continuousl
 
 There are two scripts, one for the hub and one for the agent. You can run either one, or both.
 
-The install script creates a dedicated user for the service (`beszel`), downloads the latest release, and installs the service.
+The install script creates a dedicated user for the service (`vigile`), downloads the latest release, and installs the service.
 
 If you need to edit the service -- for instance, to change an environment variable -- you can edit the file(s) in `/etc/systemd/system/`. Then reload the systemd daemon and restart the service.
 
@@ -38,7 +38,7 @@ You may specify a port number with the `-p` flag. The default port is `8090`.
 #### Update
 
 ```bash
-sudo /opt/beszel/beszel update && sudo systemctl restart beszel-hub
+sudo /opt/vigile/vigile update && sudo systemctl restart vigile-hub
 ```
 
 ### Agent
@@ -68,23 +68,23 @@ If specifying your key with `-k`, please make sure to enclose it in quotes.
 #### Update
 
 ```bash
-sudo /opt/beszel-agent/beszel-agent update && sudo systemctl restart beszel-agent
+sudo /opt/vigile-agent/vigile-agent update && sudo systemctl restart vigile-agent
 ```
 
 ## Manual install
 
 ### Hub
 
-1. Create the system service at `/etc/systemd/system/beszel.service`
+1. Create the system service at `/etc/systemd/system/vigile.service`
 
 ```bash
 [Unit]
-Description=Beszel Hub Service
+Description=Vigile Hub Service
 After=network.target
 
 [Service]
 # update the values in the curly braces below (remove the braces)
-ExecStart={/path/to/working/directory}/beszel serve
+ExecStart={/path/to/working/directory}/vigile serve
 WorkingDirectory={/path/to/working/directory}
 User={YOUR_USERNAME}
 Restart=always
@@ -97,17 +97,17 @@ WantedBy=multi-user.target
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable beszel.service
-sudo systemctl start beszel.service
+sudo systemctl enable vigile.service
+sudo systemctl start vigile.service
 ```
 
 ### Agent
 
-1. Create the system service at `/etc/systemd/system/beszel-agent.service`
+1. Create the system service at `/etc/systemd/system/vigile-agent.service`
 
 ```bash
 [Unit]
-Description=Beszel Agent Service
+Description=Vigile Agent Service
 After=network.target
 
 [Service]
@@ -115,7 +115,7 @@ After=network.target
 Environment="PORT={PASTE_YOUR_PORT_HERE}"
 Environment="KEY={PASTE_YOUR_KEY_HERE}"
 # Environment="EXTRA_FILESYSTEMS={sdb}"
-ExecStart={/path/to/directory}/beszel-agent
+ExecStart={/path/to/directory}/vigile-agent
 User={YOUR_USERNAME}
 Restart=always
 
@@ -127,6 +127,6 @@ WantedBy=multi-user.target
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable beszel-agent.service
-sudo systemctl start beszel-agent.service
+sudo systemctl enable vigile-agent.service
+sudo systemctl start vigile-agent.service
 ```

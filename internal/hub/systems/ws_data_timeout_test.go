@@ -12,9 +12,9 @@ import (
 
 	"github.com/blang/semver"
 	"github.com/fxamacker/cbor/v2"
-	"github.com/henrygd/beszel/internal/common"
-	esystem "github.com/henrygd/beszel/internal/entities/system"
-	"github.com/henrygd/beszel/internal/hub/ws"
+	"github.com/Akilaea/vigile/internal/common"
+	esystem "github.com/Akilaea/vigile/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/hub/ws"
 	"github.com/lxzan/gws"
 	"github.com/stretchr/testify/require"
 )

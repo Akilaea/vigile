@@ -7,9 +7,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/henrygd/beszel"
-	"github.com/henrygd/beszel/internal/hub"
-	_ "github.com/henrygd/beszel/internal/migrations"
+	"github.com/Akilaea/vigile"
+	"github.com/Akilaea/vigile/internal/hub"
+	_ "github.com/Akilaea/vigile/internal/migrations"
 
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
@@ -39,16 +39,16 @@ func getBaseApp() *pocketbase.PocketBase {
 	isDev := os.Getenv("ENV") == "dev"
 
 	baseApp := pocketbase.NewWithConfig(pocketbase.Config{
-		DefaultDataDir: beszel.AppName + "_data",
+		DefaultDataDir: vigile.AppName + "_data",
 		DefaultDev:     isDev,
 	})
-	baseApp.RootCmd.Version = beszel.Version
-	baseApp.RootCmd.Use = beszel.AppName
+	baseApp.RootCmd.Version = vigile.Version
+	baseApp.RootCmd.Use = vigile.AppName
 	baseApp.RootCmd.Short = ""
 	// add update command
 	updateCmd := &cobra.Command{
 		Use:   "update",
-		Short: "Update " + beszel.AppName + " to the latest version",
+		Short: "Update " + vigile.AppName + " to the latest version",
 		Run:   hub.Update,
 	}
 	updateCmd.Flags().Bool("china-mirrors", false, "Use mirror (gh.beszel.dev) instead of GitHub")

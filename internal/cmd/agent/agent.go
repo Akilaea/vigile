@@ -8,10 +8,10 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/henrygd/beszel"
-	"github.com/henrygd/beszel/agent"
-	"github.com/henrygd/beszel/agent/health"
-	"github.com/henrygd/beszel/agent/utils"
+	"github.com/Akilaea/vigile"
+	"github.com/Akilaea/vigile/agent"
+	"github.com/Akilaea/vigile/agent/health"
+	"github.com/Akilaea/vigile/agent/utils"
 	"github.com/spf13/pflag"
 	"golang.org/x/crypto/ssh"
 )
@@ -19,14 +19,14 @@ import (
 type noKeyProvidedError struct{}
 
 func (noKeyProvidedError) Error() string {
-	return "no key provided: must set -key flag, KEY env var, or KEY_FILE env var. Use 'beszel-agent help' for usage"
+	return "no key provided: must set -key flag, KEY env var, or KEY_FILE env var. Use 'vigile-agent help' for usage"
 }
 
 // cli options
 type cmdOptions struct {
 	key    string // key is the public key(s) for SSH authentication.
 	listen string // listen is the address or port to listen on.
-	hubURL string // hubURL is the URL of the Beszel hub.
+	hubURL string // hubURL is the URL of the Vigile hub.
 	token  string // token is the token to use for authentication.
 }
 
@@ -55,7 +55,7 @@ func (opts *cmdOptions) parse() bool {
 	// pflag.CommandLine.ParseErrorsWhitelist.UnknownFlags = true
 	pflag.StringVarP(&opts.key, "key", "k", "", "Public key(s) for SSH authentication")
 	pflag.StringVarP(&opts.listen, "listen", "l", "", "Address or port to listen on")
-	pflag.StringVarP(&opts.hubURL, "url", "u", "", "URL of the Beszel hub")
+	pflag.StringVarP(&opts.hubURL, "url", "u", "", "URL of the Vigile hub")
 	pflag.StringVarP(&opts.token, "token", "t", "", "Token to use for authentication")
 	chinaMirrors := pflag.BoolP("china-mirrors", "c", false, "Use mirror for update (gh.beszel.dev) instead of GitHub")
 	version := pflag.BoolP("version", "v", false, "Show version information")
@@ -97,7 +97,7 @@ func (opts *cmdOptions) parse() bool {
 	// Must run after pflag.Parse()
 	switch {
 	case *version:
-		fmt.Println(beszel.AppName+"-agent", beszel.Version)
+		fmt.Println(vigile.AppName+"-agent", vigile.Version)
 		return true
 	case *help || subcommand == "help":
 		pflag.Usage()

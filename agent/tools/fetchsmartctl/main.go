@@ -53,7 +53,7 @@ func downloadFile(url, dest, shaHex string) error {
 	if err != nil {
 		return fmt.Errorf("new request: %w", err)
 	}
-	req.Header.Set("User-Agent", "beszel-fetchsmartctl/1.0")
+	req.Header.Set("User-Agent", "vigile-fetchsmartctl/1.0")
 
 	resp, err := client.Do(req)
 	if err != nil {

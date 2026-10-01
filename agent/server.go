@@ -11,10 +11,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/henrygd/beszel"
-	"github.com/henrygd/beszel/agent/utils"
-	"github.com/henrygd/beszel/internal/common"
-	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/Akilaea/vigile"
+	"github.com/Akilaea/vigile/agent/utils"
+	"github.com/Akilaea/vigile/internal/common"
+	"github.com/Akilaea/vigile/internal/entities/system"
 
 	"github.com/blang/semver"
 	"github.com/fxamacker/cbor/v2"
@@ -95,7 +95,7 @@ func newSSHServerConfig(ssh.Context) *gossh.ServerConfig {
 			MACs:         common.DefaultMACs,
 			Ciphers:      common.DefaultCiphers,
 		},
-		ServerVersion: fmt.Sprintf("SSH-2.0-%s_%s", beszel.AppName, beszel.Version),
+		ServerVersion: fmt.Sprintf("SSH-2.0-%s_%s", vigile.AppName, vigile.Version),
 	}
 }
 
@@ -122,7 +122,7 @@ func (a *Agent) handleSession(s ssh.Session) {
 	hubVersion := a.getHubVersion(sessionCtx)
 
 	// Legacy one-shot behavior for older hubs
-	if hubVersion.LT(beszel.MinVersionAgentResponse) {
+	if hubVersion.LT(vigile.MinVersionAgentResponse) {
 		if err := a.handleLegacyStats(s, hubVersion); err != nil {
 			slog.Error("Error encoding stats", "err", err)
 			s.Exit(1)
@@ -191,14 +191,14 @@ func (a *Agent) handleLegacyStats(w io.Writer, hubVersion semver.Version) error 
 // It chooses between CBOR and JSON encoding based on the hub version,
 // using CBOR for newer versions and JSON for legacy compatibility.
 func (a *Agent) writeToSession(w io.Writer, stats *system.CombinedData, hubVersion semver.Version) error {
-	if hubVersion.GTE(beszel.MinVersionCbor) {
+	if hubVersion.GTE(vigile.MinVersionCbor) {
 		return cbor.NewEncoder(w).Encode(stats)
 	}
 	return json.NewEncoder(w).Encode(stats)
 }
 
-// extractHubVersion extracts the beszel version from SSH client version string.
-// Expected format: "SSH-2.0-beszel_X.Y.Z" or "beszel_X.Y.Z"
+// extractHubVersion extracts the vigile version from SSH client version string.
+// Expected format: "SSH-2.0-vigile_X.Y.Z" or "vigile_X.Y.Z"
 func extractHubVersion(versionString string) (semver.Version, error) {
 	_, after, _ := strings.Cut(versionString, "_")
 	return semver.Parse(after)

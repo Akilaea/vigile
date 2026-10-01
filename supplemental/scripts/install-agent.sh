@@ -104,11 +104,11 @@ ensure_trailing_slash() {
 # as text so host:port and unix socket paths survive.
 configured_address() {
   if is_alpine || is_openwrt; then
-    address_file=/etc/init.d/beszel-agent
+    address_file=/etc/init.d/vigile-agent
   elif is_freebsd; then
     address_file="$AGENT_DIR/env"
   else
-    address_file=/etc/systemd/system/beszel-agent.service
+    address_file=/etc/systemd/system/vigile-agent.service
   fi
 
   [ -f "$address_file" ] || return 0
@@ -133,35 +133,35 @@ generate_freebsd_rc_service() {
   cat <<'EOF'
 #!/bin/sh
 
-# PROVIDE: beszel_agent
+# PROVIDE: vigile_agent
 # REQUIRE: DAEMON NETWORKING
 # BEFORE: LOGIN
 # KEYWORD: shutdown
 
-# Add the following lines to /etc/rc.conf to configure Beszel Agent:
+# Add the following lines to /etc/rc.conf to configure Vigile Agent:
 #
-# beszel_agent_enable (bool):   Set to YES to enable Beszel Agent
+# vigile_agent_enable (bool):   Set to YES to enable Vigile Agent
 #                               Default: YES
-# beszel_agent_env_file (str):  Beszel Agent env configuration file
-#                               Default: /usr/local/etc/beszel-agent/env
-# beszel_agent_user (str):      Beszel Agent daemon user
-#                               Default: beszel
-# beszel_agent_bin (str):       Path to the beszel-agent binary
-#                               Default: /usr/local/sbin/beszel-agent
-# beszel_agent_flags (str):     Extra flags passed to beszel-agent command invocation
+# vigile_agent_env_file (str):  Vigile Agent env configuration file
+#                               Default: /usr/local/etc/vigile-agent/env
+# vigile_agent_user (str):      Vigile Agent daemon user
+#                               Default: vigile
+# vigile_agent_bin (str):       Path to the vigile-agent binary
+#                               Default: /usr/local/sbin/vigile-agent
+# vigile_agent_flags (str):     Extra flags passed to vigile-agent command invocation
 #                               Default:
 
 . /etc/rc.subr
 
-name="beszel_agent"
-rcvar=beszel_agent_enable
+name="vigile_agent"
+rcvar=vigile_agent_enable
 
 load_rc_config $name
-: ${beszel_agent_enable:="YES"}
-: ${beszel_agent_user:="beszel"}
-: ${beszel_agent_flags:=""}
-: ${beszel_agent_env_file:="/usr/local/etc/beszel-agent/env"}
-: ${beszel_agent_bin:="/usr/local/sbin/beszel-agent"}
+: ${vigile_agent_enable:="YES"}
+: ${vigile_agent_user:="vigile"}
+: ${vigile_agent_flags:=""}
+: ${vigile_agent_env_file:="/usr/local/etc/vigile-agent/env"}
+: ${vigile_agent_bin:="/usr/local/sbin/vigile-agent"}
 
 logfile="/var/log/${name}.log"
 pidfile="/var/run/${name}.pid"
@@ -172,27 +172,27 @@ start_cmd="${name}_start"
 stop_cmd="${name}_stop"
 
 extra_commands="upgrade"
-upgrade_cmd="beszel_agent_upgrade"
+upgrade_cmd="vigile_agent_upgrade"
 
-beszel_agent_prestart()
+vigile_agent_prestart()
 {
-    if [ ! -f "${beszel_agent_env_file}" ]; then
-        echo WARNING: missing "${beszel_agent_env_file}" env file. Start aborted.
+    if [ ! -f "${vigile_agent_env_file}" ]; then
+        echo WARNING: missing "${vigile_agent_env_file}" env file. Start aborted.
         exit 1
     fi
 }
 
-beszel_agent_start()
+vigile_agent_start()
 {
     echo "Starting ${name}"
     /usr/sbin/daemon -fc \
             -P "${pidfile}" \
             -o "${logfile}" \
-            -u "${beszel_agent_user}" \
-            "${beszel_agent_bin}" ${beszel_agent_flags}
+            -u "${vigile_agent_user}" \
+            "${vigile_agent_bin}" ${vigile_agent_flags}
 }
 
-beszel_agent_stop()
+vigile_agent_stop()
 {
     pid="$(check_pidfile "${pidfile}" "${procname}")"
     if [ -n "${pid}" ]; then
@@ -204,13 +204,13 @@ beszel_agent_stop()
     fi
 }
 
-beszel_agent_upgrade()
+vigile_agent_upgrade()
 {
     echo "Upgrading ${name}"
     if command -v sudo >/dev/null; then
-        sudo -u "${beszel_agent_user}" -- "${beszel_agent_bin}" update
+        sudo -u "${vigile_agent_user}" -- "${vigile_agent_bin}" update
     else
-        su -m "${beszel_agent_user}" -c "${beszel_agent_bin} update"
+        su -m "${vigile_agent_user}" -c "${vigile_agent_bin} update"
     fi
 }
 
@@ -227,8 +227,8 @@ generate_appliance_boot_script() {
   cat <<'EOF'
 #!/bin/sh
 
-if ! /usr/sbin/service beszel-agent status >/dev/null 2>&1; then
-    /usr/sbin/service beszel-agent onestart
+if ! /usr/sbin/service vigile-agent status >/dev/null 2>&1; then
+    /usr/sbin/service vigile-agent onestart
 fi
 EOF
 }
@@ -316,17 +316,17 @@ validate_openwrt_account() {
   # Duplicate numeric IDs share permissions even when the names differ.
   for account_file in /etc/passwd /etc/group; do
     if ! awk -F: '
-      $1 == "beszel" { id = $3; count++ }
+      $1 == "vigile" { id = $3; count++ }
       { ids[$3]++ }
       END { if (count && (count != 1 || id == 0 || ids[id] != 1)) exit 1 }
     ' "$account_file"; then
-      fail "The beszel account has a duplicate or root ID in $account_file. Stop beszel-agent and assign beszel an unused UID/GID before reinstalling. Update ownership only in $AGENT_DIR; do not change all files owned by the shared ID."
+      fail "The vigile account has a duplicate or root ID in $account_file. Stop vigile-agent and assign vigile an unused UID/GID before reinstalling. Update ownership only in $AGENT_DIR; do not change all files owned by the shared ID."
     fi
   done
-  if grep -q '^beszel:' /etc/passwd; then
-    account_gid=$(awk -F: '$1 == "beszel" { print $4 }' /etc/passwd)
-    group_gid=$(awk -F: '$1 == "beszel" { print $3 }' /etc/group)
-    [ "$account_gid" = "$group_gid" ] || fail "The beszel user's primary group is not the dedicated beszel group. Repair the account before reinstalling."
+  if grep -q '^vigile:' /etc/passwd; then
+    account_gid=$(awk -F: '$1 == "vigile" { print $4 }' /etc/passwd)
+    group_gid=$(awk -F: '$1 == "vigile" { print $3 }' /etc/group)
+    [ "$account_gid" = "$group_gid" ] || fail "The vigile user's primary group is not the dedicated vigile group. Repair the account before reinstalling."
   fi
 }
 
@@ -339,38 +339,38 @@ configure_openwrt_account() (
   . /lib/functions.sh
   IPKG_INSTROOT=""
 
-  if ! grep -q '^beszel:' /etc/group; then
+  if ! grep -q '^vigile:' /etc/group; then
     account_gid=$(openwrt_unused_id /etc/group) || fail "No unused service GID available."
-    group_add beszel "$account_gid" || fail "Could not create the beszel group."
+    group_add vigile "$account_gid" || fail "Could not create the vigile group."
   fi
-  account_gid=$(awk -F: '$1 == "beszel" { print $3 }' /etc/group)
-  [ -n "$account_gid" ] || fail "The beszel group was not created."
-  if ! grep -q '^beszel:' /etc/passwd; then
+  account_gid=$(awk -F: '$1 == "vigile" { print $3 }' /etc/group)
+  [ -n "$account_gid" ] || fail "The vigile group was not created."
+  if ! grep -q '^vigile:' /etc/passwd; then
     account_uid=$(openwrt_unused_id /etc/passwd) || fail "No unused service UID available."
-    user_add beszel "$account_uid" "$account_gid" "Beszel agent" /nonexistent /bin/false || fail "Could not create the beszel user."
+    user_add vigile "$account_uid" "$account_gid" "Vigile agent" /nonexistent /bin/false || fail "Could not create the vigile user."
   fi
-  grep -q '^beszel:' /etc/passwd || fail "The beszel account is incomplete."
+  grep -q '^vigile:' /etc/passwd || fail "The vigile account is incomplete."
   validate_openwrt_account
   # Previous installers omitted the shadow entry. Repair it with a locked
   # password, without rewriting an existing account or changing its IDs.
-  if ! grep -q '^beszel:' /etc/shadow; then
+  if ! grep -q '^vigile:' /etc/shadow; then
     lock /var/lock/passwd || fail "Could not lock the account database."
     shadow_status=0
-    if ! grep -q '^beszel:' /etc/shadow; then
-      printf 'beszel:!:0:0:99999:7:::\n' >> /etc/shadow || shadow_status=$?
+    if ! grep -q '^vigile:' /etc/shadow; then
+      printf 'vigile:!:0:0:99999:7:::\n' >> /etc/shadow || shadow_status=$?
     fi
     lock -u /var/lock/passwd || fail "Could not unlock the account database."
-    [ "$shadow_status" -eq 0 ] || fail "Could not create the beszel shadow entry."
+    [ "$shadow_status" -eq 0 ] || fail "Could not create the vigile shadow entry."
   fi
 
   if grep -q '^docker:' /etc/group; then
     # Match complete member names and avoid a leading comma for empty groups.
-    if ! awk -F: '$1 == "docker" { n = split($4, members, ","); for (i = 1; i <= n; i++) if (members[i] == "beszel") found = 1 } END { exit !found }' /etc/group; then
-      echo "Adding beszel to docker group"
+    if ! awk -F: '$1 == "docker" { n = split($4, members, ","); for (i = 1; i <= n; i++) if (members[i] == "vigile") found = 1 } END { exit !found }' /etc/group; then
+      echo "Adding vigile to docker group"
       if grep -q '^docker:[^:]*:[^:]*:$' /etc/group; then
-        sed -i '/^docker:/s/$/beszel/' /etc/group
+        sed -i '/^docker:/s/$/vigile/' /etc/group
       else
-        sed -i '/^docker:/s/$/,beszel/' /etc/group
+        sed -i '/^docker:/s/$/,vigile/' /etc/group
       fi
     fi
   fi
@@ -378,11 +378,11 @@ configure_openwrt_account() (
 
 remove_openwrt_account() {
   if command -v userdel >/dev/null 2>&1; then
-    userdel beszel || fail "Could not remove the beszel user."
+    userdel vigile || fail "Could not remove the vigile user."
   elif command -v deluser >/dev/null 2>&1; then
-    deluser beszel || fail "Could not remove the beszel user."
+    deluser vigile || fail "Could not remove the vigile user."
   else
-    warn "Neither userdel nor deluser is available; the beszel account has been retained."
+    warn "Neither userdel nor deluser is available; the vigile account has been retained."
   fi
 }
 
@@ -411,13 +411,13 @@ validate_platform() {
 
 agent_service() {
   if is_alpine; then
-    rc-service beszel-agent "$1"
+    rc-service vigile-agent "$1"
   elif is_openwrt; then
-    /etc/init.d/beszel-agent "$1"
+    /etc/init.d/vigile-agent "$1"
   elif is_freebsd; then
-    service beszel-agent "$1"
+    service vigile-agent "$1"
   else
-    systemctl "$1" beszel-agent.service
+    systemctl "$1" vigile-agent.service
   fi
 }
 
@@ -425,11 +425,11 @@ agent_service() {
 # alone is not reusable configuration (FreeBSD stores its environment separately).
 agent_configuration_exists() {
   if is_alpine || is_openwrt; then
-    [ -f /etc/init.d/beszel-agent ]
+    [ -f /etc/init.d/vigile-agent ]
   elif is_freebsd; then
     [ -f "$AGENT_DIR/env" ]
   else
-    [ -f /etc/systemd/system/beszel-agent.service ]
+    [ -f /etc/systemd/system/vigile-agent.service ]
   fi
 }
 
@@ -437,11 +437,11 @@ agent_configuration_exists() {
 # that the service manager knows about the agent yet.
 agent_service_registered() {
   if is_alpine || is_openwrt; then
-    [ -f /etc/init.d/beszel-agent ]
+    [ -f /etc/init.d/vigile-agent ]
   elif is_freebsd; then
-    [ -f /usr/local/etc/rc.d/beszel-agent ]
+    [ -f /usr/local/etc/rc.d/vigile-agent ]
   else
-    service_load_state=$(systemctl show --property=LoadState --value beszel-agent.service) || return 2
+    service_load_state=$(systemctl show --property=LoadState --value vigile-agent.service) || return 2
     case "$service_load_state" in
       not-found) return 1 ;;
       "") return 2 ;;
@@ -497,7 +497,7 @@ read_root_crontab() {
 }
 
 prompt_auto_update() {
-  printf "\nEnable automatic daily updates for beszel-agent? (y/n): "
+  printf "\nEnable automatic daily updates for vigile-agent? (y/n): "
   if ! read -r AUTO_UPDATE; then
     AUTO_UPDATE=n
     echo "Skipping automatic updates (no input)."
@@ -524,7 +524,7 @@ VERSION="latest"
 # Check for help flag
 case "${1-}" in
 -h | --help)
-  printf "Beszel Agent installation script\n\n"
+  printf "Vigile Agent installation script\n\n"
   printf "Usage: ./install-agent.sh [options]\n\n"
   printf "Options: \n"
   printf "  -k                    : SSH key (required, or interactive if not provided)\n"
@@ -532,7 +532,7 @@ case "${1-}" in
   printf "  -t                    : Token (optional for backwards compatibility)\n"
   printf "  -url                  : Hub URL (optional for backwards compatibility)\n"
   printf "  -v, --version         : Version to install (default: latest)\n"
-  printf "  -u                    : Uninstall Beszel Agent\n"
+  printf "  -u                    : Uninstall Vigile Agent\n"
   printf "  --auto-update [VALUE] : Control automatic daily updates\n"
   printf "                          VALUE can be true (enable) or false (disable). If not specified, will prompt.\n"
   printf "  --mirror [URL]        : Use GitHub proxy to resolve network timeout issues in mainland China\n"
@@ -660,13 +660,13 @@ done
 
 # Set paths based on operating system
 if is_freebsd; then
-  AGENT_DIR="/usr/local/etc/beszel-agent"
+  AGENT_DIR="/usr/local/etc/vigile-agent"
   BIN_DIR="/usr/local/sbin"
-  BIN_PATH="/usr/local/sbin/beszel-agent"
+  BIN_PATH="/usr/local/sbin/vigile-agent"
 else
-  AGENT_DIR="/opt/beszel-agent"
-  BIN_DIR="/opt/beszel-agent"
-  BIN_PATH="/opt/beszel-agent/beszel-agent"
+  AGENT_DIR="/opt/vigile-agent"
+  BIN_DIR="/opt/vigile-agent"
+  BIN_PATH="/opt/vigile-agent/vigile-agent"
 fi
 
 INSTALL_STEP="uninstalling the agent"
@@ -677,58 +677,58 @@ if [ "$UNINSTALL" = true ]; then
 
   if is_alpine; then
     echo "Stopping and disabling the agent service..."
-    rc-service beszel-agent stop || warn "Cleanup command failed: rc-service beszel-agent stop"
-    rc-update del beszel-agent default || warn "Cleanup command failed: rc-update del beszel-agent default"
+    rc-service vigile-agent stop || warn "Cleanup command failed: rc-service vigile-agent stop"
+    rc-update del vigile-agent default || warn "Cleanup command failed: rc-update del vigile-agent default"
 
     echo "Removing the OpenRC service files..."
-    rm -f /etc/init.d/beszel-agent
+    rm -f /etc/init.d/vigile-agent
 
     # Remove the daily update cron job if it exists
     echo "Removing the daily update cron job..."
-    if crontab -u root -l 2>/dev/null | grep -q "beszel-agent.*update"; then
-      crontab -u root -l 2>/dev/null | grep -v "beszel-agent.*update" | crontab -u root -
+    if crontab -u root -l 2>/dev/null | grep -q "vigile-agent.*update"; then
+      crontab -u root -l 2>/dev/null | grep -v "vigile-agent.*update" | crontab -u root -
     fi
 
     # Remove log files
     echo "Removing log files..."
-    rm -f /var/log/beszel-agent.log /var/log/beszel-agent.err
+    rm -f /var/log/vigile-agent.log /var/log/vigile-agent.err
   elif is_openwrt; then
     echo "Stopping and disabling the agent service..."
-    /etc/init.d/beszel-agent stop || warn "Cleanup command failed: /etc/init.d/beszel-agent stop"
-    /etc/init.d/beszel-agent disable || warn "Cleanup command failed: /etc/init.d/beszel-agent disable"
+    /etc/init.d/vigile-agent stop || warn "Cleanup command failed: /etc/init.d/vigile-agent stop"
+    /etc/init.d/vigile-agent disable || warn "Cleanup command failed: /etc/init.d/vigile-agent disable"
 
     echo "Removing the OpenWRT service files..."
-    rm -f /etc/init.d/beszel-agent
+    rm -f /etc/init.d/vigile-agent
 
     # Remove the update service if it exists
     echo "Removing the daily update service..."
-    # Remove legacy beszel account based crontab file
-    rm -f /etc/crontabs/beszel
+    # Remove legacy vigile account based crontab file
+    rm -f /etc/crontabs/vigile
     # Install root crontab job
-    if crontab -u root -l 2>/dev/null | grep -q "beszel-agent.*update"; then
-      crontab -u root -l 2>/dev/null | grep -v "beszel-agent.*update" | crontab -u root -
+    if crontab -u root -l 2>/dev/null | grep -q "vigile-agent.*update"; then
+      crontab -u root -l 2>/dev/null | grep -v "vigile-agent.*update" | crontab -u root -
     fi
 
   elif is_freebsd; then
     echo "Stopping and disabling the agent service..."
-    service beszel-agent stop || warn "Cleanup command failed: service beszel-agent stop"
-    sysrc beszel_agent_enable="NO"
+    service vigile-agent stop || warn "Cleanup command failed: service vigile-agent stop"
+    sysrc vigile_agent_enable="NO"
 
     echo "Removing the FreeBSD service files..."
-    rm -f /usr/local/etc/rc.d/beszel-agent
-    rm -f /usr/local/etc/rc.d/beszel-agent-start.sh
+    rm -f /usr/local/etc/rc.d/vigile-agent
+    rm -f /usr/local/etc/rc.d/vigile-agent-start.sh
 
     # Remove the OPNsense boot hook if it exists
-    rm -f /usr/local/etc/rc.syshook.d/start/99-beszel-agent
+    rm -f /usr/local/etc/rc.syshook.d/start/99-vigile-agent
 
     # Remove the daily update cron job if it exists
     echo "Removing the daily update cron job..."
-    rm -f /etc/cron.d/beszel-agent
+    rm -f /etc/cron.d/vigile-agent
 
     # Remove log files. The rc script derives its logfile from $name
-    # (beszel_agent), not from the script filename (beszel-agent).
+    # (vigile_agent), not from the script filename (vigile-agent).
     echo "Removing log files..."
-    rm -f /var/log/beszel_agent.log
+    rm -f /var/log/vigile_agent.log
 
     # Remove env file and directories
     echo "Removing environment configuration file..."
@@ -738,43 +738,43 @@ if [ "$UNINSTALL" = true ]; then
 
   else
     echo "Stopping and disabling the agent service..."
-    systemctl stop beszel-agent.service || warn "Cleanup command failed: systemctl stop beszel-agent.service"
-    systemctl disable beszel-agent.service >/dev/null 2>&1 || warn "Cleanup command failed: systemctl disable beszel-agent.service"
+    systemctl stop vigile-agent.service || warn "Cleanup command failed: systemctl stop vigile-agent.service"
+    systemctl disable vigile-agent.service >/dev/null 2>&1 || warn "Cleanup command failed: systemctl disable vigile-agent.service"
 
     echo "Removing the systemd service file..."
-    rm -f /etc/systemd/system/beszel-agent.service
+    rm -f /etc/systemd/system/vigile-agent.service
 
     # Remove the update timer and service if they exist
     echo "Removing the daily update service and timer..."
-    systemctl stop beszel-agent-update.timer 2>/dev/null || warn "Cleanup command failed: systemctl stop beszel-agent-update.timer"
-    systemctl disable beszel-agent-update.timer >/dev/null 2>&1 || warn "Cleanup command failed: systemctl disable beszel-agent-update.timer"
-    rm -f /etc/systemd/system/beszel-agent-update.service
-    rm -f /etc/systemd/system/beszel-agent-update.timer
+    systemctl stop vigile-agent-update.timer 2>/dev/null || warn "Cleanup command failed: systemctl stop vigile-agent-update.timer"
+    systemctl disable vigile-agent-update.timer >/dev/null 2>&1 || warn "Cleanup command failed: systemctl disable vigile-agent-update.timer"
+    rm -f /etc/systemd/system/vigile-agent-update.service
+    rm -f /etc/systemd/system/vigile-agent-update.timer
 
     systemctl daemon-reload
   fi
 
-  echo "Removing the Beszel Agent directory..."
+  echo "Removing the Vigile Agent directory..."
   rm -rf "$AGENT_DIR"
 
-  echo "Removing the Beszel Agent data directory..."
-  rm -rf /var/lib/beszel-agent
+  echo "Removing the Vigile Agent data directory..."
+  rm -rf /var/lib/vigile-agent
 
   echo "Removing the dedicated user for the agent service..."
-  killall beszel-agent 2>/dev/null || true # Usually already stopped by the service manager.
-  if id -u beszel >/dev/null 2>&1; then
+  killall vigile-agent 2>/dev/null || true # Usually already stopped by the service manager.
+  if id -u vigile >/dev/null 2>&1; then
     if is_openwrt; then
       remove_openwrt_account
     elif is_alpine; then
-      deluser beszel || fail "Could not remove the beszel user."
+      deluser vigile || fail "Could not remove the vigile user."
     elif is_freebsd; then
-      pw user del beszel || fail "Could not remove the beszel user."
+      pw user del vigile || fail "Could not remove the vigile user."
     else
-      userdel beszel || fail "Could not remove the beszel user."
+      userdel vigile || fail "Could not remove the vigile user."
     fi
   fi
 
-  echo "Beszel Agent has been uninstalled successfully!"
+  echo "Vigile Agent has been uninstalled successfully!"
   exit 0
 fi
 
@@ -851,17 +851,17 @@ fi
 
 INSTALL_STEP="configuring the service user"
 # Create a dedicated user for the service if it doesn't exist
-AGENT_USER="beszel"
-echo "Configuring the dedicated user for the Beszel Agent service..."
+AGENT_USER="vigile"
+echo "Configuring the dedicated user for the Vigile Agent service..."
 if is_alpine; then
-  if ! id -u beszel >/dev/null 2>&1; then
-    addgroup beszel
-    adduser -S -D -H -s /sbin/nologin -G beszel beszel
+  if ! id -u vigile >/dev/null 2>&1; then
+    addgroup vigile
+    adduser -S -D -H -s /sbin/nologin -G vigile vigile
   fi
   # Add the user to the docker group to allow access to the Docker socket if group docker exists
   if getent group docker >/dev/null 2>&1; then
-    echo "Adding beszel to docker group"
-    addgroup beszel docker
+    echo "Adding vigile to docker group"
+    addgroup vigile docker
   fi
   
 elif is_openwrt; then
@@ -872,42 +872,42 @@ elif is_freebsd; then
     echo "Firewall appliance detected: skipping user creation (using daemon user instead)"
     AGENT_USER="daemon"
   else
-    if ! id -u beszel >/dev/null 2>&1; then
-      pw user add beszel -d /nonexistent -s /usr/sbin/nologin -c "beszel user"
+    if ! id -u vigile >/dev/null 2>&1; then
+      pw user add vigile -d /nonexistent -s /usr/sbin/nologin -c "vigile user"
     fi
     # Add the user to the wheel group to allow self-updates
     if pw group show wheel >/dev/null 2>&1; then
-      echo "Adding beszel to wheel group for self-updates"
-      pw group mod wheel -m beszel
+      echo "Adding vigile to wheel group for self-updates"
+      pw group mod wheel -m vigile
     fi
     # Add the user to the operator group for device access (SMART, /dev/xpt0, /dev/nvme*)
     if pw group show operator >/dev/null 2>&1; then
-      echo "Adding beszel to operator group for device access"
-      pw group mod operator -m beszel
+      echo "Adding vigile to operator group for device access"
+      pw group mod operator -m vigile
     fi
   fi
 
 else
-  if ! id -u beszel >/dev/null 2>&1; then
-    useradd --system --home-dir /nonexistent --shell /bin/false beszel
+  if ! id -u vigile >/dev/null 2>&1; then
+    useradd --system --home-dir /nonexistent --shell /bin/false vigile
   fi
   # Add the user to the docker group to allow access to the Docker socket if group docker exists
   if getent group docker >/dev/null 2>&1; then
-    echo "Adding beszel to docker group"
-    usermod -aG docker beszel
+    echo "Adding vigile to docker group"
+    usermod -aG docker vigile
   fi
   # Add the user to the disk group to allow access to disk devices if group disk exists
   if getent group disk >/dev/null 2>&1; then
-    echo "Adding beszel to disk group"
-    usermod -aG disk beszel
+    echo "Adding vigile to disk group"
+    usermod -aG disk vigile
   fi
 fi
 
 INSTALL_STEP="creating installation directories"
-# Create the directory for the Beszel Agent
+# Create the directory for the Vigile Agent
 
 if [ ! -d "$AGENT_DIR" ]; then
-  echo "Creating the directory for the Beszel Agent..."
+  echo "Creating the directory for the Vigile Agent..."
   mkdir -p "$AGENT_DIR"
   chown "${AGENT_USER}:${AGENT_USER}" "$AGENT_DIR"
   chmod 755 "$AGENT_DIR"
@@ -918,13 +918,13 @@ if [ ! -d "$BIN_DIR" ]; then
 fi
 
 INSTALL_STEP="downloading and verifying the agent"
-# Download and install the Beszel Agent
+# Download and install the Vigile Agent
 
 OS=$(uname -s | sed -e 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')
 ARCH=$(detect_architecture)
-FILE_NAME="beszel-agent_${OS}_${ARCH}.tar.gz"
+FILE_NAME="vigile-agent_${OS}_${ARCH}.tar.gz"
 if [ "$OS" = "linux" ] && [ "$ARCH" = "amd64" ] && is_glibc; then
-  FILE_NAME="beszel-agent_${OS}_${ARCH}_glibc.tar.gz"
+  FILE_NAME="vigile-agent_${OS}_${ARCH}_glibc.tar.gz"
 fi
 
 # Determine version to install
@@ -946,12 +946,12 @@ else
   INSTALL_VERSION=$(echo "$INSTALL_VERSION" | sed 's/^v//')
 fi
 
-echo "Downloading beszel-agent v${INSTALL_VERSION}..."
+echo "Downloading vigile-agent v${INSTALL_VERSION}..."
 
 # Download checksums file
 TEMP_DIR=$(mktemp -d)
 cd "$TEMP_DIR" || exit 1
-curl -fsSL --connect-timeout 10 --max-time 60 "$GITHUB_URL/henrygd/beszel/releases/download/v${INSTALL_VERSION}/beszel_${INSTALL_VERSION}_checksums.txt" -o checksums.txt || fail "Could not download checksums. Try --mirror if GitHub is unreachable."
+curl -fsSL --connect-timeout 10 --max-time 60 "$GITHUB_URL/henrygd/beszel/releases/download/v${INSTALL_VERSION}/vigile_${INSTALL_VERSION}_checksums.txt" -o checksums.txt || fail "Could not download checksums. Try --mirror if GitHub is unreachable."
 CHECKSUM=$(awk -v name="$FILE_NAME" '$2 == name { print $1 }' checksums.txt)
 if [ -z "$CHECKSUM" ] || ! echo "$CHECKSUM" | grep -qE "^[a-fA-F0-9]{64}$"; then
   echo "Failed to get checksum or invalid checksum format"
@@ -980,13 +980,13 @@ if [ "$ACTUAL_CHECKSUM" != "$CHECKSUM" ]; then
   fail "Checksum verification failed: $ACTUAL_CHECKSUM != $CHECKSUM"
 fi
 
-if ! tar -xzf "$FILE_NAME" beszel-agent; then
+if ! tar -xzf "$FILE_NAME" vigile-agent; then
   echo "Failed to extract the agent"
   rm -rf "$TEMP_DIR"
   exit 1
 fi
 
-if [ ! -s "$TEMP_DIR/beszel-agent" ]; then
+if [ ! -s "$TEMP_DIR/vigile-agent" ]; then
   echo "Downloaded binary is missing or empty."
   rm -rf "$TEMP_DIR"
   exit 1
@@ -995,7 +995,7 @@ fi
 INSTALL_STEP="replacing the agent binary"
 # Stage on the destination filesystem so replacement and rollback use atomic renames.
 STAGED_BINARY=$(mktemp "$BIN_PATH.XXXXXX") || fail "Could not create a staged binary."
-cp beszel-agent "$STAGED_BINARY" || fail "Could not stage the agent binary."
+cp vigile-agent "$STAGED_BINARY" || fail "Could not stage the agent binary."
 chown "${AGENT_USER}:${AGENT_USER}" "$STAGED_BINARY" || fail "Could not set binary ownership."
 chmod 755 "$STAGED_BINARY" || fail "Could not set binary permissions."
 
@@ -1047,22 +1047,22 @@ detect_nvidia_devices() {
 INSTALL_STEP="configuring and starting the service"
 # Modify service installation part, add Alpine check before systemd service creation
 if is_alpine; then
-  if [ ! -f /etc/init.d/beszel-agent ]; then
+  if [ ! -f /etc/init.d/vigile-agent ]; then
     echo "Creating OpenRC service for Alpine Linux..."
-    cat >/etc/init.d/beszel-agent <<EOF
+    cat >/etc/init.d/vigile-agent <<EOF
 #!/sbin/openrc-run
 
-name="beszel-agent"
-description="Beszel Agent Service"
+name="vigile-agent"
+description="Vigile Agent Service"
 command="$BIN_PATH"
-command_user="beszel"
+command_user="vigile"
 command_background="yes"
 pidfile="/run/\${RC_SVCNAME}.pid"
-output_log="/var/log/beszel-agent.log"
-error_log="/var/log/beszel-agent.err"
+output_log="/var/log/vigile-agent.log"
+error_log="/var/log/vigile-agent.err"
 
 start_pre() {
-    checkpath -f -m 0644 -o beszel:beszel "\$output_log" "\$error_log"
+    checkpath -f -m 0644 -o vigile:vigile "\$output_log" "\$error_log"
 }
 
 export PORT="$PORT"
@@ -1075,32 +1075,32 @@ depend() {
     after firewall
 }
 EOF
-    chmod +x /etc/init.d/beszel-agent
-    rc-update add beszel-agent default
+    chmod +x /etc/init.d/vigile-agent
+    rc-update add vigile-agent default
   else
     echo "Alpine OpenRC service file already exists. Updating environment variables..."
     SED_PORT=$(escape_sed_replacement "$PORT")
     SED_KEY=$(escape_sed_replacement "$KEY")
     SED_TOKEN=$(escape_sed_replacement "$TOKEN")
     SED_HUB_URL=$(escape_sed_replacement "$HUB_URL")
-    [ "$PORT_PROVIDED" = "true" ] && sed -i "s|^export PORT=.*|export PORT=\"$SED_PORT\"|" /etc/init.d/beszel-agent
-    [ "$KEY_PROVIDED" = "true" ] && sed -i "s|^export KEY=.*|export KEY=\"$SED_KEY\"|" /etc/init.d/beszel-agent
-    [ "$TOKEN_PROVIDED" = "true" ] && sed -i "s|^export TOKEN=.*|export TOKEN=\"$SED_TOKEN\"|" /etc/init.d/beszel-agent
-    [ "$HUB_URL_PROVIDED" = "true" ] && sed -i "s|^export HUB_URL=.*|export HUB_URL=\"$SED_HUB_URL\"|" /etc/init.d/beszel-agent
+    [ "$PORT_PROVIDED" = "true" ] && sed -i "s|^export PORT=.*|export PORT=\"$SED_PORT\"|" /etc/init.d/vigile-agent
+    [ "$KEY_PROVIDED" = "true" ] && sed -i "s|^export KEY=.*|export KEY=\"$SED_KEY\"|" /etc/init.d/vigile-agent
+    [ "$TOKEN_PROVIDED" = "true" ] && sed -i "s|^export TOKEN=.*|export TOKEN=\"$SED_TOKEN\"|" /etc/init.d/vigile-agent
+    [ "$HUB_URL_PROVIDED" = "true" ] && sed -i "s|^export HUB_URL=.*|export HUB_URL=\"$SED_HUB_URL\"|" /etc/init.d/vigile-agent
   fi
 
   # Create log files with proper permissions
-  touch /var/log/beszel-agent.log /var/log/beszel-agent.err
-  chown "${AGENT_USER}:${AGENT_USER}" /var/log/beszel-agent.log /var/log/beszel-agent.err
+  touch /var/log/vigile-agent.log /var/log/vigile-agent.err
+  chown "${AGENT_USER}:${AGENT_USER}" /var/log/vigile-agent.log /var/log/vigile-agent.err
 
   # Start the service
-  rc-service beszel-agent restart || fail "Could not start the agent; check service logs."
+  rc-service vigile-agent restart || fail "Could not start the agent; check service logs."
 
   # Check if service started successfully
   sleep 2
-  if ! rc-service beszel-agent status | grep -q "started"; then
-    echo "Error: The Beszel Agent service failed to start. Checking logs..."
-    tail -n 20 /var/log/beszel-agent.err
+  if ! rc-service vigile-agent status | grep -q "started"; then
+    echo "Error: The Vigile Agent service failed to start. Checking logs..."
+    tail -n 20 /var/log/vigile-agent.err
     exit 1
   fi
 
@@ -1114,10 +1114,10 @@ EOF
   fi
   case "$AUTO_UPDATE" in
   [Yy]*)
-    echo "Setting up daily automatic updates for beszel-agent..."
+    echo "Setting up daily automatic updates for vigile-agent..."
 
-    # Create cron job to run beszel-agent update command daily at midnight
-    if ! crontab -u root -l 2>/dev/null | grep -q "beszel-agent.*update"; then
+    # Create cron job to run vigile-agent update command daily at midnight
+    if ! crontab -u root -l 2>/dev/null | grep -q "vigile-agent.*update"; then
       (read_root_crontab; echo "12 0 * * * $BIN_PATH update >/dev/null 2>&1") | crontab -u root -
     fi
 
@@ -1126,16 +1126,16 @@ EOF
   esac
 
   # Check service status
-  if ! rc-service beszel-agent status >/dev/null 2>&1; then
-    echo "Error: The Beszel Agent service is not running."
-    rc-service beszel-agent status
+  if ! rc-service vigile-agent status >/dev/null 2>&1; then
+    echo "Error: The Vigile Agent service is not running."
+    rc-service vigile-agent status
     exit 1
   fi
 
 elif is_openwrt; then
-  if [ ! -f /etc/init.d/beszel-agent ]; then
+  if [ ! -f /etc/init.d/vigile-agent ]; then
     echo "Creating procd init script service for OpenWRT..."
-    cat >/etc/init.d/beszel-agent <<EOF
+    cat >/etc/init.d/vigile-agent <<EOF
 #!/bin/sh /etc/rc.common
 
 USE_PROCD=1
@@ -1144,8 +1144,8 @@ START=99
 start_service() {
     procd_open_instance
     procd_set_param command $BIN_PATH
-    procd_set_param user beszel
-    procd_set_param pidfile /var/run/beszel-agent.pid
+    procd_set_param user vigile
+    procd_set_param pidfile /var/run/vigile-agent.pid
     procd_set_param env PORT="$PORT" KEY="$KEY" TOKEN="$TOKEN" HUB_URL="$HUB_URL"
     procd_set_param respawn
     procd_set_param stdout 1
@@ -1155,8 +1155,8 @@ start_service() {
 
 # Extra command to trigger agent update
 EXTRA_COMMANDS="update restart"
-EXTRA_HELP="        update          Update the Beszel agent
-        restart         Restart the Beszel agent"
+EXTRA_HELP="        update          Update the Vigile agent
+        restart         Restart the Vigile agent"
 
 update() {
     $BIN_PATH update
@@ -1164,15 +1164,15 @@ update() {
 
 EOF
     # Enable the service
-    chmod +x /etc/init.d/beszel-agent
-    /etc/init.d/beszel-agent enable
+    chmod +x /etc/init.d/vigile-agent
+    /etc/init.d/vigile-agent enable
   else
     echo "OpenWRT init script already exists. Updating environment variables..."
     # The env vars live on a single procd_set_param line, so merge any values
     # that weren't explicitly provided in from the existing line before rewriting it.
-    CUR_ENV_LINE=$(sed -n '/^[[:space:]]*procd_set_param env PORT=/{p;q;}' /etc/init.d/beszel-agent)
+    CUR_ENV_LINE=$(sed -n '/^[[:space:]]*procd_set_param env PORT=/{p;q;}' /etc/init.d/vigile-agent)
     if [ -z "$CUR_ENV_LINE" ] || ! printf '%s\n' "$CUR_ENV_LINE" | grep -q 'PORT="[^"]*" KEY="[^"]*" TOKEN="[^"]*" HUB_URL="[^"]*"'; then
-      echo "Error: Could not parse the existing environment configuration in /etc/init.d/beszel-agent."
+      echo "Error: Could not parse the existing environment configuration in /etc/init.d/vigile-agent."
       echo "Expected a procd_set_param env line containing PORT, KEY, TOKEN, and HUB_URL."
       exit 1
     fi
@@ -1184,11 +1184,11 @@ EOF
     SED_KEY=$(escape_sed_replacement "$KEY")
     SED_TOKEN=$(escape_sed_replacement "$TOKEN")
     SED_HUB_URL=$(escape_sed_replacement "$HUB_URL")
-    sed -i "s|procd_set_param env PORT=.*|procd_set_param env PORT=\"$SED_PORT\" KEY=\"$SED_KEY\" TOKEN=\"$SED_TOKEN\" HUB_URL=\"$SED_HUB_URL\"|" /etc/init.d/beszel-agent
+    sed -i "s|procd_set_param env PORT=.*|procd_set_param env PORT=\"$SED_PORT\" KEY=\"$SED_KEY\" TOKEN=\"$SED_TOKEN\" HUB_URL=\"$SED_HUB_URL\"|" /etc/init.d/vigile-agent
   fi
 
   # Start the service
-  /etc/init.d/beszel-agent restart || fail "Could not start the agent; check service logs."
+  /etc/init.d/vigile-agent restart || fail "Could not start the agent; check service logs."
 
   # Auto-update service for OpenWRT using a crontab job
   if [ "$AUTO_UPDATE_FLAG" = "true" ]; then
@@ -1202,10 +1202,10 @@ EOF
   fi
   case "$AUTO_UPDATE" in
   [Yy]*)
-    echo "Setting up daily automatic updates for beszel-agent..."
+    echo "Setting up daily automatic updates for vigile-agent..."
 
-    if ! crontab -u root -l 2>/dev/null | grep -q "beszel-agent.*update"; then
-      (read_root_crontab; echo "12 0 * * * /etc/init.d/beszel-agent update") | crontab -u root -
+    if ! crontab -u root -l 2>/dev/null | grep -q "vigile-agent.*update"; then
+      (read_root_crontab; echo "12 0 * * * /etc/init.d/vigile-agent update") | crontab -u root -
     fi
 
     /etc/init.d/cron restart
@@ -1215,9 +1215,9 @@ EOF
   esac
 
   # Check service status
-  if ! /etc/init.d/beszel-agent running >/dev/null 2>&1; then
-    echo "Error: The Beszel Agent service is not running."
-    /etc/init.d/beszel-agent status
+  if ! /etc/init.d/vigile-agent running >/dev/null 2>&1; then
+    echo "Error: The Vigile Agent service is not running."
+    /etc/init.d/vigile-agent status
     exit 1
   fi
 
@@ -1250,59 +1250,59 @@ EOF
   chown "root:${AGENT_USER}" "$AGENT_DIR/env"
   
   # Create the rc service file if it doesn't exist
-  if [ ! -f /usr/local/etc/rc.d/beszel-agent ]; then
+  if [ ! -f /usr/local/etc/rc.d/vigile-agent ]; then
     echo "Creating FreeBSD rc service..."
-    generate_freebsd_rc_service > /usr/local/etc/rc.d/beszel-agent
+    generate_freebsd_rc_service > /usr/local/etc/rc.d/vigile-agent
     # Set proper permissions for the rc script
-    chmod 755 /usr/local/etc/rc.d/beszel-agent
+    chmod 755 /usr/local/etc/rc.d/vigile-agent
   else
     echo "FreeBSD rc service file already exists. Skipping creation."
   fi
 
   if is_pfsense; then
     echo "Creating pfSense boot script..."
-    generate_appliance_boot_script > /usr/local/etc/rc.d/beszel-agent-start.sh
-    chmod 755 /usr/local/etc/rc.d/beszel-agent-start.sh
+    generate_appliance_boot_script > /usr/local/etc/rc.d/vigile-agent-start.sh
+    chmod 755 /usr/local/etc/rc.d/vigile-agent-start.sh
   elif is_opnsense; then
     # OPNsense does not execute /usr/local/etc/rc.d/*.sh at boot, so the
     # pfSense hook above would never run. Install the same script as a syshook.
     echo "Creating OPNsense boot script..."
     mkdir -p /usr/local/etc/rc.syshook.d/start
-    generate_appliance_boot_script > /usr/local/etc/rc.syshook.d/start/99-beszel-agent
-    chmod 755 /usr/local/etc/rc.syshook.d/start/99-beszel-agent
+    generate_appliance_boot_script > /usr/local/etc/rc.syshook.d/start/99-vigile-agent
+    chmod 755 /usr/local/etc/rc.syshook.d/start/99-vigile-agent
   fi
 
   # Enable and start the service
   echo "Enabling and starting the agent service..."
-  sysrc beszel_agent_enable="YES"
-  sysrc beszel_agent_user="${AGENT_USER}"
+  sysrc vigile_agent_enable="YES"
+  sysrc vigile_agent_user="${AGENT_USER}"
 
-  # sysrc writes to /etc/rc.conf, but rc.subr sources /etc/rc.conf.d/beszel_agent
+  # sysrc writes to /etc/rc.conf, but rc.subr sources /etc/rc.conf.d/vigile_agent
   # afterwards, so a stale or third-party file there silently overrides the value
   # we just set. The service then refuses to start, and rc.subr's own error points
   # at /etc/rc.conf, which looks correct. Verify the flag actually took effect.
   # An empty value means this rc.subr does not support "rcvar"; skip the check.
-  rcvar_value=$(service beszel-agent rcvar 2>/dev/null | sed -n 's/^beszel_agent_enable="\(.*\)"$/\1/p')
+  rcvar_value=$(service vigile-agent rcvar 2>/dev/null | sed -n 's/^vigile_agent_enable="\(.*\)"$/\1/p')
   if [ -n "$rcvar_value" ]; then
     case "$rcvar_value" in
     [Yy][Ee][Ss] | [Tt][Rr][Uu][Ee] | [Oo][Nn] | 1) ;;
     *)
-      echo "Error: beszel_agent_enable resolves to \"${rcvar_value}\" even though it was just set to YES in /etc/rc.conf."
+      echo "Error: vigile_agent_enable resolves to \"${rcvar_value}\" even though it was just set to YES in /etc/rc.conf."
       echo "Another rc configuration file is overriding it. The most likely cause is a leftover:"
-      echo "  /etc/rc.conf.d/beszel_agent"
+      echo "  /etc/rc.conf.d/vigile_agent"
       echo "Remove or correct that file, then re-run this installer."
       exit 1
       ;;
     esac
   fi
 
-  service beszel-agent restart || fail "Could not start the agent; check service logs."
+  service vigile-agent restart || fail "Could not start the agent; check service logs."
   
   # Check if service started successfully
   sleep 2
-  if ! service beszel-agent status | grep -q "is running"; then
-    echo "Error: The Beszel Agent service failed to start. Checking logs..."
-    tail -n 20 /var/log/beszel_agent.log
+  if ! service vigile-agent status | grep -q "is running"; then
+    echo "Error: The Vigile Agent service failed to start. Checking logs..."
+    tail -n 20 /var/log/vigile_agent.log
     exit 1
   fi
 
@@ -1316,36 +1316,36 @@ EOF
   fi
   case "$AUTO_UPDATE" in
   [Yy]*)
-    echo "Setting up daily automatic updates for beszel-agent..."
+    echo "Setting up daily automatic updates for vigile-agent..."
 
     # Create cron job in /etc/cron.d 
-    cat >/etc/cron.d/beszel-agent <<EOF
-# Beszel Agent daily update job
+    cat >/etc/cron.d/vigile-agent <<EOF
+# Vigile Agent daily update job
 12 0 * * * root $BIN_PATH update >/dev/null 2>&1
 EOF
-    chmod 644 /etc/cron.d/beszel-agent
+    chmod 644 /etc/cron.d/vigile-agent
     printf "\nDaily updates have been enabled via /etc/cron.d.\n"
     ;;
   esac
 
   # Check service status
-  if ! service beszel-agent status >/dev/null 2>&1; then
-    echo "Error: The Beszel Agent service is not running."
-    service beszel-agent status
+  if ! service vigile-agent status >/dev/null 2>&1; then
+    echo "Error: The Vigile Agent service is not running."
+    service vigile-agent status
     exit 1
   fi
 
 else
   # Original systemd service installation code
-  if [ ! -f /etc/systemd/system/beszel-agent.service ]; then
+  if [ ! -f /etc/systemd/system/vigile-agent.service ]; then
     echo "Creating the systemd service for the agent..."
 
     # Detect NVIDIA devices and grant device permissions
     NVIDIA_DEVICES=$(detect_nvidia_devices)
 
-    cat >/etc/systemd/system/beszel-agent.service <<EOF
+    cat >/etc/systemd/system/vigile-agent.service <<EOF
 [Unit]
-Description=Beszel Agent Service
+Description=Vigile Agent Service
 Wants=network-online.target
 After=network-online.target
 
@@ -1356,10 +1356,10 @@ Environment="TOKEN=$TOKEN"
 Environment="HUB_URL=$HUB_URL"
 # Environment="EXTRA_FILESYSTEMS=sdb"
 ExecStart=$BIN_PATH
-User=beszel
+User=vigile
 Restart=on-failure
 RestartSec=5
-StateDirectory=beszel-agent
+StateDirectory=vigile-agent
 
 # Security/sandboxing settings
 KeyringMode=private
@@ -1383,24 +1383,24 @@ EOF
     SED_KEY=$(escape_sed_replacement "$KEY")
     SED_TOKEN=$(escape_sed_replacement "$TOKEN")
     SED_HUB_URL=$(escape_sed_replacement "$HUB_URL")
-    [ "$PORT_PROVIDED" = "true" ] && sed -i "s|^Environment=\"PORT=.*\"|Environment=\"PORT=$SED_PORT\"|" /etc/systemd/system/beszel-agent.service
-    [ "$KEY_PROVIDED" = "true" ] && sed -i "s|^Environment=\"KEY=.*\"|Environment=\"KEY=$SED_KEY\"|" /etc/systemd/system/beszel-agent.service
-    [ "$TOKEN_PROVIDED" = "true" ] && sed -i "s|^Environment=\"TOKEN=.*\"|Environment=\"TOKEN=$SED_TOKEN\"|" /etc/systemd/system/beszel-agent.service
-    [ "$HUB_URL_PROVIDED" = "true" ] && sed -i "s|^Environment=\"HUB_URL=.*\"|Environment=\"HUB_URL=$SED_HUB_URL\"|" /etc/systemd/system/beszel-agent.service
+    [ "$PORT_PROVIDED" = "true" ] && sed -i "s|^Environment=\"PORT=.*\"|Environment=\"PORT=$SED_PORT\"|" /etc/systemd/system/vigile-agent.service
+    [ "$KEY_PROVIDED" = "true" ] && sed -i "s|^Environment=\"KEY=.*\"|Environment=\"KEY=$SED_KEY\"|" /etc/systemd/system/vigile-agent.service
+    [ "$TOKEN_PROVIDED" = "true" ] && sed -i "s|^Environment=\"TOKEN=.*\"|Environment=\"TOKEN=$SED_TOKEN\"|" /etc/systemd/system/vigile-agent.service
+    [ "$HUB_URL_PROVIDED" = "true" ] && sed -i "s|^Environment=\"HUB_URL=.*\"|Environment=\"HUB_URL=$SED_HUB_URL\"|" /etc/systemd/system/vigile-agent.service
   fi
 
-  # Let the agent service (not the beszel user) read the system journal for service logs.
+  # Let the agent service (not the vigile user) read the system journal for service logs.
   # Admins can opt out with a drop-in that sets an empty SupplementaryGroups=.
-  if getent group systemd-journal >/dev/null 2>&1 && ! grep -q '^SupplementaryGroups=' /etc/systemd/system/beszel-agent.service; then
+  if getent group systemd-journal >/dev/null 2>&1 && ! grep -q '^SupplementaryGroups=' /etc/systemd/system/vigile-agent.service; then
     echo "Granting the agent service read access to the systemd journal"
-    sed -i '/^User=beszel$/a SupplementaryGroups=systemd-journal' /etc/systemd/system/beszel-agent.service
+    sed -i '/^User=vigile$/a SupplementaryGroups=systemd-journal' /etc/systemd/system/vigile-agent.service
   fi
 
   # Load and start the service
   printf "\nLoading and starting the agent service...\n"
   systemctl daemon-reload
-  systemctl enable beszel-agent.service >/dev/null 2>&1
-  systemctl restart beszel-agent.service || fail "Could not start the agent; check service logs."
+  systemctl enable vigile-agent.service >/dev/null 2>&1
+  systemctl restart vigile-agent.service || fail "Could not start the agent; check service logs."
 
 
 
@@ -1416,13 +1416,13 @@ EOF
   fi
   case "$AUTO_UPDATE" in
   [Yy]*)
-    echo "Setting up daily automatic updates for beszel-agent..."
+    echo "Setting up daily automatic updates for vigile-agent..."
 
     # Create systemd service for the daily update
-    cat >/etc/systemd/system/beszel-agent-update.service <<EOF
+    cat >/etc/systemd/system/vigile-agent-update.service <<EOF
 [Unit]
-Description=Update beszel-agent if needed
-Wants=beszel-agent.service
+Description=Update vigile-agent if needed
+Wants=vigile-agent.service
 
 [Service]
 Type=oneshot
@@ -1430,9 +1430,9 @@ ExecStart=$BIN_PATH update
 EOF
 
     # Create systemd timer for the daily update
-    cat >/etc/systemd/system/beszel-agent-update.timer <<EOF
+    cat >/etc/systemd/system/vigile-agent-update.timer <<EOF
 [Unit]
-Description=Run beszel-agent update daily
+Description=Run vigile-agent update daily
 
 [Timer]
 OnCalendar=daily
@@ -1444,16 +1444,16 @@ WantedBy=timers.target
 EOF
 
     systemctl daemon-reload
-    systemctl enable --now beszel-agent-update.timer >/dev/null 2>&1
+    systemctl enable --now vigile-agent-update.timer >/dev/null 2>&1
 
     printf "\nDaily updates have been enabled.\n"
     ;;
   esac
 
   # Wait for the service to start or fail
-  if [ "$(systemctl is-active beszel-agent.service)" != "active" ]; then
-    echo "Error: The Beszel Agent service is not running."
-    echo "$(systemctl status beszel-agent.service)"
+  if [ "$(systemctl is-active vigile-agent.service)" != "active" ]; then
+    echo "Error: The Vigile Agent service is not running."
+    echo "$(systemctl status vigile-agent.service)"
     exit 1
   fi
 fi
@@ -1462,4 +1462,4 @@ UPGRADE_PENDING=false
 RUNNING_ADDRESS=$(configured_address)
 [ -n "$RUNNING_ADDRESS" ] || RUNNING_ADDRESS=$PORT
 
-printf "\n\033[32mBeszel Agent has been installed successfully! It is now running on $RUNNING_ADDRESS.\033[0m\n"
+printf "\n\033[32mVigile Agent has been installed successfully! It is now running on $RUNNING_ADDRESS.\033[0m\n"

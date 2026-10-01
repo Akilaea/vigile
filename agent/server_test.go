@@ -15,8 +15,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/henrygd/beszel/internal/entities/container"
-	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/entities/container"
+	"github.com/Akilaea/vigile/internal/entities/system"
 
 	"github.com/blang/semver"
 	"github.com/fxamacker/cbor/v2"
@@ -43,7 +43,7 @@ func TestStartServer(t *testing.T) {
 	sshBadPubKey, err := gossh.NewPublicKey(badPubKey)
 	require.NoError(t, err)
 
-	socketFile := filepath.Join(t.TempDir(), "beszel-test.sock")
+	socketFile := filepath.Join(t.TempDir(), "vigile-test.sock")
 
 	tests := []struct {
 		name        string
@@ -183,7 +183,7 @@ func TestStartServer(t *testing.T) {
 }
 
 func TestStartServerDisableSSH(t *testing.T) {
-	t.Setenv("BESZEL_AGENT_DISABLE_SSH", "true")
+	t.Setenv("VIGILE_AGENT_DISABLE_SSH", "true")
 
 	agent, err := NewAgent("")
 	require.NoError(t, err)
@@ -350,20 +350,20 @@ func TestExtractHubVersion(t *testing.T) {
 		expectError     bool
 	}{
 		{
-			name:            "valid beszel client version with underscore",
-			clientVersion:   "SSH-2.0-beszel_0.11.1",
+			name:            "valid vigile client version with underscore",
+			clientVersion:   "SSH-2.0-vigile_0.11.1",
 			expectedVersion: "0.11.1",
 			expectError:     false,
 		},
 		{
-			name:            "valid beszel client version with beta",
-			clientVersion:   "SSH-2.0-beszel_1.0.0-beta",
+			name:            "valid vigile client version with beta",
+			clientVersion:   "SSH-2.0-vigile_1.0.0-beta",
 			expectedVersion: "1.0.0-beta",
 			expectError:     false,
 		},
 		{
-			name:            "valid beszel client version with rc",
-			clientVersion:   "SSH-2.0-beszel_0.12.0-rc1",
+			name:            "valid vigile client version with rc",
+			clientVersion:   "SSH-2.0-vigile_0.12.0-rc1",
 			expectedVersion: "0.12.0-rc1",
 			expectError:     false,
 		},
@@ -375,7 +375,7 @@ func TestExtractHubVersion(t *testing.T) {
 		},
 		{
 			name:          "malformed version string without underscore",
-			clientVersion: "SSH-2.0-beszel",
+			clientVersion: "SSH-2.0-vigile",
 			expectError:   true,
 		},
 		{
@@ -385,13 +385,13 @@ func TestExtractHubVersion(t *testing.T) {
 		},
 		{
 			name:            "version string with underscore but no version",
-			clientVersion:   "beszel_",
+			clientVersion:   "vigile_",
 			expectedVersion: "",
 			expectError:     true,
 		},
 		{
 			name:            "version with patch and build metadata",
-			clientVersion:   "SSH-2.0-beszel_1.2.3+build.123",
+			clientVersion:   "SSH-2.0-vigile_1.2.3+build.123",
 			expectedVersion: "1.2.3+build.123",
 			expectError:     false,
 		},
@@ -423,7 +423,7 @@ func TestGetHubVersion(t *testing.T) {
 	// Mock SSH context that implements the ssh.Context interface
 	mockCtx := &mockSSHContext{
 		sessionID:     "test-session-123",
-		clientVersion: "SSH-2.0-beszel_0.12.0",
+		clientVersion: "SSH-2.0-vigile_0.12.0",
 	}
 
 	// Test first call - should extract version
@@ -431,14 +431,14 @@ func TestGetHubVersion(t *testing.T) {
 	assert.Equal(t, "0.12.0", version.String())
 
 	// Test that version reflects the current client version (no stale caching)
-	mockCtx.clientVersion = "SSH-2.0-beszel_0.11.0"
+	mockCtx.clientVersion = "SSH-2.0-vigile_0.11.0"
 	version = agent.getHubVersion(mockCtx)
 	assert.Equal(t, "0.11.0", version.String())
 
-	// Test with invalid version string (non-beszel client)
+	// Test with invalid version string (non-vigile client)
 	mockCtx.clientVersion = "SSH-2.0-OpenSSH_8.0"
 	version = agent.getHubVersion(mockCtx)
-	assert.Equal(t, "0.0.0", version.String()) // Should be empty version for non-beszel clients
+	assert.Equal(t, "0.0.0", version.String()) // Should be empty version for non-vigile clients
 
 	// Test with no client version
 	mockCtx.clientVersion = ""
@@ -463,7 +463,7 @@ func (m *mockSSHContext) ClientVersion() string {
 }
 
 func (m *mockSSHContext) ServerVersion() string {
-	return "SSH-2.0-beszel_test"
+	return "SSH-2.0-vigile_test"
 }
 
 func (m *mockSSHContext) Value(key interface{}) interface{} {
@@ -617,7 +617,7 @@ func TestGetHubVersionConcurrent(t *testing.T) {
 			defer wg.Done()
 			ctx := &mockSSHContext{
 				sessionID:     fmt.Sprintf("session-%d", i),
-				clientVersion: "SSH-2.0-beszel_0.12.0",
+				clientVersion: "SSH-2.0-vigile_0.12.0",
 			}
 			version := agent.getHubVersion(ctx)
 			assert.Equal(t, "0.12.0", version.String())

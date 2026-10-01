@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/henrygd/beszel/internal/common"
-	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/common"
+	"github.com/Akilaea/vigile/internal/entities/system"
 	"github.com/shirou/gopsutil/v4/mem"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

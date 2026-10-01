@@ -5,7 +5,7 @@ package agent
 import (
 	"testing"
 
-	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/entities/system"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

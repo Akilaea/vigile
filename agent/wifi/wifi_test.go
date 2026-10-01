@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/fxamacker/cbor/v2"
-	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/entities/system"
 )
 
 func TestSSIDWireSafety(t *testing.T) {

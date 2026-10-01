@@ -3,8 +3,8 @@ package transport
 import (
 	"testing"
 
-	"github.com/henrygd/beszel/internal/common"
-	"github.com/henrygd/beszel/internal/entities/smart"
+	"github.com/Akilaea/vigile/internal/common"
+	"github.com/Akilaea/vigile/internal/entities/smart"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

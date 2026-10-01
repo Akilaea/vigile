@@ -38,10 +38,10 @@ jobs:
 
       - name: Build .NET LHM executable for Windows sensors
         run: |
-          dotnet build -c Release ./agent/lhm/beszel_lhm.csproj
+          dotnet build -c Release ./agent/lhm/vigile_lhm.csproj
         shell: bash
 
-      - name: GoReleaser beszel
+      - name: GoReleaser vigile
         uses: goreleaser/goreleaser-action@v7
         with:
           workdir: ./

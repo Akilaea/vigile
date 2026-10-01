@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/blang/semver"
-	"github.com/henrygd/beszel/internal/entities/system"
-	"github.com/henrygd/beszel/internal/entities/zfs"
-	"github.com/henrygd/beszel/internal/hub/expirymap"
+	"github.com/Akilaea/vigile/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/entities/zfs"
+	"github.com/Akilaea/vigile/internal/hub/expirymap"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

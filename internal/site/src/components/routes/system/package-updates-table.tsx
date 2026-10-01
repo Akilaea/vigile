@@ -162,7 +162,7 @@ export default function PackageUpdatesTable({ systemId, counts }: { systemId: st
 
 	useEffect(() => {
 		let cancelled = false
-		pb.send<PackageUpdates>("/api/beszel/package-updates", { query: { system: systemId } })
+		pb.send<PackageUpdates>("/api/vigile/package-updates", { query: { system: systemId } })
 			.then((result) => {
 				if (cancelled) return
 				setData(result)

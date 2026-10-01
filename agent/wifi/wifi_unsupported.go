@@ -5,7 +5,7 @@ package wifi
 import (
 	"context"
 
-	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/entities/system"
 )
 
 func collect(context.Context) map[string]system.WiFi { return nil }

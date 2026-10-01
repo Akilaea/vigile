@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/henrygd/beszel/internal/entities/monitor"
+	"github.com/Akilaea/vigile/internal/entities/monitor"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/stretchr/testify/assert"

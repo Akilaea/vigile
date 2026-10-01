@@ -8,7 +8,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/entities/system"
 	"github.com/mdlayher/genetlink"
 	"github.com/mdlayher/netlink"
 	native "github.com/mdlayher/wifi"

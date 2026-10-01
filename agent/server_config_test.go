@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/henrygd/beszel"
-	"github.com/henrygd/beszel/internal/common"
+	"github.com/Akilaea/vigile"
+	"github.com/Akilaea/vigile/internal/common"
 
 	"github.com/gliderlabs/ssh"
 	"github.com/stretchr/testify/assert"
@@ -86,7 +86,7 @@ func TestSSHServerConfigConcurrentConnections(t *testing.T) {
 	for range connections {
 		select {
 		case config := <-configs:
-			assert.Equal(t, fmt.Sprintf("SSH-2.0-%s_%s", beszel.AppName, beszel.Version), config.ServerVersion)
+			assert.Equal(t, fmt.Sprintf("SSH-2.0-%s_%s", vigile.AppName, vigile.Version), config.ServerVersion)
 			assert.Equal(t, common.DefaultKeyExchanges, config.KeyExchanges)
 			assert.Equal(t, common.DefaultMACs, config.MACs)
 			assert.Equal(t, common.DefaultCiphers, config.Ciphers)

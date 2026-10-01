@@ -8,9 +8,9 @@ import (
 	"weak"
 
 	"github.com/blang/semver"
-	"github.com/henrygd/beszel"
+	"github.com/Akilaea/vigile"
 
-	"github.com/henrygd/beszel/internal/common"
+	"github.com/Akilaea/vigile/internal/common"
 
 	"github.com/fxamacker/cbor/v2"
 	"github.com/lxzan/gws"
@@ -146,7 +146,7 @@ func (ws *WsConn) handleAgentRequest(req *PendingRequest, handler ResponseHandle
 		data := message.Data.Bytes()
 
 		// Legacy format - unmarshal directly
-		if ws.agentVersion.LT(beszel.MinVersionAgentResponse) {
+		if ws.agentVersion.LT(vigile.MinVersionAgentResponse) {
 			return handler.HandleLegacy(data)
 		}
 

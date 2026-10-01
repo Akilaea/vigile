@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/henrygd/beszel/internal/entities/monitor"
+	"github.com/Akilaea/vigile/internal/entities/monitor"
 )
 
 // MonitorManager manages network monitor configurations and task lifetimes.

@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/henrygd/beszel/agent/utils"
+	"github.com/Akilaea/vigile/agent/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sys/unix"
@@ -166,9 +166,9 @@ func TestFilesystemWithoutDevinfo(t *testing.T) {
 }
 
 func TestLocalBtrfsUsage(t *testing.T) {
-	path := os.Getenv("BESZEL_TEST_BTRFS_MOUNT")
+	path := os.Getenv("VIGILE_TEST_BTRFS_MOUNT")
 	if path == "" {
-		t.Skip("set BESZEL_TEST_BTRFS_MOUNT for read-only live validation")
+		t.Skip("set VIGILE_TEST_BTRFS_MOUNT for read-only live validation")
 	}
 	used, available, err := statfsUsage(path)
 	require.NoError(t, err)
@@ -186,9 +186,9 @@ func TestLocalBtrfsUsage(t *testing.T) {
 func TestMountID(t *testing.T) {
 	assert.Empty(t, MountID(""))
 	assert.Empty(t, MountID(filepath.Join(t.TempDir(), "missing")))
-	path := os.Getenv("BESZEL_TEST_BTRFS_MOUNT")
+	path := os.Getenv("VIGILE_TEST_BTRFS_MOUNT")
 	if path == "" {
-		t.Skip("set BESZEL_TEST_BTRFS_MOUNT for live identity validation")
+		t.Skip("set VIGILE_TEST_BTRFS_MOUNT for live identity validation")
 	}
 	id := MountID(path)
 	require.NotEmpty(t, id)
@@ -253,9 +253,9 @@ func TestDockerFilesystemWithoutDeviceNodes(t *testing.T) {
 }
 
 func TestLivePoolMountIdentity(t *testing.T) {
-	path := os.Getenv("BESZEL_TEST_BTRFS_MOUNT")
+	path := os.Getenv("VIGILE_TEST_BTRFS_MOUNT")
 	if path == "" {
-		t.Skip("set BESZEL_TEST_BTRFS_MOUNT for live validation")
+		t.Skip("set VIGILE_TEST_BTRFS_MOUNT for live validation")
 	}
 	id := MountID(path)
 	require.NotEmpty(t, id)

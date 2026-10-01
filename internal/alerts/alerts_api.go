@@ -6,14 +6,14 @@ import (
 	"net/http"
 	"slices"
 
-	"github.com/henrygd/beszel/internal/hub/utils"
+	"github.com/Akilaea/vigile/internal/hub/utils"
 	"github.com/nicholas-fedor/shoutrrr"
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 )
 
 // UpsertUserAlerts handles API request to create or update alerts for a user
-// across multiple systems (POST /api/beszel/user-alerts)
+// across multiple systems (POST /api/vigile/user-alerts)
 func UpsertUserAlerts(e *core.RequestEvent) error {
 	userID := e.Auth.Id
 
@@ -86,7 +86,7 @@ func UpsertUserAlerts(e *core.RequestEvent) error {
 }
 
 // DeleteUserAlerts handles API request to delete alerts for a user across multiple systems
-// (DELETE /api/beszel/user-alerts)
+// (DELETE /api/vigile/user-alerts)
 func DeleteUserAlerts(e *core.RequestEvent) error {
 	userID := e.Auth.Id
 
@@ -156,7 +156,7 @@ func (am *AlertManager) SendTestNotification(e *core.RequestEvent) error {
 	if !e.Auth.IsSuperuser() && e.Auth.GetString("role") != "admin" {
 		send = sendPublicNotification
 	}
-	err = am.sendShoutrrrAlert(data.URL, "Test Alert", "This is a notification from Beszel.", am.hub.Settings().Meta.AppURL, "View Beszel", send)
+	err = am.sendShoutrrrAlert(data.URL, "Test Alert", "This is a notification from Vigile.", am.hub.Settings().Meta.AppURL, "View Vigile", send)
 	if errors.Is(err, errInternalDestination) || errors.Is(err, errUnrestrictedService) {
 		return e.ForbiddenError(err.Error(), nil)
 	}

@@ -17,9 +17,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/henrygd/beszel/agent/deltatracker"
-	"github.com/henrygd/beszel/agent/utils"
-	"github.com/henrygd/beszel/internal/entities/container"
+	"github.com/Akilaea/vigile/agent/deltatracker"
+	"github.com/Akilaea/vigile/agent/utils"
+	"github.com/Akilaea/vigile/internal/entities/container"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -1686,9 +1686,9 @@ func TestUpdateContainerStatsUsesPodmanInspectHealthFallback(t *testing.T) {
 
 	ctr := &container.ApiInfo{
 		IdShort: "0123456789ab",
-		Names:   []string{"/beszel"},
+		Names:   []string{"/vigile"},
 		Status:  "Up 2 minutes",
-		Image:   "beszel:latest",
+		Image:   "vigile:latest",
 	}
 
 	err := dm.updateContainerStats(ctr, defaultCacheTimeMs)

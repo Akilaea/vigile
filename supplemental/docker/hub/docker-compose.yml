@@ -2,16 +2,16 @@
 # Env vars: https://beszel.dev/guide/environment-variables
 
 services:
-  beszel:
+  vigile:
     image: "henrygd/beszel"
-    container_name: "beszel"
+    container_name: "vigile"
     restart: unless-stopped
     ports:
       - "8090:8090"
     volumes:
-      - ./beszel_data:/beszel_data
+      - ./vigile_data:/vigile_data
     # healthcheck:
-    #   test: ['CMD', '/beszel', 'health', '--url', 'http://localhost:8090']
+    #   test: ['CMD', '/vigile', 'health', '--url', 'http://localhost:8090']
     #   interval: 120s
     #   start_period: 10s
     #   timeout: 5s

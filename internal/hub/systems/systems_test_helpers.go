@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"testing"
 
-	entities "github.com/henrygd/beszel/internal/entities/system"
-	"github.com/henrygd/beszel/internal/entities/systemd"
+	entities "github.com/Akilaea/vigile/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/entities/systemd"
 	"github.com/pocketbase/pocketbase/core"
 )
 

@@ -6,9 +6,9 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/henrygd/beszel/internal/entities/container"
-	"github.com/henrygd/beszel/internal/entities/monitor"
-	"github.com/henrygd/beszel/internal/entities/systemd"
+	"github.com/Akilaea/vigile/internal/entities/container"
+	"github.com/Akilaea/vigile/internal/entities/monitor"
+	"github.com/Akilaea/vigile/internal/entities/systemd"
 )
 
 // WiFi describes a currently connected station interface. Keys in WiFi maps are

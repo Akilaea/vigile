@@ -6,13 +6,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: @lingui/cli\n"
 "Language: hu\n"
-"Project-Id-Version: beszel\n"
+"Project-Id-Version: vigile\n"
 "Report-Msgid-Bugs-To: \n"
 "PO-Revision-Date: 2026-09-24 17:29\n"
 "Last-Translator: \n"
 "Language-Team: Hungarian\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Crowdin-Project: beszel\n"
+"X-Crowdin-Project: vigile\n"
 "X-Crowdin-Project-ID: 733311\n"
 "X-Crowdin-Language: hu\n"
 "X-Crowdin-File: /main/internal/site/src/locales/en/en.po\n"
@@ -30,11 +30,19 @@ msgstr "{0} elérhető"
 msgid "{0} of {1} row(s) selected."
 msgstr "{0} a(z) {1} sorból kiválasztva."
 
-#. placeholder {0}: selectedSystemIds.size
+#. placeholder {0}: selectedIds.size
 #: src/components/network-monitors-table/monitor-dialog.tsx
 #: src/components/network-monitors-table/monitor-dialog.tsx
 msgid "{0} selected"
 msgstr "{0} kiválasztva"
+
+#: src/components/active-alerts.tsx
+msgid "{alertCount, plural, one {# active alert} other {# active alerts}}"
+msgstr ""
+
+#: src/components/active-alerts.tsx
+msgid "{alertCount, plural, one {# alert is currently triggered} other {# alerts are currently triggered}}"
+msgstr ""
 
 #: src/components/routes/system/info-bar.tsx
 msgid "{cores, plural, one {# core} other {# cores}}"
@@ -64,9 +72,17 @@ msgstr "{diskName} I/O"
 msgid "{numFailed, plural, one {# failed service} other {# failed services}}"
 msgstr ""
 
+#: src/components/active-alerts.tsx
+msgid "{systemCount, plural, one {Across # system} other {Across # systems}}"
+msgstr ""
+
 #: src/components/routes/system/info-bar.tsx
 msgid "{threads, plural, one {# thread} other {# threads}}"
 msgstr "{threads, plural, one {# szál} other {# szál}}"
+
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "{total, plural, one {# update} other {# updates}}"
+msgstr ""
 
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "{totalCount, plural, one {# service} other {# services}}"
@@ -178,8 +194,8 @@ msgid "After"
 msgstr "Utána"
 
 #: src/components/routes/settings/heartbeat.tsx
-msgid "After setting the environment variables, restart your Beszel hub for changes to take effect."
-msgstr "A környezeti változók beállítása után indítsa újra a Beszel hubot a módosítások érvénybe léptetéséhez."
+msgid "After setting the environment variables, restart your Vigile hub for changes to take effect."
+msgstr "A környezeti változók beállítása után indítsa újra a Vigile hubot a módosítások érvénybe léptetéséhez."
 
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Agent"
@@ -226,6 +242,11 @@ msgstr "Biztos vagy benne?"
 msgid "Automatic copy requires a secure context."
 msgstr "Az automatikus másolás biztonságos környezetet igényel."
 
+#: src/components/routes/system/package-updates-table.tsx
+msgctxt "Package version available to install"
+msgid "Available"
+msgstr ""
+
 #: src/components/routes/system/storage-pools-table.tsx
 msgctxt "Disk space available"
 msgid "Available"
@@ -239,15 +260,21 @@ msgstr "Átlag"
 msgid "Average CPU utilization of containers"
 msgstr "Konténerek átlagos CPU kihasználtsága"
 
-#. placeholder {0}: alertData.unit
 #: src/components/alerts/alerts-sheet.tsx
-msgid "Average drops below <0>{value}{0}</0>"
-msgstr "Az átlag esik <0>{value}{0}</0> alá"
+#~ msgid "Average drops below <0>{value}{0}</0>"
+#~ msgstr "Az átlag esik <0>{value}{0}</0> alá"
 
-#. placeholder {0}: alertData.unit
 #: src/components/alerts/alerts-sheet.tsx
-msgid "Average exceeds <0>{value}{0}</0>"
-msgstr "Az átlag meghaladja a <0>{value}{0}</0> értéket"
+msgid "Average drops below <0>{value}{unitLabel}</0>"
+msgstr ""
+
+#: src/components/alerts/alerts-sheet.tsx
+#~ msgid "Average exceeds <0>{value}{0}</0>"
+#~ msgstr "Az átlag meghaladja a <0>{value}{0}</0> értéket"
+
+#: src/components/alerts/alerts-sheet.tsx
+msgid "Average exceeds <0>{value}{unitLabel}</0>"
+msgstr ""
 
 #: src/components/routes/system/disk-io-sheet.tsx
 msgid "Average number of I/O operations waiting to be serviced"
@@ -261,6 +288,10 @@ msgstr "GPU-k átlagos energiafogyasztása"
 msgctxt "Disk I/O average operation time (iostat await)"
 msgid "Average queue to completion time per operation"
 msgstr "Műveletenkénti átlagos várakozási és befejezési idő"
+
+#: src/components/routes/system/charts/monitors-charts.tsx
+msgid "Average response time"
+msgstr ""
 
 #: src/components/routes/system/charts/cpu-charts.tsx
 msgid "Average system-wide CPU utilization"
@@ -324,14 +355,6 @@ msgstr "Előtte"
 msgid "Below {0}{1} in last {2, plural, one {# minute} other {# minutes}}"
 msgstr "{0}{1} alatt az elmúlt {2, plural, one {# percben} other {# percben}}"
 
-#: src/components/login/auth-form.tsx
-msgid "Beszel supports OpenID Connect and many OAuth2 authentication providers."
-msgstr "A Beszel támogatja az OpenID Connect-et és számos OAuth2 hitelesítési szolgáltatót."
-
-#: src/components/routes/settings/notifications.tsx
-msgid "Beszel uses <0>Shoutrrr</0> to integrate with popular notification services."
-msgstr "A Beszel a <0>Shoutrrr</0>-t használja a népszerű értesítési szolgáltatások integrálására."
-
 #: src/components/add-system.tsx
 msgid "Binary"
 msgstr "Bináris"
@@ -355,8 +378,8 @@ msgid "Bulk Add {foo}"
 msgstr "{foo} tömeges hozzáadása"
 
 #: src/components/network-monitors-table/network-monitors-columns.tsx
-msgid "Bulk copy"
-msgstr "Tömeges másolás"
+#~ msgid "Bulk copy"
+#~ msgstr "Tömeges másolás"
 
 #: src/components/routes/settings/general.tsx
 #: src/components/routes/settings/general.tsx
@@ -416,6 +439,10 @@ msgstr ""
 msgid "Certificate expires {expires}"
 msgstr ""
 
+#: src/components/routes/system/package-updates-table.tsx
+msgid "Change"
+msgstr ""
+
 #: src/components/routes/settings/general.tsx
 msgid "Change display units for metrics."
 msgstr "A mértékegységek megjelenítésének megváltoztatása."
@@ -457,12 +484,18 @@ msgstr "Ellenőrizze a megfigyelő szolgáltatást"
 msgid "Check your notification service"
 msgstr "Ellenőrizd az értesítési szolgáltatásodat"
 
+#. placeholder {0}: formatShortDate(new Date(data.checkedAt * 1000).toISOString())
+#: src/components/routes/system/package-updates-table.tsx
+msgid "Checked {0}"
+msgstr ""
+
 #: src/components/routes/system/storage-pools-table.tsx
 msgid "Checksum errors"
 msgstr "Ellenőrzőösszeg-hibák"
 
 #: src/components/containers-table/containers-table.tsx
 #: src/components/network-monitors-table/network-monitors-table.tsx
+#: src/components/routes/system/package-updates-table.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/routes/system/storage-pools-table.tsx
 #: src/components/routes/system/storage-pools-table.tsx
@@ -502,6 +535,14 @@ msgstr "Kattints a másoláshoz"
 #: src/components/login/forgot-pass-form.tsx
 msgid "Command line instructions"
 msgstr "Parancssori utasítások"
+
+#: src/components/network-monitors-table/network-monitors-table.tsx
+msgid "Compare with other systems"
+msgstr ""
+
+#: src/components/network-monitors-table/network-monitors-table.tsx
+msgid "Compare with other targets"
+msgstr ""
 
 #: src/components/routes/settings/notifications.tsx
 msgid "Configure how you receive alert notifications."
@@ -545,6 +586,10 @@ msgstr "Tovább"
 #: src/lib/utils.ts
 msgid "Copied to clipboard"
 msgstr "Vágólapra másolva"
+
+#: src/components/network-monitors-table/network-monitors-columns.tsx
+msgid "Copy bulk config"
+msgstr ""
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -598,8 +643,8 @@ msgid "Copy the<0>docker-compose.yml</0> content for the agent below, or registe
 msgstr "Másold az alábbi ügynök <0>docker-compose.yml</0> tartalmát, vagy regisztráld az ügynököket automatikusan egy <1>univerzális tokennel</1>."
 
 #: src/components/network-monitors-table/network-monitors-columns.tsx
-msgid "Copy to system"
-msgstr "Másolás a rendszerbe"
+#~ msgid "Copy to system"
+#~ msgstr "Másolás a rendszerbe"
 
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Copy YAML"
@@ -688,6 +733,11 @@ msgstr "Kumulatív feltöltés"
 msgid "Cumulative Write"
 msgstr "Összes írás"
 
+#: src/components/routes/system/package-updates-table.tsx
+msgctxt "Installed package version"
+msgid "Current"
+msgstr ""
+
 #. Context: Battery state
 #. Context: Battery state
 #: src/components/routes/system/charts/sensor-charts.tsx
@@ -761,10 +811,19 @@ msgstr "Lemezhasználat"
 msgid "Disk usage of {extraFsName}"
 msgstr "Lemezhasználat a {extraFsName}"
 
+#: src/components/alert-banner-sheet.tsx
+#: src/components/alert-banner-sheet.tsx
+msgid "Dismiss"
+msgstr ""
+
 #: src/components/routes/system/info-bar.tsx
 msgctxt "Layout display options"
 msgid "Display"
 msgstr "Megjelenítés"
+
+#: src/components/network-monitors-table/monitor-dialog.tsx
+msgid "DNS Server"
+msgstr ""
 
 #: src/components/routes/system/charts/cpu-charts.tsx
 msgid "Docker CPU Usage"
@@ -846,6 +905,10 @@ msgstr "Végpont URL"
 msgid "Endpoint URL to ping (required)"
 msgstr "Pingelendő végpont URL (kötelező)"
 
+#: src/components/network-monitors-table/monitor-dialog.tsx
+msgid "Enter a domain name to look up. Put the resolver's IP in DNS Server."
+msgstr ""
+
 #: src/components/login/login.tsx
 msgid "Enter email address to reset password"
 msgstr "E-mail cím megadása a jelszó visszaállításához"
@@ -864,7 +927,6 @@ msgstr "Ideiglenes"
 
 #: src/components/network-monitors-table/monitor-dialog.tsx
 #: src/components/network-monitors-table/monitor-dialog.tsx
-#: src/components/network-monitors-table/network-monitors-table.tsx
 #: src/components/network-monitors-table/network-monitors-table.tsx
 #: src/components/network-monitors-table/network-monitors-table.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
@@ -940,9 +1002,17 @@ msgid "Failed to authenticate"
 msgstr "Hitelesítés sikertelen"
 
 #: src/components/network-monitors-table/network-monitors-table.tsx
-#: src/components/network-monitors-table/network-monitors-table.tsx
 msgid "Failed to delete monitors."
 msgstr "A monitorok törlése sikertelen."
+
+#: src/components/systemd-table/systemd-table.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Failed to load logs."
+msgstr ""
+
+#: src/components/routes/system/package-updates-table.tsx
+msgid "Failed to load package updates"
+msgstr ""
 
 #: src/components/routes/settings/layout.tsx
 #: src/components/routes/settings/notifications.tsx
@@ -979,6 +1049,7 @@ msgstr "Ventilátorok"
 #: src/components/network-monitors-table/network-monitors-table.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/system/chart-card.tsx
+#: src/components/routes/system/package-updates-table.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/routes/system/storage-pools-table.tsx
 #: src/components/routes/system/storage-pools-table.tsx
@@ -1020,6 +1091,11 @@ msgstr "FreeBSD parancs"
 #: src/lib/i18n.ts
 msgid "Full"
 msgstr "Tele"
+
+#: src/components/containers-table/containers-table.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Fullscreen"
+msgstr ""
 
 #. Context: General settings
 #: src/components/routes/settings/general.tsx
@@ -1068,6 +1144,10 @@ msgstr "Heartbeat figyelés"
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Heartbeat sent successfully"
 msgstr "Heartbeat sikeresen elküldve"
+
+#: src/components/logs-display.tsx
+msgid "Hide timestamps"
+msgstr ""
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1187,6 +1267,7 @@ msgid "Load state"
 msgstr "Betöltési állapot"
 
 #: src/components/systemd-table/systemd-table.tsx
+#: src/components/systemd-table/systemd-table.tsx
 msgid "Loading..."
 msgstr "Betöltés..."
 
@@ -1207,6 +1288,7 @@ msgstr "Bejelentkezés sikertelen"
 #: src/components/command-palette.tsx
 #: src/components/containers-table/containers-table.tsx
 #: src/components/navbar.tsx
+#: src/components/systemd-table/systemd-table.tsx
 msgid "Logs"
 msgstr "Naplók"
 
@@ -1227,6 +1309,11 @@ msgstr "Veszteség 1 óra"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Main PID"
 msgstr "Fő PID"
+
+#: src/components/routes/system/package-updates-table.tsx
+msgctxt "Version change"
+msgid "Major"
+msgstr ""
 
 #: src/components/routes/settings/layout.tsx
 msgid "Manage display and notification preferences."
@@ -1277,6 +1364,11 @@ msgstr "Konténerek memóriahasználata"
 #: src/components/network-monitors-table/network-monitors-columns.tsx
 msgid "Min 1h"
 msgstr "Min. 1 óra"
+
+#: src/components/routes/system/package-updates-table.tsx
+msgctxt "Version change"
+msgid "Minor"
+msgstr ""
 
 #. Device model
 #: src/components/routes/system/smart-table.tsx
@@ -1359,6 +1451,10 @@ msgstr "Nem"
 msgid "No detail data for this pool."
 msgstr "Ehhez a tárkészlethez nem érhetők el részletes adatok."
 
+#: src/components/systemd-table/systemd-table.tsx
+msgid "No logs found."
+msgstr ""
+
 #: src/components/command-palette.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "No results found."
@@ -1369,6 +1465,7 @@ msgstr "Nincs találat."
 #: src/components/containers-table/containers-table.tsx
 #: src/components/network-monitors-table/network-monitors-table.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
+#: src/components/routes/system/package-updates-table.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "No results."
@@ -1383,6 +1480,10 @@ msgstr "Ehhez az eszközhöz nem állnak rendelkezésre S.M.A.R.T. attribútumok
 #: src/components/systems-table/systems-table.tsx
 msgid "No systems found."
 msgstr "Nem található rendszer."
+
+#: src/components/network-monitors-table/monitor-dialog.tsx
+msgid "No targets found."
+msgstr ""
 
 #: src/components/routes/system/storage-pools-table.tsx
 msgid "None"
@@ -1438,9 +1539,18 @@ msgstr "Egyszeri jelszó"
 msgid "Open menu"
 msgstr "Menü megnyitása"
 
+#: src/components/network-monitors-table/monitor-dialog.tsx
+msgid "Optional. Defaults to the agent's system resolver."
+msgstr ""
+
 #: src/components/login/auth-form.tsx
 msgid "Or continue with"
 msgstr "Vagy folytasd ezzel"
+
+#: src/components/routes/system/package-updates-table.tsx
+msgctxt "Version change"
+msgid "Other"
+msgstr ""
 
 #: src/components/routes/system/cpu-sheet.tsx
 msgid "Other"
@@ -1449,6 +1559,14 @@ msgstr "Egyéb"
 #: src/components/alerts/alerts-sheet.tsx
 msgid "Overwrite existing alerts"
 msgstr "Felülírja a meglévő riasztásokat"
+
+#: src/components/routes/system/package-updates-table.tsx
+msgid "Package"
+msgstr ""
+
+#: src/components/routes/system/package-updates-table.tsx
+msgid "Package Updates"
+msgstr ""
 
 #: src/components/routes/system/charts/monitors-charts.tsx
 msgid "Packet loss (%)"
@@ -1491,6 +1609,11 @@ msgstr "Jelszó-visszaállítási kérelmet kaptunk"
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Past"
 msgstr "Múlt"
+
+#: src/components/routes/system/package-updates-table.tsx
+msgctxt "Version change"
+msgid "Patch"
+msgstr ""
 
 #: src/components/network-monitors-table/network-monitors-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
@@ -1624,6 +1747,7 @@ msgid "Queue Depth"
 msgstr "Várakozási sor mélysége"
 
 #: src/components/routes/settings/quiet-hours.tsx
+#: src/components/routes/settings/quiet-hours.tsx
 msgid "Quiet Hours"
 msgstr "Csendes órák"
 
@@ -1658,9 +1782,11 @@ msgid "Received"
 msgstr "Fogadott"
 
 #: src/components/containers-table/containers-table.tsx
-#: src/components/containers-table/containers-table.tsx
+#: src/components/logs-display.tsx
+#: src/components/logs-display.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/routes/system/storage-pools-table.tsx
+#: src/components/systemd-table/systemd-table.tsx
 msgid "Refresh"
 msgstr "Frissítés"
 
@@ -1697,6 +1823,7 @@ msgstr "Megoldva"
 #: src/components/network-monitors-table/network-monitors-columns.tsx
 #: src/components/network-monitors-table/network-monitors-columns.tsx
 #: src/components/routes/system/charts/monitors-charts.tsx
+#: src/components/routes/system/charts/monitors-charts.tsx
 msgid "Response"
 msgstr "Válasz"
 
@@ -1712,6 +1839,11 @@ msgstr "Újraindítások"
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Resume"
 msgstr "Folytatás"
+
+#: src/components/routes/system/package-updates-table.tsx
+msgctxt "Version change"
+msgid "Revision"
+msgstr ""
 
 #: src/components/routes/system/charts/disk-charts.tsx
 #: src/components/routes/system/charts/disk-charts.tsx
@@ -1782,13 +1914,25 @@ msgid "Search for systems or settings..."
 msgstr "Keresés rendszerek vagy beállítások után..."
 
 #: src/components/network-monitors-table/monitor-dialog.tsx
-#: src/components/network-monitors-table/monitor-dialog.tsx
 msgid "Search systems"
 msgstr "Rendszerek keresése"
+
+#: src/components/network-monitors-table/monitor-dialog.tsx
+msgid "Search targets"
+msgstr ""
 
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Seconds between pings (default: 60)"
 msgstr "Pingek közötti másodpercek (alapértelmezett: 60)"
+
+#: src/components/routes/system/package-updates-table.tsx
+#: src/components/routes/system/package-updates-table.tsx
+msgid "Security"
+msgstr ""
+
+#: src/components/routes/system/package-updates-table.tsx
+msgid "Security: {securityCount}"
+msgstr ""
 
 #: src/components/alerts/alerts-sheet.tsx
 msgid "See <0>notification settings</0> to configure how you receive alerts."
@@ -1819,13 +1963,17 @@ msgstr "Sor kijelölése"
 msgid "Select systems"
 msgstr "Rendszerek kijelölése"
 
+#: src/components/network-monitors-table/monitor-dialog.tsx
+msgid "Select targets"
+msgstr ""
+
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Send a single heartbeat ping to verify your endpoint is working."
 msgstr "Küldjön egyetlen heartbeat pinget a végpont működésének ellenőrzéséhez."
 
 #: src/components/routes/settings/heartbeat.tsx
-msgid "Send periodic outbound pings to an external monitoring service so you can monitor Beszel without exposing it to the internet."
-msgstr "Küldjön időszakos kimenő pingeket egy külső megfigyelő szolgáltatásnak, így a Beszel-t az internetnek való kitettség nélkül is megfigyelheti."
+msgid "Send periodic outbound pings to an external monitoring service so you can monitor Vigile without exposing it to the internet."
+msgstr "Küldjön időszakos kimenő pingeket egy külső megfigyelő szolgáltatásnak, így a Vigile-t az internetnek való kitettség nélkül is megfigyelheti."
 
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Send test heartbeat"
@@ -1853,8 +2001,8 @@ msgid "Set percentage thresholds for meter colors."
 msgstr "Százalékos küszöbértékek beállítása a mérőszínekhez."
 
 #: src/components/routes/settings/heartbeat.tsx
-msgid "Set the following environment variables on your Beszel hub to enable heartbeat monitoring:"
-msgstr "Állítsa be a következő környezeti változókat a Beszel hubon a heartbeat figyelés engedélyezéséhez:"
+msgid "Set the following environment variables on your Vigile hub to enable heartbeat monitoring:"
+msgstr "Állítsa be a következő környezeti változókat a Vigile hubon a heartbeat figyelés engedélyezéséhez:"
 
 #: src/components/command-palette.tsx
 #: src/components/command-palette.tsx
@@ -1870,9 +2018,18 @@ msgstr "Beállítások"
 msgid "Settings saved"
 msgstr "Beállítások elmentve"
 
+#: src/components/logs-display.tsx
+#: src/components/logs-display.tsx
+msgid "Show timestamps"
+msgstr ""
+
 #: src/components/login/auth-form.tsx
 msgid "Sign in"
 msgstr "Bejelentkezés"
+
+#: src/components/routes/system/charts/wifi-chart.tsx
+msgid "Signal strength of connected Wi-Fi interfaces"
+msgstr ""
 
 #: src/components/command-palette.tsx
 msgid "SMTP settings"
@@ -1976,8 +2133,13 @@ msgstr "Cél"
 
 #: src/components/network-monitors-table/monitor-dialog.tsx
 #: src/components/network-monitors-table/monitor-dialog.tsx
-msgid "target[,protocol[,port[,interval]]]"
+msgid "target[,protocol[,port[,interval[,server]]]]"
 msgstr ""
+
+#: src/components/network-monitors-table/monitor-dialog.tsx
+#: src/components/network-monitors-table/monitor-dialog.tsx
+#~ msgid "target[,protocol[,port[,interval]]]"
+#~ msgstr ""
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Tasks"
@@ -2085,6 +2247,8 @@ msgid "Total time spent on read/write (can exceed 100%)"
 msgstr "Olvasással/írással töltött teljes idő (meghaladhatja a 100%-ot)"
 
 #. placeholder {0}: data.length
+#. placeholder {0}: rows.length
+#: src/components/routes/system/package-updates-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Total: {0}"
 msgstr "Összesen: {0}"
@@ -2188,6 +2352,7 @@ msgstr "Univerzális token"
 
 #. Context: Battery state
 #: src/components/routes/system/storage-pools-table.tsx
+#: src/components/systems-table/systems-table-columns.tsx
 #: src/lib/i18n.ts
 msgid "Unknown"
 msgstr "Ismeretlen"
@@ -2207,6 +2372,11 @@ msgstr "Online"
 msgid "Up ({upSystemsLength})"
 msgstr "Online ({upSystemsLength})"
 
+#: src/components/routes/system/package-updates-table.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Up to date"
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Update"
 msgstr "Frissítés"
@@ -2223,6 +2393,11 @@ msgstr "Frissítve"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Updated every 10 minutes."
 msgstr "10 percenként frissítve."
+
+#: src/components/routes/system.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Updates"
+msgstr ""
 
 #: src/components/routes/system/network-sheet.tsx
 msgid "Upload"
@@ -2274,6 +2449,14 @@ msgstr "Érték"
 msgid "View"
 msgstr "Nézet"
 
+#: src/components/active-alerts.tsx
+msgid "View alerts"
+msgstr ""
+
+#: src/components/alert-banner-sheet.tsx
+msgid "View details"
+msgstr ""
+
 #: src/components/routes/system/cpu-sheet.tsx
 #: src/components/routes/system/disk-io-sheet.tsx
 #: src/components/routes/system/network-sheet.tsx
@@ -2283,6 +2466,14 @@ msgstr "Továbbiak megjelenítése"
 #: src/components/routes/settings/alerts-history-data-table.tsx
 msgid "View your 200 most recent alerts."
 msgstr "Legfrissebb 200 riasztásod áttekintése."
+
+#: src/components/login/auth-form.tsx
+msgid "Vigile supports OpenID Connect and many OAuth2 authentication providers."
+msgstr "A Vigile támogatja az OpenID Connect-et és számos OAuth2 hitelesítési szolgáltatót."
+
+#: src/components/routes/settings/notifications.tsx
+msgid "Vigile uses <0>Shoutrrr</0> to integrate with popular notification services."
+msgstr "A Vigile a <0>Shoutrrr</0>-t használja a népszerű értesítési szolgáltatások integrálására."
 
 #: src/components/network-monitors-table/network-monitors-table.tsx
 #: src/components/systems-table/systems-table.tsx
@@ -2320,6 +2511,14 @@ msgstr "Ha engedélyezve van, ez a token lehetővé teszi az ügynökök számá
 #: src/components/routes/settings/heartbeat.tsx
 msgid "When using POST, each heartbeat includes a JSON payload with system status summary, list of down systems, and triggered alerts."
 msgstr "POST használata esetén minden heartbeat tartalmaz egy JSON payload-ot a rendszerállapot összefoglalójával, a leállt rendszerek listájával és a kiváltott riasztásokkal."
+
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Wi-Fi"
+msgstr ""
+
+#: src/components/routes/system/charts/wifi-chart.tsx
+msgid "Wi-Fi signal"
+msgstr ""
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -2359,4 +2558,3 @@ msgstr "Igen"
 #: src/components/routes/settings/layout.tsx
 msgid "Your user settings have been updated."
 msgstr "A felhasználói beállítások frissítésre kerültek."
-

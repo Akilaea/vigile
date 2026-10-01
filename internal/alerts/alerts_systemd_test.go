@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/henrygd/beszel/internal/alerts"
-	systemEntity "github.com/henrygd/beszel/internal/entities/system"
-	"github.com/henrygd/beszel/internal/entities/systemd"
-	beszelTests "github.com/henrygd/beszel/internal/tests"
+	"github.com/Akilaea/vigile/internal/alerts"
+	systemEntity "github.com/Akilaea/vigile/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/entities/systemd"
+	vigileTests "github.com/Akilaea/vigile/internal/tests"
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/stretchr/testify/assert"
@@ -56,10 +56,10 @@ func serviceName(i int) string {
 }
 
 // systemdTestSetup creates a user with an email, a system, and a SystemdFailed alert.
-func systemdTestSetup(t *testing.T, triggered bool) (*beszelTests.TestHub, *core.Record, *core.Record) {
+func systemdTestSetup(t *testing.T, triggered bool) (*vigileTests.TestHub, *core.Record, *core.Record) {
 	t.Helper()
 
-	hub, user := beszelTests.GetHubWithUser(t)
+	hub, user := vigileTests.GetHubWithUser(t)
 
 	userSettings, err := hub.FindFirstRecordByFilter("user_settings", "user={:user}", map[string]any{"user": user.Id})
 	require.NoError(t, err)
@@ -68,11 +68,11 @@ func systemdTestSetup(t *testing.T, triggered bool) (*beszelTests.TestHub, *core
 
 	// "paused" avoids spawning a background updater goroutine that would outlive
 	// the test hub; these tests drive HandleSystemdAlerts directly.
-	systems, err := beszelTests.CreateSystems(hub, 1, user.Id, "paused")
+	systems, err := vigileTests.CreateSystems(hub, 1, user.Id, "paused")
 	require.NoError(t, err)
 	system := systems[0]
 
-	alert, err := beszelTests.CreateRecord(hub, "alerts", map[string]any{
+	alert, err := vigileTests.CreateRecord(hub, "alerts", map[string]any{
 		"name":      "SystemdFailed",
 		"system":    system.Id,
 		"user":      user.Id,
@@ -268,10 +268,10 @@ func TestSystemdAlertFreshEmptySnapshotResolves(t *testing.T) {
 }
 
 func TestSystemdAlertNoAlertRecord(t *testing.T) {
-	hub, user := beszelTests.GetHubWithUser(t)
+	hub, user := vigileTests.GetHubWithUser(t)
 	defer hub.Cleanup()
 
-	systems, err := beszelTests.CreateSystems(hub, 1, user.Id, "paused")
+	systems, err := vigileTests.CreateSystems(hub, 1, user.Id, "paused")
 	require.NoError(t, err)
 	system := systems[0]
 
@@ -342,14 +342,14 @@ func TestResolveSystemdAlertsKeepsStillFailing(t *testing.T) {
 }
 
 func TestSystemdAlertMultipleUsersRespectOwnAlerts(t *testing.T) {
-	hub, user1 := beszelTests.GetHubWithUser(t)
+	hub, user1 := vigileTests.GetHubWithUser(t)
 	defer hub.Cleanup()
 
 	setStatusAlertEmail(t, hub, user1.Id, "user1@example.com")
 
-	user2, err := beszelTests.CreateUser(hub, "user2@example.com", "password")
+	user2, err := vigileTests.CreateUser(hub, "user2@example.com", "password")
 	require.NoError(t, err)
-	_, err = beszelTests.CreateRecord(hub, "user_settings", map[string]any{
+	_, err = vigileTests.CreateRecord(hub, "user_settings", map[string]any{
 		"user": user2.Id,
 		"settings": map[string]any{
 			"emails":   []string{"user2@example.com"},
@@ -358,7 +358,7 @@ func TestSystemdAlertMultipleUsersRespectOwnAlerts(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	system, err := beszelTests.CreateRecord(hub, "systems", map[string]any{
+	system, err := vigileTests.CreateRecord(hub, "systems", map[string]any{
 		"name":  "shared-system",
 		"users": []string{user1.Id, user2.Id},
 		"host":  "127.0.0.1",
@@ -366,7 +366,7 @@ func TestSystemdAlertMultipleUsersRespectOwnAlerts(t *testing.T) {
 	require.NoError(t, err)
 
 	for _, user := range []*core.Record{user1, user2} {
-		_, err = beszelTests.CreateRecord(hub, "alerts", map[string]any{
+		_, err = vigileTests.CreateRecord(hub, "alerts", map[string]any{
 			"name":   "SystemdFailed",
 			"system": system.Id,
 			"user":   user.Id,

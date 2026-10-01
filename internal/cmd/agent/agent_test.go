@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/henrygd/beszel/agent"
+	"github.com/Akilaea/vigile/agent"
 
 	"github.com/spf13/pflag"
 	"github.com/stretchr/testify/assert"
@@ -37,9 +37,9 @@ func TestGetAddress(t *testing.T) {
 		{
 			name: "use unix socket from flag",
 			opts: cmdOptions{
-				listen: "/tmp/beszel.sock",
+				listen: "/tmp/vigile.sock",
 			},
-			expected: "/tmp/beszel.sock",
+			expected: "/tmp/vigile.sock",
 		},
 		{
 			name: "use LISTEN env var",
@@ -63,9 +63,9 @@ func TestGetAddress(t *testing.T) {
 				listen: "",
 			},
 			envVars: map[string]string{
-				"LISTEN": "/tmp/beszel.sock",
+				"LISTEN": "/tmp/vigile.sock",
 			},
-			expected: "/tmp/beszel.sock",
+			expected: "/tmp/vigile.sock",
 		},
 		{
 			name: "flag takes precedence over env vars",
@@ -239,7 +239,7 @@ func TestGetNetwork(t *testing.T) {
 		},
 		{
 			name:     "unix network",
-			opts:     cmdOptions{listen: "/tmp/beszel.sock"},
+			opts:     cmdOptions{listen: "/tmp/vigile.sock"},
 			expected: "unix",
 		},
 		{

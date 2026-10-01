@@ -6,13 +6,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: @lingui/cli\n"
 "Language: fa\n"
-"Project-Id-Version: beszel\n"
+"Project-Id-Version: vigile\n"
 "Report-Msgid-Bugs-To: \n"
 "PO-Revision-Date: 2026-09-24 17:29\n"
 "Last-Translator: \n"
 "Language-Team: Persian\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Crowdin-Project: beszel\n"
+"X-Crowdin-Project: vigile\n"
 "X-Crowdin-Project-ID: 733311\n"
 "X-Crowdin-Language: fa\n"
 "X-Crowdin-File: /main/internal/site/src/locales/en/en.po\n"
@@ -30,11 +30,19 @@ msgstr "{0} در دسترس است"
 msgid "{0} of {1} row(s) selected."
 msgstr "{0} از {1} ردیف انتخاب شده است."
 
-#. placeholder {0}: selectedSystemIds.size
+#. placeholder {0}: selectedIds.size
 #: src/components/network-monitors-table/monitor-dialog.tsx
 #: src/components/network-monitors-table/monitor-dialog.tsx
 msgid "{0} selected"
 msgstr "{0} مورد انتخاب شد"
+
+#: src/components/active-alerts.tsx
+msgid "{alertCount, plural, one {# active alert} other {# active alerts}}"
+msgstr ""
+
+#: src/components/active-alerts.tsx
+msgid "{alertCount, plural, one {# alert is currently triggered} other {# alerts are currently triggered}}"
+msgstr ""
 
 #: src/components/routes/system/info-bar.tsx
 msgid "{cores, plural, one {# core} other {# cores}}"
@@ -64,9 +72,17 @@ msgstr "ورودی/خروجی {diskName}"
 msgid "{numFailed, plural, one {# failed service} other {# failed services}}"
 msgstr ""
 
+#: src/components/active-alerts.tsx
+msgid "{systemCount, plural, one {Across # system} other {Across # systems}}"
+msgstr ""
+
 #: src/components/routes/system/info-bar.tsx
 msgid "{threads, plural, one {# thread} other {# threads}}"
 msgstr "{threads, plural, one {# رشته} other {# رشته}}"
+
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "{total, plural, one {# update} other {# updates}}"
+msgstr ""
 
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "{totalCount, plural, one {# service} other {# services}}"
@@ -178,8 +194,8 @@ msgid "After"
 msgstr "بعد از"
 
 #: src/components/routes/settings/heartbeat.tsx
-msgid "After setting the environment variables, restart your Beszel hub for changes to take effect."
-msgstr "پس از تنظیم متغیرهای محیطی، هاب Beszel خود را مجدداً راه اندازی کنید تا تغییرات اعمال شوند."
+msgid "After setting the environment variables, restart your Vigile hub for changes to take effect."
+msgstr "پس از تنظیم متغیرهای محیطی، هاب Vigile خود را مجدداً راه اندازی کنید تا تغییرات اعمال شوند."
 
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Agent"
@@ -226,6 +242,11 @@ msgstr "آیا مطمئن هستید؟"
 msgid "Automatic copy requires a secure context."
 msgstr "کپی خودکار نیاز به یک زمینه امن دارد."
 
+#: src/components/routes/system/package-updates-table.tsx
+msgctxt "Package version available to install"
+msgid "Available"
+msgstr ""
+
 #: src/components/routes/system/storage-pools-table.tsx
 msgctxt "Disk space available"
 msgid "Available"
@@ -239,15 +260,21 @@ msgstr "میانگین"
 msgid "Average CPU utilization of containers"
 msgstr "میانگین استفاده از CPU کانتینرها"
 
-#. placeholder {0}: alertData.unit
 #: src/components/alerts/alerts-sheet.tsx
-msgid "Average drops below <0>{value}{0}</0>"
-msgstr "میانگین به زیر <0>{value}{0}</0> می‌افتد"
+#~ msgid "Average drops below <0>{value}{0}</0>"
+#~ msgstr "میانگین به زیر <0>{value}{0}</0> می‌افتد"
 
-#. placeholder {0}: alertData.unit
 #: src/components/alerts/alerts-sheet.tsx
-msgid "Average exceeds <0>{value}{0}</0>"
-msgstr "میانگین از <0>{value}{0}</0> فراتر رفته است"
+msgid "Average drops below <0>{value}{unitLabel}</0>"
+msgstr ""
+
+#: src/components/alerts/alerts-sheet.tsx
+#~ msgid "Average exceeds <0>{value}{0}</0>"
+#~ msgstr "میانگین از <0>{value}{0}</0> فراتر رفته است"
+
+#: src/components/alerts/alerts-sheet.tsx
+msgid "Average exceeds <0>{value}{unitLabel}</0>"
+msgstr ""
 
 #: src/components/routes/system/disk-io-sheet.tsx
 msgid "Average number of I/O operations waiting to be serviced"
@@ -261,6 +288,10 @@ msgstr "میانگین مصرف برق پردازنده‌های گرافیکی"
 msgctxt "Disk I/O average operation time (iostat await)"
 msgid "Average queue to completion time per operation"
 msgstr "میانگین زمان صف تا تکمیل به ازای هر عملیات"
+
+#: src/components/routes/system/charts/monitors-charts.tsx
+msgid "Average response time"
+msgstr ""
 
 #: src/components/routes/system/charts/cpu-charts.tsx
 msgid "Average system-wide CPU utilization"
@@ -324,14 +355,6 @@ msgstr "قبل از"
 msgid "Below {0}{1} in last {2, plural, one {# minute} other {# minutes}}"
 msgstr "زیر {0}{1} در آخرین {2, plural, one {# دقیقه} other {# دقیقه}}"
 
-#: src/components/login/auth-form.tsx
-msgid "Beszel supports OpenID Connect and many OAuth2 authentication providers."
-msgstr "بِزل از OpenID Connect و بسیاری از ارائه‌دهندگان احراز هویت OAuth2 پشتیبانی می‌کند."
-
-#: src/components/routes/settings/notifications.tsx
-msgid "Beszel uses <0>Shoutrrr</0> to integrate with popular notification services."
-msgstr "بِزل از <0>Shoutrrr</0> برای ادغام با سرویس‌های اطلاع‌رسانی محبوب استفاده می‌کند."
-
 #: src/components/add-system.tsx
 msgid "Binary"
 msgstr "دودویی"
@@ -355,8 +378,8 @@ msgid "Bulk Add {foo}"
 msgstr "افزودن گروهی {foo}"
 
 #: src/components/network-monitors-table/network-monitors-columns.tsx
-msgid "Bulk copy"
-msgstr "کپی گروهی"
+#~ msgid "Bulk copy"
+#~ msgstr "کپی گروهی"
 
 #: src/components/routes/settings/general.tsx
 #: src/components/routes/settings/general.tsx
@@ -416,6 +439,10 @@ msgstr ""
 msgid "Certificate expires {expires}"
 msgstr ""
 
+#: src/components/routes/system/package-updates-table.tsx
+msgid "Change"
+msgstr ""
+
 #: src/components/routes/settings/general.tsx
 msgid "Change display units for metrics."
 msgstr "تغییر واحدهای نمایش برای معیارها."
@@ -457,12 +484,18 @@ msgstr "سرویس نظارتی خود را بررسی کنید"
 msgid "Check your notification service"
 msgstr "سرویس اطلاع‌رسانی خود را بررسی کنید"
 
+#. placeholder {0}: formatShortDate(new Date(data.checkedAt * 1000).toISOString())
+#: src/components/routes/system/package-updates-table.tsx
+msgid "Checked {0}"
+msgstr ""
+
 #: src/components/routes/system/storage-pools-table.tsx
 msgid "Checksum errors"
 msgstr "خطاهای مجموع بررسی"
 
 #: src/components/containers-table/containers-table.tsx
 #: src/components/network-monitors-table/network-monitors-table.tsx
+#: src/components/routes/system/package-updates-table.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/routes/system/storage-pools-table.tsx
 #: src/components/routes/system/storage-pools-table.tsx
@@ -502,6 +535,14 @@ msgstr "برای کپی کردن کلیک کنید"
 #: src/components/login/forgot-pass-form.tsx
 msgid "Command line instructions"
 msgstr "دستورالعمل‌های خط فرمان"
+
+#: src/components/network-monitors-table/network-monitors-table.tsx
+msgid "Compare with other systems"
+msgstr ""
+
+#: src/components/network-monitors-table/network-monitors-table.tsx
+msgid "Compare with other targets"
+msgstr ""
 
 #: src/components/routes/settings/notifications.tsx
 msgid "Configure how you receive alert notifications."
@@ -545,6 +586,10 @@ msgstr "ادامه"
 #: src/lib/utils.ts
 msgid "Copied to clipboard"
 msgstr "در کلیپ‌بورد کپی شد"
+
+#: src/components/network-monitors-table/network-monitors-columns.tsx
+msgid "Copy bulk config"
+msgstr ""
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -598,8 +643,8 @@ msgid "Copy the<0>docker-compose.yml</0> content for the agent below, or registe
 msgstr "محتوای <0>docker-compose.yml</0> عامل زیر را کپی کنید، یا عامل‌ها را به طور خودکار با <1>توکن جهانی</1> ثبت کنید."
 
 #: src/components/network-monitors-table/network-monitors-columns.tsx
-msgid "Copy to system"
-msgstr "کپی به سیستم"
+#~ msgid "Copy to system"
+#~ msgstr "کپی به سیستم"
 
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Copy YAML"
@@ -688,6 +733,11 @@ msgstr "آپلود تجمعی"
 msgid "Cumulative Write"
 msgstr "نوشتن تجمعی"
 
+#: src/components/routes/system/package-updates-table.tsx
+msgctxt "Installed package version"
+msgid "Current"
+msgstr ""
+
 #. Context: Battery state
 #. Context: Battery state
 #: src/components/routes/system/charts/sensor-charts.tsx
@@ -761,10 +811,19 @@ msgstr "میزان استفاده از دیسک"
 msgid "Disk usage of {extraFsName}"
 msgstr "میزان استفاده از دیسک {extraFsName}"
 
+#: src/components/alert-banner-sheet.tsx
+#: src/components/alert-banner-sheet.tsx
+msgid "Dismiss"
+msgstr ""
+
 #: src/components/routes/system/info-bar.tsx
 msgctxt "Layout display options"
 msgid "Display"
 msgstr "نمایش"
+
+#: src/components/network-monitors-table/monitor-dialog.tsx
+msgid "DNS Server"
+msgstr ""
 
 #: src/components/routes/system/charts/cpu-charts.tsx
 msgid "Docker CPU Usage"
@@ -846,6 +905,10 @@ msgstr "URL نقطه پایانی"
 msgid "Endpoint URL to ping (required)"
 msgstr "URL نقطه پایانی برای پینگ (الزامی)"
 
+#: src/components/network-monitors-table/monitor-dialog.tsx
+msgid "Enter a domain name to look up. Put the resolver's IP in DNS Server."
+msgstr ""
+
 #: src/components/login/login.tsx
 msgid "Enter email address to reset password"
 msgstr "آدرس ایمیل را برای بازنشانی رمز عبور وارد کنید"
@@ -864,7 +927,6 @@ msgstr "گذرا"
 
 #: src/components/network-monitors-table/monitor-dialog.tsx
 #: src/components/network-monitors-table/monitor-dialog.tsx
-#: src/components/network-monitors-table/network-monitors-table.tsx
 #: src/components/network-monitors-table/network-monitors-table.tsx
 #: src/components/network-monitors-table/network-monitors-table.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
@@ -940,9 +1002,17 @@ msgid "Failed to authenticate"
 msgstr "احراز هویت ناموفق بود"
 
 #: src/components/network-monitors-table/network-monitors-table.tsx
-#: src/components/network-monitors-table/network-monitors-table.tsx
 msgid "Failed to delete monitors."
 msgstr "حذف مانیتورها ناموفق بود."
+
+#: src/components/systemd-table/systemd-table.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Failed to load logs."
+msgstr ""
+
+#: src/components/routes/system/package-updates-table.tsx
+msgid "Failed to load package updates"
+msgstr ""
 
 #: src/components/routes/settings/layout.tsx
 #: src/components/routes/settings/notifications.tsx
@@ -979,6 +1049,7 @@ msgstr "فن‌ها"
 #: src/components/network-monitors-table/network-monitors-table.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/system/chart-card.tsx
+#: src/components/routes/system/package-updates-table.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/routes/system/storage-pools-table.tsx
 #: src/components/routes/system/storage-pools-table.tsx
@@ -1020,6 +1091,11 @@ msgstr "دستور FreeBSD"
 #: src/lib/i18n.ts
 msgid "Full"
 msgstr "پر"
+
+#: src/components/containers-table/containers-table.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Fullscreen"
+msgstr ""
 
 #. Context: General settings
 #: src/components/routes/settings/general.tsx
@@ -1068,6 +1144,10 @@ msgstr "نظارت بر ضربان قلب"
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Heartbeat sent successfully"
 msgstr "ضربان قلب با موفقیت ارسال شد"
+
+#: src/components/logs-display.tsx
+msgid "Hide timestamps"
+msgstr ""
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1187,6 +1267,7 @@ msgid "Load state"
 msgstr "وضعیت بارگذاری"
 
 #: src/components/systemd-table/systemd-table.tsx
+#: src/components/systemd-table/systemd-table.tsx
 msgid "Loading..."
 msgstr "در حال بارگذاری..."
 
@@ -1207,6 +1288,7 @@ msgstr "تلاش برای ورود ناموفق بود"
 #: src/components/command-palette.tsx
 #: src/components/containers-table/containers-table.tsx
 #: src/components/navbar.tsx
+#: src/components/systemd-table/systemd-table.tsx
 msgid "Logs"
 msgstr "لاگ‌ها"
 
@@ -1227,6 +1309,11 @@ msgstr "افت ۱ ساعت"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Main PID"
 msgstr "PID اصلی"
+
+#: src/components/routes/system/package-updates-table.tsx
+msgctxt "Version change"
+msgid "Major"
+msgstr ""
 
 #: src/components/routes/settings/layout.tsx
 msgid "Manage display and notification preferences."
@@ -1277,6 +1364,11 @@ msgstr "میزان استفاده حافظه کانتینرها"
 #: src/components/network-monitors-table/network-monitors-columns.tsx
 msgid "Min 1h"
 msgstr "حداقل ۱ ساعت"
+
+#: src/components/routes/system/package-updates-table.tsx
+msgctxt "Version change"
+msgid "Minor"
+msgstr ""
 
 #. Device model
 #: src/components/routes/system/smart-table.tsx
@@ -1359,6 +1451,10 @@ msgstr "خیر"
 msgid "No detail data for this pool."
 msgstr "دادهٔ جزئی برای این استخر موجود نیست."
 
+#: src/components/systemd-table/systemd-table.tsx
+msgid "No logs found."
+msgstr ""
+
 #: src/components/command-palette.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "No results found."
@@ -1369,6 +1465,7 @@ msgstr "هیچ نتیجه‌ای یافت نشد."
 #: src/components/containers-table/containers-table.tsx
 #: src/components/network-monitors-table/network-monitors-table.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
+#: src/components/routes/system/package-updates-table.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "No results."
@@ -1383,6 +1480,10 @@ msgstr "هیچ ویژگی S.M.A.R.T برای این دستگاه موجود نی
 #: src/components/systems-table/systems-table.tsx
 msgid "No systems found."
 msgstr "هیچ سیستمی یافت نشد."
+
+#: src/components/network-monitors-table/monitor-dialog.tsx
+msgid "No targets found."
+msgstr ""
 
 #: src/components/routes/system/storage-pools-table.tsx
 msgid "None"
@@ -1438,9 +1539,18 @@ msgstr "رمز عبور یک‌بار مصرف"
 msgid "Open menu"
 msgstr "باز کردن منو"
 
+#: src/components/network-monitors-table/monitor-dialog.tsx
+msgid "Optional. Defaults to the agent's system resolver."
+msgstr ""
+
 #: src/components/login/auth-form.tsx
 msgid "Or continue with"
 msgstr "یا ادامه با"
+
+#: src/components/routes/system/package-updates-table.tsx
+msgctxt "Version change"
+msgid "Other"
+msgstr ""
 
 #: src/components/routes/system/cpu-sheet.tsx
 msgid "Other"
@@ -1449,6 +1559,14 @@ msgstr "سایر"
 #: src/components/alerts/alerts-sheet.tsx
 msgid "Overwrite existing alerts"
 msgstr "بازنویسی هشدارهای موجود"
+
+#: src/components/routes/system/package-updates-table.tsx
+msgid "Package"
+msgstr ""
+
+#: src/components/routes/system/package-updates-table.tsx
+msgid "Package Updates"
+msgstr ""
 
 #: src/components/routes/system/charts/monitors-charts.tsx
 msgid "Packet loss (%)"
@@ -1491,6 +1609,11 @@ msgstr "درخواست بازنشانی رمز عبور دریافت شد"
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Past"
 msgstr "گذشته"
+
+#: src/components/routes/system/package-updates-table.tsx
+msgctxt "Version change"
+msgid "Patch"
+msgstr ""
 
 #: src/components/network-monitors-table/network-monitors-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
@@ -1624,6 +1747,7 @@ msgid "Queue Depth"
 msgstr "عمق صف"
 
 #: src/components/routes/settings/quiet-hours.tsx
+#: src/components/routes/settings/quiet-hours.tsx
 msgid "Quiet Hours"
 msgstr "ساعات آرام"
 
@@ -1658,9 +1782,11 @@ msgid "Received"
 msgstr "دریافت شد"
 
 #: src/components/containers-table/containers-table.tsx
-#: src/components/containers-table/containers-table.tsx
+#: src/components/logs-display.tsx
+#: src/components/logs-display.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/routes/system/storage-pools-table.tsx
+#: src/components/systemd-table/systemd-table.tsx
 msgid "Refresh"
 msgstr "تازه‌سازی"
 
@@ -1697,6 +1823,7 @@ msgstr "حل شده"
 #: src/components/network-monitors-table/network-monitors-columns.tsx
 #: src/components/network-monitors-table/network-monitors-columns.tsx
 #: src/components/routes/system/charts/monitors-charts.tsx
+#: src/components/routes/system/charts/monitors-charts.tsx
 msgid "Response"
 msgstr "پاسخ"
 
@@ -1712,6 +1839,11 @@ msgstr "راه‌اندازی مجدد"
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Resume"
 msgstr "ادامه"
+
+#: src/components/routes/system/package-updates-table.tsx
+msgctxt "Version change"
+msgid "Revision"
+msgstr ""
 
 #: src/components/routes/system/charts/disk-charts.tsx
 #: src/components/routes/system/charts/disk-charts.tsx
@@ -1782,13 +1914,25 @@ msgid "Search for systems or settings..."
 msgstr "جستجو برای سیستم‌ها یا تنظیمات..."
 
 #: src/components/network-monitors-table/monitor-dialog.tsx
-#: src/components/network-monitors-table/monitor-dialog.tsx
 msgid "Search systems"
 msgstr "جستجوی سیستم‌ها"
+
+#: src/components/network-monitors-table/monitor-dialog.tsx
+msgid "Search targets"
+msgstr ""
 
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Seconds between pings (default: 60)"
 msgstr "ثانیه بین پینگ‌ها (پیش‌فرض: ۶۰)"
+
+#: src/components/routes/system/package-updates-table.tsx
+#: src/components/routes/system/package-updates-table.tsx
+msgid "Security"
+msgstr ""
+
+#: src/components/routes/system/package-updates-table.tsx
+msgid "Security: {securityCount}"
+msgstr ""
 
 #: src/components/alerts/alerts-sheet.tsx
 msgid "See <0>notification settings</0> to configure how you receive alerts."
@@ -1819,13 +1963,17 @@ msgstr "انتخاب ردیف"
 msgid "Select systems"
 msgstr "انتخاب سیستم‌ها"
 
+#: src/components/network-monitors-table/monitor-dialog.tsx
+msgid "Select targets"
+msgstr ""
+
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Send a single heartbeat ping to verify your endpoint is working."
 msgstr "یک پینگ ضربان قلب تکی ارسال کنید تا از کارکرد نقطه پایانی خود اطمینان حاصل کنید."
 
 #: src/components/routes/settings/heartbeat.tsx
-msgid "Send periodic outbound pings to an external monitoring service so you can monitor Beszel without exposing it to the internet."
-msgstr "پینگ‌های خروجی دوره‌ای را به یک سرویس نظارتی خارجی ارسال کنید تا بتوانید Beszel را بدون قرار دادن آن در معرض اینترنت نظارت کنید."
+msgid "Send periodic outbound pings to an external monitoring service so you can monitor Vigile without exposing it to the internet."
+msgstr "پینگ‌های خروجی دوره‌ای را به یک سرویس نظارتی خارجی ارسال کنید تا بتوانید Vigile را بدون قرار دادن آن در معرض اینترنت نظارت کنید."
 
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Send test heartbeat"
@@ -1853,8 +2001,8 @@ msgid "Set percentage thresholds for meter colors."
 msgstr "آستانه های درصدی را برای رنگ های متر تنظیم کنید."
 
 #: src/components/routes/settings/heartbeat.tsx
-msgid "Set the following environment variables on your Beszel hub to enable heartbeat monitoring:"
-msgstr "متغیرهای محیطی زیر را در هاب Beszel خود تنظیم کنید تا نظارت بر ضربان قلب فعال شود:"
+msgid "Set the following environment variables on your Vigile hub to enable heartbeat monitoring:"
+msgstr "متغیرهای محیطی زیر را در هاب Vigile خود تنظیم کنید تا نظارت بر ضربان قلب فعال شود:"
 
 #: src/components/command-palette.tsx
 #: src/components/command-palette.tsx
@@ -1870,9 +2018,18 @@ msgstr "تنظیمات"
 msgid "Settings saved"
 msgstr "تنظیمات ذخیره شد"
 
+#: src/components/logs-display.tsx
+#: src/components/logs-display.tsx
+msgid "Show timestamps"
+msgstr ""
+
 #: src/components/login/auth-form.tsx
 msgid "Sign in"
 msgstr "ورود"
+
+#: src/components/routes/system/charts/wifi-chart.tsx
+msgid "Signal strength of connected Wi-Fi interfaces"
+msgstr ""
 
 #: src/components/command-palette.tsx
 msgid "SMTP settings"
@@ -1976,8 +2133,13 @@ msgstr "هدف"
 
 #: src/components/network-monitors-table/monitor-dialog.tsx
 #: src/components/network-monitors-table/monitor-dialog.tsx
-msgid "target[,protocol[,port[,interval]]]"
+msgid "target[,protocol[,port[,interval[,server]]]]"
 msgstr ""
+
+#: src/components/network-monitors-table/monitor-dialog.tsx
+#: src/components/network-monitors-table/monitor-dialog.tsx
+#~ msgid "target[,protocol[,port[,interval]]]"
+#~ msgstr ""
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Tasks"
@@ -2085,6 +2247,8 @@ msgid "Total time spent on read/write (can exceed 100%)"
 msgstr "کل زمان صرف‌شده برای خواندن/نوشتن (ممکن است از ۱۰۰٪ بیشتر شود)"
 
 #. placeholder {0}: data.length
+#. placeholder {0}: rows.length
+#: src/components/routes/system/package-updates-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Total: {0}"
 msgstr "کل: {0}"
@@ -2188,6 +2352,7 @@ msgstr "توکن جهانی"
 
 #. Context: Battery state
 #: src/components/routes/system/storage-pools-table.tsx
+#: src/components/systems-table/systems-table-columns.tsx
 #: src/lib/i18n.ts
 msgid "Unknown"
 msgstr "ناشناخته"
@@ -2207,6 +2372,11 @@ msgstr "فعال"
 msgid "Up ({upSystemsLength})"
 msgstr "فعال ({upSystemsLength})"
 
+#: src/components/routes/system/package-updates-table.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Up to date"
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Update"
 msgstr "به‌روزرسانی"
@@ -2223,6 +2393,11 @@ msgstr "به‌روزرسانی شد"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Updated every 10 minutes."
 msgstr "هر ۱۰ دقیقه به‌روزرسانی می‌شود."
+
+#: src/components/routes/system.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Updates"
+msgstr ""
 
 #: src/components/routes/system/network-sheet.tsx
 msgid "Upload"
@@ -2274,6 +2449,14 @@ msgstr "مقدار"
 msgid "View"
 msgstr "مشاهده"
 
+#: src/components/active-alerts.tsx
+msgid "View alerts"
+msgstr ""
+
+#: src/components/alert-banner-sheet.tsx
+msgid "View details"
+msgstr ""
+
 #: src/components/routes/system/cpu-sheet.tsx
 #: src/components/routes/system/disk-io-sheet.tsx
 #: src/components/routes/system/network-sheet.tsx
@@ -2283,6 +2466,14 @@ msgstr "مشاهده بیشتر"
 #: src/components/routes/settings/alerts-history-data-table.tsx
 msgid "View your 200 most recent alerts."
 msgstr "۲۰۰ هشدار اخیر خود را مشاهده کنید."
+
+#: src/components/login/auth-form.tsx
+msgid "Vigile supports OpenID Connect and many OAuth2 authentication providers."
+msgstr "بِزل از OpenID Connect و بسیاری از ارائه‌دهندگان احراز هویت OAuth2 پشتیبانی می‌کند."
+
+#: src/components/routes/settings/notifications.tsx
+msgid "Vigile uses <0>Shoutrrr</0> to integrate with popular notification services."
+msgstr "بِزل از <0>Shoutrrr</0> برای ادغام با سرویس‌های اطلاع‌رسانی محبوب استفاده می‌کند."
 
 #: src/components/network-monitors-table/network-monitors-table.tsx
 #: src/components/systems-table/systems-table.tsx
@@ -2320,6 +2511,14 @@ msgstr "هنگامی که فعال باشد، این توکن به عوامل ا
 #: src/components/routes/settings/heartbeat.tsx
 msgid "When using POST, each heartbeat includes a JSON payload with system status summary, list of down systems, and triggered alerts."
 msgstr "هنگام استفاده از POST، هر ضربان قلب شامل یک پی‌لود JSON با خلاصه وضعیت سیستم، لیست سیستم‌های پایین و هشدارهای فعال شده است."
+
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Wi-Fi"
+msgstr ""
+
+#: src/components/routes/system/charts/wifi-chart.tsx
+msgid "Wi-Fi signal"
+msgstr ""
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -2359,4 +2558,3 @@ msgstr "بله"
 #: src/components/routes/settings/layout.tsx
 msgid "Your user settings have been updated."
 msgstr "تنظیمات کاربری شما به‌روزرسانی شد."
-

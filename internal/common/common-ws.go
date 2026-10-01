@@ -2,9 +2,9 @@ package common
 
 import (
 	"github.com/fxamacker/cbor/v2"
-	"github.com/henrygd/beszel/internal/entities/smart"
-	"github.com/henrygd/beszel/internal/entities/system"
-	"github.com/henrygd/beszel/internal/entities/systemd"
+	"github.com/Akilaea/vigile/internal/entities/smart"
+	"github.com/Akilaea/vigile/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/entities/systemd"
 )
 
 type WebSocketAction = uint8

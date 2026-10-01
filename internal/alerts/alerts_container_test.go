@@ -9,17 +9,17 @@ import (
 	"testing/synctest"
 	"time"
 
-	"github.com/henrygd/beszel/internal/alerts"
-	"github.com/henrygd/beszel/internal/entities/container"
-	"github.com/henrygd/beszel/internal/entities/system"
-	beszelTests "github.com/henrygd/beszel/internal/tests"
+	"github.com/Akilaea/vigile/internal/alerts"
+	"github.com/Akilaea/vigile/internal/entities/container"
+	"github.com/Akilaea/vigile/internal/entities/system"
+	vigileTests "github.com/Akilaea/vigile/internal/tests"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 type containerAlertTestFixture struct {
-	hub          *beszelTests.TestHub
+	hub          *vigileTests.TestHub
 	am           *alerts.AlertManager
 	alertID      string
 	systemRecord *core.Record
@@ -28,9 +28,9 @@ type containerAlertTestFixture struct {
 func newContainerAlertTestFixture(t *testing.T, min int) *containerAlertTestFixture {
 	t.Helper()
 
-	hub, user := beszelTests.GetHubWithUser(t)
+	hub, user := vigileTests.GetHubWithUser(t)
 
-	systems, err := beszelTests.CreateSystems(hub, 1, user.Id, "up")
+	systems, err := vigileTests.CreateSystems(hub, 1, user.Id, "up")
 	require.NoError(t, err)
 	systemRecord := systems[0]
 
@@ -39,7 +39,7 @@ func newContainerAlertTestFixture(t *testing.T, min int) *containerAlertTestFixt
 	userSettings.Set("settings", `{"emails":["test@example.com"],"webhooks":[]}`)
 	require.NoError(t, hub.Save(userSettings))
 
-	alertRecord, err := beszelTests.CreateRecord(hub, "alerts", map[string]any{
+	alertRecord, err := vigileTests.CreateRecord(hub, "alerts", map[string]any{
 		"name":   "ContainerHealth",
 		"system": systemRecord.Id,
 		"user":   user.Id,

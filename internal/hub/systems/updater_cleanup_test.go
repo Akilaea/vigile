@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"github.com/blang/semver"
-	"github.com/henrygd/beszel/internal/entities/monitor"
-	esystem "github.com/henrygd/beszel/internal/entities/system"
-	"github.com/henrygd/beszel/internal/hub/ws"
+	"github.com/Akilaea/vigile/internal/entities/monitor"
+	esystem "github.com/Akilaea/vigile/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/hub/ws"
 	"github.com/lxzan/gws"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/stretchr/testify/require"

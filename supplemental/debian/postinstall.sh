@@ -3,9 +3,9 @@ set -e
 
 [ "$1" = "configure" ] || exit 0
 
-CONFIG_FILE=/etc/beszel-agent.conf
-SERVICE=beszel-agent
-SERVICE_USER=beszel
+CONFIG_FILE=/etc/vigile-agent.conf
+SERVICE=vigile-agent
+SERVICE_USER=vigile
 
 . /usr/share/debconf/confmodule
 
@@ -41,7 +41,7 @@ fi;
 
 # Only add key to config if it's not already present
 if ! grep -q "^KEY=" "$CONFIG_FILE"; then
-	db_get beszel-agent/key
+	db_get vigile-agent/key
 	echo "KEY=$RET" > "$CONFIG_FILE"
 fi;
 

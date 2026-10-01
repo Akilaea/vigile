@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	monitorEntity "github.com/henrygd/beszel/internal/entities/monitor"
-	"github.com/henrygd/beszel/internal/records"
-	"github.com/henrygd/beszel/internal/tests"
+	monitorEntity "github.com/Akilaea/vigile/internal/entities/monitor"
+	"github.com/Akilaea/vigile/internal/records"
+	"github.com/Akilaea/vigile/internal/tests"
 
 	"github.com/pocketbase/dbx"
 	"github.com/stretchr/testify/assert"

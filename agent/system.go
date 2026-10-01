@@ -10,14 +10,14 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/henrygd/beszel"
-	"github.com/henrygd/beszel/agent/battery"
-	"github.com/henrygd/beszel/agent/btrfs"
-	"github.com/henrygd/beszel/agent/utils"
-	"github.com/henrygd/beszel/agent/wifi"
-	"github.com/henrygd/beszel/agent/zfs"
-	"github.com/henrygd/beszel/internal/entities/container"
-	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/Akilaea/vigile"
+	"github.com/Akilaea/vigile/agent/battery"
+	"github.com/Akilaea/vigile/agent/btrfs"
+	"github.com/Akilaea/vigile/agent/utils"
+	"github.com/Akilaea/vigile/agent/wifi"
+	"github.com/Akilaea/vigile/agent/zfs"
+	"github.com/Akilaea/vigile/internal/entities/container"
+	"github.com/Akilaea/vigile/internal/entities/system"
 
 	"github.com/shirou/gopsutil/v4/cpu"
 	"github.com/shirou/gopsutil/v4/host"
@@ -27,7 +27,7 @@ import (
 
 // Sets initial / non-changing values about the host system
 func (a *Agent) refreshSystemDetails() {
-	a.systemInfo.AgentVersion = beszel.Version
+	a.systemInfo.AgentVersion = vigile.Version
 
 	// get host info from Docker if available
 	var hostInfo container.HostInfo

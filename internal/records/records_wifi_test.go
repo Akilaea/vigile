@@ -3,7 +3,7 @@ package records
 import (
 	"testing"
 
-	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/entities/system"
 )
 
 func TestWiFiAverageAvailableSamples(t *testing.T) {

@@ -21,38 +21,38 @@ generate_freebsd_rc_service() {
   cat <<'EOF'
 #!/bin/sh
 
-# PROVIDE: beszel_hub
+# PROVIDE: vigile_hub
 # REQUIRE: DAEMON NETWORKING
 # BEFORE: LOGIN
 # KEYWORD: shutdown
 
-# Add the following lines to /etc/rc.conf to configure Beszel Hub:
+# Add the following lines to /etc/rc.conf to configure Vigile Hub:
 #
-# beszel_hub_enable (bool):   Set to YES to enable Beszel Hub
+# vigile_hub_enable (bool):   Set to YES to enable Vigile Hub
 #                             Default: YES
-# beszel_hub_port (str):      Port to listen on
+# vigile_hub_port (str):      Port to listen on
 #                             Default: 8090
-# beszel_hub_user (str):      Beszel Hub daemon user
-#                             Default: beszel
-# beszel_hub_bin (str):       Path to the beszel binary
-#                             Default: /usr/local/sbin/beszel
-# beszel_hub_data (str):      Path to the beszel data directory
-#                             Default: /usr/local/etc/beszel/beszel_data
-# beszel_hub_flags (str):     Extra flags passed to beszel command invocation
+# vigile_hub_user (str):      Vigile Hub daemon user
+#                             Default: vigile
+# vigile_hub_bin (str):       Path to the vigile binary
+#                             Default: /usr/local/sbin/vigile
+# vigile_hub_data (str):      Path to the vigile data directory
+#                             Default: /usr/local/etc/vigile/vigile_data
+# vigile_hub_flags (str):     Extra flags passed to vigile command invocation
 #                             Default:
 
 . /etc/rc.subr
 
-name="beszel_hub"
-rcvar=beszel_hub_enable
+name="vigile_hub"
+rcvar=vigile_hub_enable
 
 load_rc_config $name
-: ${beszel_hub_enable:="YES"}
-: ${beszel_hub_port:="8090"}
-: ${beszel_hub_user:="beszel"}
-: ${beszel_hub_flags:=""}
-: ${beszel_hub_bin:="/usr/local/sbin/beszel"}
-: ${beszel_hub_data:="/usr/local/etc/beszel/beszel_data"}
+: ${vigile_hub_enable:="YES"}
+: ${vigile_hub_port:="8090"}
+: ${vigile_hub_user:="vigile"}
+: ${vigile_hub_flags:=""}
+: ${vigile_hub_bin:="/usr/local/sbin/vigile"}
+: ${vigile_hub_data:="/usr/local/etc/vigile/vigile_data"}
 
 logfile="/var/log/${name}.log"
 pidfile="/var/run/${name}.pid"
@@ -63,29 +63,29 @@ start_cmd="${name}_start"
 stop_cmd="${name}_stop"
 
 extra_commands="upgrade"
-upgrade_cmd="beszel_hub_upgrade"
+upgrade_cmd="vigile_hub_upgrade"
 
-beszel_hub_prestart()
+vigile_hub_prestart()
 {
-    if [ ! -d "${beszel_hub_data}" ]; then
-        echo "Creating data directory ${beszel_hub_data}"
-        mkdir -p "${beszel_hub_data}"
-        chown "${beszel_hub_user}:${beszel_hub_user}" "${beszel_hub_data}"
+    if [ ! -d "${vigile_hub_data}" ]; then
+        echo "Creating data directory ${vigile_hub_data}"
+        mkdir -p "${vigile_hub_data}"
+        chown "${vigile_hub_user}:${vigile_hub_user}" "${vigile_hub_data}"
     fi
 }
 
-beszel_hub_start()
+vigile_hub_start()
 {
     echo "Starting ${name}"
-    cd "$(dirname "${beszel_hub_data}")" || exit 1
+    cd "$(dirname "${vigile_hub_data}")" || exit 1
     /usr/sbin/daemon -f \
             -P "${pidfile}" \
             -o "${logfile}" \
-            -u "${beszel_hub_user}" \
-            "${beszel_hub_bin}" serve --http "0.0.0.0:${beszel_hub_port}" ${beszel_hub_flags}
+            -u "${vigile_hub_user}" \
+            "${vigile_hub_bin}" serve --http "0.0.0.0:${vigile_hub_port}" ${vigile_hub_flags}
 }
 
-beszel_hub_stop()
+vigile_hub_stop()
 {
     pid="$(check_pidfile "${pidfile}" "${procname}")"
     if [ -n "${pid}" ]; then
@@ -97,13 +97,13 @@ beszel_hub_stop()
     fi
 }
 
-beszel_hub_upgrade()
+vigile_hub_upgrade()
 {
     echo "Upgrading ${name}"
     if command -v sudo >/dev/null; then
-        sudo -u "${beszel_hub_user}" -- "${beszel_hub_bin}" update
+        sudo -u "${vigile_hub_user}" -- "${vigile_hub_bin}" update
     else
-        su -m "${beszel_hub_user}" -c "${beszel_hub_bin} update"
+        su -m "${vigile_hub_user}" -c "${vigile_hub_bin} update"
     fi
 }
 
@@ -168,10 +168,10 @@ while [ $# -gt 0 ]; do
       shift
       ;;
     -h|--help)
-      printf "Beszel Hub installation script\n\n"
+      printf "Vigile Hub installation script\n\n"
       printf "Usage: ./install-hub.sh [options]\n\n"
       printf "Options: \n"
-      printf "  -u           : Uninstall the Beszel Hub\n"
+      printf "  -u           : Uninstall the Vigile Hub\n"
       printf "  -p <port>    : Specify a port number (default: 8090)\n"
       printf "  -c, --mirror [URL] : Use a GitHub mirror/proxy URL (default: https://gh.beszel.dev)\n"
       printf "  --auto-update : Enable automatic daily updates (disabled by default)\n"
@@ -205,68 +205,68 @@ done
 
 # Set paths based on operating system
 if is_freebsd; then
-  HUB_DIR="/usr/local/etc/beszel"
-  BIN_PATH="/usr/local/sbin/beszel"
+  HUB_DIR="/usr/local/etc/vigile"
+  BIN_PATH="/usr/local/sbin/vigile"
 else
-  HUB_DIR="/opt/beszel"
-  BIN_PATH="/opt/beszel/beszel"
+  HUB_DIR="/opt/vigile"
+  BIN_PATH="/opt/vigile/vigile"
 fi
 
 # Uninstall process
 if [ "$UNINSTALL" = true ]; then
   if is_freebsd; then
-    echo "Stopping and disabling the Beszel Hub service..."
-    service beszel-hub stop 2>/dev/null
-    sysrc beszel_hub_enable="NO" 2>/dev/null
+    echo "Stopping and disabling the Vigile Hub service..."
+    service vigile-hub stop 2>/dev/null
+    sysrc vigile_hub_enable="NO" 2>/dev/null
 
     echo "Removing the FreeBSD service files..."
-    rm -f /usr/local/etc/rc.d/beszel-hub
+    rm -f /usr/local/etc/rc.d/vigile-hub
 
     echo "Removing the daily update cron job..."
-    rm -f /etc/cron.d/beszel-hub
+    rm -f /etc/cron.d/vigile-hub
 
     echo "Removing log files..."
-    rm -f /var/log/beszel_hub.log
+    rm -f /var/log/vigile_hub.log
 
-    echo "Removing the Beszel Hub binary and data..."
+    echo "Removing the Vigile Hub binary and data..."
     rm -f "$BIN_PATH"
     rm -rf "$HUB_DIR"
 
     echo "Removing the dedicated user..."
-    pw user del beszel 2>/dev/null
+    pw user del vigile 2>/dev/null
 
-    echo "The Beszel Hub has been uninstalled successfully!"
+    echo "The Vigile Hub has been uninstalled successfully!"
     exit 0
   else
-    # Stop and disable the Beszel Hub service
-    echo "Stopping and disabling the Beszel Hub service..."
-    systemctl stop beszel-hub.service
-    systemctl disable beszel-hub.service
+    # Stop and disable the Vigile Hub service
+    echo "Stopping and disabling the Vigile Hub service..."
+    systemctl stop vigile-hub.service
+    systemctl disable vigile-hub.service
 
     # Remove the systemd service file
     echo "Removing the systemd service file..."
-    rm -f /etc/systemd/system/beszel-hub.service
+    rm -f /etc/systemd/system/vigile-hub.service
 
     # Remove the update timer and service if they exist
     echo "Removing the daily update service and timer..."
-    systemctl stop beszel-hub-update.timer 2>/dev/null
-    systemctl disable beszel-hub-update.timer 2>/dev/null
-    rm -f /etc/systemd/system/beszel-hub-update.service
-    rm -f /etc/systemd/system/beszel-hub-update.timer
+    systemctl stop vigile-hub-update.timer 2>/dev/null
+    systemctl disable vigile-hub-update.timer 2>/dev/null
+    rm -f /etc/systemd/system/vigile-hub-update.service
+    rm -f /etc/systemd/system/vigile-hub-update.timer
 
     # Reload the systemd daemon
     echo "Reloading the systemd daemon..."
     systemctl daemon-reload
 
-    # Remove the Beszel Hub binary and data
-    echo "Removing the Beszel Hub binary and data..."
+    # Remove the Vigile Hub binary and data
+    echo "Removing the Vigile Hub binary and data..."
     rm -rf "$HUB_DIR"
 
     # Remove the dedicated user
     echo "Removing the dedicated user..."
-    userdel beszel 2>/dev/null
+    userdel vigile 2>/dev/null
 
-    echo "The Beszel Hub has been uninstalled successfully!"
+    echo "The Vigile Hub has been uninstalled successfully!"
     exit 0
   fi
 fi
@@ -300,36 +300,36 @@ else
 fi
 
 # Create a dedicated user for the service if it doesn't exist
-echo "Creating a dedicated user for the Beszel Hub service..."
+echo "Creating a dedicated user for the Vigile Hub service..."
 if is_freebsd; then
-  if ! id -u beszel >/dev/null 2>&1; then
-    pw user add beszel -d /nonexistent -s /usr/sbin/nologin -c "beszel user"
+  if ! id -u vigile >/dev/null 2>&1; then
+    pw user add vigile -d /nonexistent -s /usr/sbin/nologin -c "vigile user"
   fi
 else
-  if ! id -u beszel >/dev/null 2>&1; then
-    useradd -M -s /bin/false beszel
+  if ! id -u vigile >/dev/null 2>&1; then
+    useradd -M -s /bin/false vigile
   fi
 fi
 
-# Create the directory for the Beszel Hub
-echo "Creating the directory for the Beszel Hub..."
-mkdir -p "$HUB_DIR/beszel_data"
-chown -R beszel:beszel "$HUB_DIR"
+# Create the directory for the Vigile Hub
+echo "Creating the directory for the Vigile Hub..."
+mkdir -p "$HUB_DIR/vigile_data"
+chown -R vigile:vigile "$HUB_DIR"
 chmod 755 "$HUB_DIR"
 
-# Download and install the Beszel Hub
-echo "Downloading and installing the Beszel Hub..."
+# Download and install the Vigile Hub
+echo "Downloading and installing the Vigile Hub..."
 
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 ARCH=$(detect_architecture)
-FILE_NAME="beszel_${OS}_${ARCH}.tar.gz"
+FILE_NAME="vigile_${OS}_${ARCH}.tar.gz"
 
 TEMP_DIR=$(mktemp -d)
 ARCHIVE_PATH="$TEMP_DIR/$FILE_NAME"
 DOWNLOAD_URL="$GITHUB_URL/henrygd/beszel/releases/latest/download/$FILE_NAME"
 
 if ! curl -fL# --retry 3 --retry-delay 2 --connect-timeout 10 "$DOWNLOAD_URL" -o "$ARCHIVE_PATH"; then
-  echo "Failed to download the Beszel Hub from:"
+  echo "Failed to download the Vigile Hub from:"
   echo "$DOWNLOAD_URL"
   echo "Try again with --mirror (or --mirror <url>) if GitHub is not reachable."
   rm -rf "$TEMP_DIR"
@@ -343,80 +343,80 @@ if ! tar -tzf "$ARCHIVE_PATH" >/dev/null 2>&1; then
   exit 1
 fi
 
-if ! tar -xzf "$ARCHIVE_PATH" -C "$TEMP_DIR" beszel; then
-  echo "Failed to extract beszel from archive."
+if ! tar -xzf "$ARCHIVE_PATH" -C "$TEMP_DIR" vigile; then
+  echo "Failed to extract vigile from archive."
   rm -rf "$TEMP_DIR"
   exit 1
 fi
 
-if [ ! -s "$TEMP_DIR/beszel" ]; then
+if [ ! -s "$TEMP_DIR/vigile" ]; then
   echo "Downloaded binary is missing or empty."
   rm -rf "$TEMP_DIR"
   exit 1
 fi
 
-chmod +x "$TEMP_DIR/beszel"
-mv "$TEMP_DIR/beszel" "$BIN_PATH"
-chown beszel:beszel "$BIN_PATH"
+chmod +x "$TEMP_DIR/vigile"
+mv "$TEMP_DIR/vigile" "$BIN_PATH"
+chown vigile:vigile "$BIN_PATH"
 rm -rf "$TEMP_DIR"
 
 if is_freebsd; then
   echo "Creating FreeBSD rc service..."
 
   # Create the rc service file
-  generate_freebsd_rc_service > /usr/local/etc/rc.d/beszel-hub
+  generate_freebsd_rc_service > /usr/local/etc/rc.d/vigile-hub
 
   # Set proper permissions for the rc script
-  chmod 755 /usr/local/etc/rc.d/beszel-hub
+  chmod 755 /usr/local/etc/rc.d/vigile-hub
 
   # Configure the port
-  sysrc beszel_hub_port="$PORT"
+  sysrc vigile_hub_port="$PORT"
 
   # Enable and start the service
-  echo "Enabling and starting the Beszel Hub service..."
-  sysrc beszel_hub_enable="YES"
-  service beszel-hub restart
+  echo "Enabling and starting the Vigile Hub service..."
+  sysrc vigile_hub_enable="YES"
+  service vigile-hub restart
 
   # Check if service started successfully
   sleep 2
-  if ! service beszel-hub status | grep -q "is running"; then
-    echo "Error: The Beszel Hub service failed to start. Checking logs..."
-    tail -n 20 /var/log/beszel_hub.log
+  if ! service vigile-hub status | grep -q "is running"; then
+    echo "Error: The Vigile Hub service failed to start. Checking logs..."
+    tail -n 20 /var/log/vigile_hub.log
     exit 1
   fi
 
   # Auto-update service for FreeBSD
   if [ "$AUTO_UPDATE_FLAG" = "true" ]; then
-    echo "Setting up daily automatic updates for beszel-hub..."
+    echo "Setting up daily automatic updates for vigile-hub..."
 
     # Create cron job in /etc/cron.d
-    cat >/etc/cron.d/beszel-hub <<EOF
-# Beszel Hub daily update job
+    cat >/etc/cron.d/vigile-hub <<EOF
+# Vigile Hub daily update job
 12 8 * * * root $BIN_PATH update >/dev/null 2>&1
 EOF
-    chmod 644 /etc/cron.d/beszel-hub
+    chmod 644 /etc/cron.d/vigile-hub
     printf "\nDaily updates have been enabled via /etc/cron.d.\n"
   fi
 
   # Check service status
-  if ! service beszel-hub status >/dev/null 2>&1; then
-    echo "Error: The Beszel Hub service is not running."
-    service beszel-hub status
+  if ! service vigile-hub status >/dev/null 2>&1; then
+    echo "Error: The Vigile Hub service is not running."
+    service vigile-hub status
     exit 1
   fi
 
 else
   # Original systemd service installation code
-  printf "Creating the systemd service for the Beszel Hub...\n"
-  cat >/etc/systemd/system/beszel-hub.service <<EOF
+  printf "Creating the systemd service for the Vigile Hub...\n"
+  cat >/etc/systemd/system/vigile-hub.service <<EOF
 [Unit]
-Description=Beszel Hub Service
+Description=Vigile Hub Service
 After=network.target
 
 [Service]
 ExecStart=$BIN_PATH serve --http "0.0.0.0:$PORT"
 WorkingDirectory=$HUB_DIR
-User=beszel
+User=vigile
 Restart=always
 RestartSec=5
 
@@ -425,30 +425,30 @@ WantedBy=multi-user.target
 EOF
 
   # Load and start the service
-  printf "Loading and starting the Beszel Hub service...\n"
+  printf "Loading and starting the Vigile Hub service...\n"
   systemctl daemon-reload
-  systemctl enable --quiet beszel-hub.service
-  systemctl start --quiet beszel-hub.service
+  systemctl enable --quiet vigile-hub.service
+  systemctl start --quiet vigile-hub.service
 
   # Wait for the service to start or fail
   sleep 2
 
   # Check if the service is running
-  if [ "$(systemctl is-active beszel-hub.service)" != "active" ]; then
-    echo "Error: The Beszel Hub service is not running."
-    echo "$(systemctl status beszel-hub.service)"
+  if [ "$(systemctl is-active vigile-hub.service)" != "active" ]; then
+    echo "Error: The Vigile Hub service is not running."
+    echo "$(systemctl status vigile-hub.service)"
     exit 1
   fi
 
   # Enable auto-update if flag is set to true
   if [ "$AUTO_UPDATE_FLAG" = "true" ]; then
-    echo "Setting up daily automatic updates for beszel-hub..."
+    echo "Setting up daily automatic updates for vigile-hub..."
 
     # Create systemd service for the daily update
-    cat >/etc/systemd/system/beszel-hub-update.service <<EOF
+    cat >/etc/systemd/system/vigile-hub-update.service <<EOF
 [Unit]
-Description=Update beszel-hub if needed
-Wants=beszel-hub.service
+Description=Update vigile-hub if needed
+Wants=vigile-hub.service
 
 [Service]
 Type=oneshot
@@ -456,9 +456,9 @@ ExecStart=$BIN_PATH update
 EOF
 
     # Create systemd timer for the daily update
-    cat >/etc/systemd/system/beszel-hub-update.timer <<EOF
+    cat >/etc/systemd/system/vigile-hub-update.timer <<EOF
 [Unit]
-Description=Run beszel-hub update daily
+Description=Run vigile-hub update daily
 
 [Timer]
 OnCalendar=daily
@@ -470,10 +470,10 @@ WantedBy=timers.target
 EOF
 
     systemctl daemon-reload
-    systemctl enable --now beszel-hub-update.timer
+    systemctl enable --now vigile-hub-update.timer
 
     printf "\nDaily updates have been enabled.\n"
   fi
 fi
 
-printf "\n\033[32mBeszel Hub has been installed successfully! It is now accessible on port $PORT.\033[0m\n"
+printf "\n\033[32mVigile Hub has been installed successfully! It is now accessible on port $PORT.\033[0m\n"

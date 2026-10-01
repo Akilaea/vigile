@@ -16,7 +16,7 @@ import (
 
 func TestRealtimeAuthorization(t *testing.T) {
 	t.Setenv("SHARE_ALL_SYSTEMS", "false")
-	t.Setenv("BESZEL_HUB_SHARE_ALL_SYSTEMS", "")
+	t.Setenv("VIGILE_HUB_SHARE_ALL_SYSTEMS", "")
 	app, err := pbtests.NewTestApp(t.TempDir())
 	require.NoError(t, err)
 	t.Cleanup(app.Cleanup)
@@ -57,7 +57,7 @@ func TestRealtimeAuthorization(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			if tc.share {
-				t.Setenv("BESZEL_HUB_SHARE_ALL_SYSTEMS", "true")
+				t.Setenv("VIGILE_HUB_SHARE_ALL_SYSTEMS", "true")
 			}
 			client := subscriptions.NewDefaultClient()
 			client.Subscribe("existing")
@@ -145,7 +145,7 @@ func TestRealtimeAuthorization(t *testing.T) {
 		_, err := app.DB().NewQuery(`UPDATE systems SET users = '[]'`).Execute()
 		require.NoError(t, err)
 		check(member, false)
-		t.Setenv("BESZEL_HUB_SHARE_ALL_SYSTEMS", "true")
+		t.Setenv("VIGILE_HUB_SHARE_ALL_SYSTEMS", "true")
 		check(outsider, true)
 		check(nil, false)
 	})

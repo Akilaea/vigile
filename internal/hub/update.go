@@ -6,17 +6,17 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/henrygd/beszel/internal/ghupdate"
+	"github.com/Akilaea/vigile/internal/ghupdate"
 	"github.com/spf13/cobra"
 )
 
-// Update updates beszel to the latest version
+// Update updates vigile to the latest version
 func Update(cmd *cobra.Command, _ []string) {
 	dataDir := os.TempDir()
 
-	// set dataDir to ./beszel_data if it exists
-	if _, err := os.Stat("./beszel_data"); err == nil {
-		dataDir = "./beszel_data"
+	// set dataDir to ./vigile_data if it exists
+	if _, err := os.Stat("./vigile_data"); err == nil {
+		dataDir = "./vigile_data"
 	}
 
 	// Check if china-mirrors flag is set
@@ -29,7 +29,7 @@ func Update(cmd *cobra.Command, _ []string) {
 	}
 
 	updated, err := ghupdate.Update(ghupdate.Config{
-		ArchiveExecutable: "beszel",
+		ArchiveExecutable: "vigile",
 		DataDir:           dataDir,
 		UseMirror:         useMirror,
 	})
@@ -54,13 +54,13 @@ func Update(cmd *cobra.Command, _ []string) {
 	restartService()
 }
 
-// restartService attempts to restart the beszel service
+// restartService attempts to restart the vigile service
 func restartService() {
 	// Check if we're running as a service by looking for systemd
 	if _, err := exec.LookPath("systemctl"); err == nil {
-		// install-hub.sh names the unit beszel-hub.service. beszel.service is
+		// install-hub.sh names the unit vigile-hub.service. vigile.service is
 		// kept as a fallback for hand written units.
-		for _, unit := range []string{"beszel-hub.service", "beszel.service"} {
+		for _, unit := range []string{"vigile-hub.service", "vigile.service"} {
 			if err := exec.Command("systemctl", "is-active", unit).Run(); err != nil {
 				continue
 			}
@@ -71,7 +71,7 @@ func restartService() {
 
 	// Check for OpenRC (Alpine Linux)
 	if _, err := exec.LookPath("rc-service"); err == nil {
-		for _, service := range []string{"beszel-hub", "beszel"} {
+		for _, service := range []string{"vigile-hub", "vigile"} {
 			if err := exec.Command("rc-service", service, "status").Run(); err != nil {
 				continue
 			}
@@ -85,7 +85,7 @@ func restartService() {
 
 // reportRestart runs the restart command and prints the result.
 func reportRestart(cmd *exec.Cmd, manualCommand string) {
-	ghupdate.ColorPrint(ghupdate.ColorYellow, "Restarting beszel service...")
+	ghupdate.ColorPrint(ghupdate.ColorYellow, "Restarting vigile service...")
 	if err := cmd.Run(); err != nil {
 		ghupdate.ColorPrintf(ghupdate.ColorYellow, "Warning: Failed to restart service: %v\n", err)
 		ghupdate.ColorPrint(ghupdate.ColorYellow, "Please restart the service manually: "+manualCommand)

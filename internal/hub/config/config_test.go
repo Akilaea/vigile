@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/henrygd/beszel/internal/tests"
+	"github.com/Akilaea/vigile/internal/tests"
 
-	"github.com/henrygd/beszel/internal/hub/config"
+	"github.com/Akilaea/vigile/internal/hub/config"
 
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/stretchr/testify/assert"

@@ -6,24 +6,24 @@ import (
 	"testing"
 	"time"
 
-	beszelTests "github.com/henrygd/beszel/internal/tests"
+	vigileTests "github.com/Akilaea/vigile/internal/tests"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestZfsPoolAlertOnlineToDegraded(t *testing.T) {
-	hub, user := beszelTests.GetHubWithUser(t)
+	hub, user := vigileTests.GetHubWithUser(t)
 	defer hub.Cleanup()
 
-	system, err := beszelTests.CreateRecord(hub, "systems", map[string]any{
+	system, err := vigileTests.CreateRecord(hub, "systems", map[string]any{
 		"name":  "test-system",
 		"users": []string{user.Id},
 		"host":  "127.0.0.1",
 	})
 	assert.NoError(t, err)
 
-	pool, err := beszelTests.CreateRecord(hub, "zfs_pools", map[string]any{
+	pool, err := vigileTests.CreateRecord(hub, "zfs_pools", map[string]any{
 		"system": system.Id,
 		"name":   "tank",
 		"health": "ONLINE",
@@ -48,17 +48,17 @@ func TestZfsPoolAlertOnlineToDegraded(t *testing.T) {
 }
 
 func TestZfsPoolAlertDegradedToFaulted(t *testing.T) {
-	hub, user := beszelTests.GetHubWithUser(t)
+	hub, user := vigileTests.GetHubWithUser(t)
 	defer hub.Cleanup()
 
-	system, err := beszelTests.CreateRecord(hub, "systems", map[string]any{
+	system, err := vigileTests.CreateRecord(hub, "systems", map[string]any{
 		"name":  "test-system",
 		"users": []string{user.Id},
 		"host":  "127.0.0.1",
 	})
 	assert.NoError(t, err)
 
-	pool, err := beszelTests.CreateRecord(hub, "zfs_pools", map[string]any{
+	pool, err := vigileTests.CreateRecord(hub, "zfs_pools", map[string]any{
 		"system": system.Id,
 		"name":   "rpool",
 		"health": "DEGRADED",
@@ -80,17 +80,17 @@ func TestZfsPoolAlertDegradedToFaulted(t *testing.T) {
 }
 
 func TestZfsPoolAlertNoAlertOnRecovery(t *testing.T) {
-	hub, user := beszelTests.GetHubWithUser(t)
+	hub, user := vigileTests.GetHubWithUser(t)
 	defer hub.Cleanup()
 
-	system, err := beszelTests.CreateRecord(hub, "systems", map[string]any{
+	system, err := vigileTests.CreateRecord(hub, "systems", map[string]any{
 		"name":  "test-system",
 		"users": []string{user.Id},
 		"host":  "127.0.0.1",
 	})
 	assert.NoError(t, err)
 
-	pool, err := beszelTests.CreateRecord(hub, "zfs_pools", map[string]any{
+	pool, err := vigileTests.CreateRecord(hub, "zfs_pools", map[string]any{
 		"system": system.Id,
 		"name":   "tank",
 		"health": "DEGRADED",
@@ -122,17 +122,17 @@ func TestZfsPoolAlertNoAlertOnRecovery(t *testing.T) {
 }
 
 func TestZfsPoolAlertUnknownHealthDoesNotResolve(t *testing.T) {
-	hub, user := beszelTests.GetHubWithUser(t)
+	hub, user := vigileTests.GetHubWithUser(t)
 	defer hub.Cleanup()
 
-	system, err := beszelTests.CreateRecord(hub, "systems", map[string]any{
+	system, err := vigileTests.CreateRecord(hub, "systems", map[string]any{
 		"name":  "test-system",
 		"users": []string{user.Id},
 		"host":  "127.0.0.1",
 	})
 	require.NoError(t, err)
 
-	pool, err := beszelTests.CreateRecord(hub, "zfs_pools", map[string]any{
+	pool, err := vigileTests.CreateRecord(hub, "zfs_pools", map[string]any{
 		"system": system.Id,
 		"name":   "tank",
 		"health": "DEGRADED",
@@ -152,17 +152,17 @@ func TestZfsPoolAlertUnknownHealthDoesNotResolve(t *testing.T) {
 }
 
 func TestZfsPoolAlertUnknownToFaulted(t *testing.T) {
-	hub, user := beszelTests.GetHubWithUser(t)
+	hub, user := vigileTests.GetHubWithUser(t)
 	defer hub.Cleanup()
 
-	system, err := beszelTests.CreateRecord(hub, "systems", map[string]any{
+	system, err := vigileTests.CreateRecord(hub, "systems", map[string]any{
 		"name":  "test-system",
 		"users": []string{user.Id},
 		"host":  "127.0.0.1",
 	})
 	assert.NoError(t, err)
 
-	pool, err := beszelTests.CreateRecord(hub, "zfs_pools", map[string]any{
+	pool, err := vigileTests.CreateRecord(hub, "zfs_pools", map[string]any{
 		"system": system.Id,
 		"name":   "tank",
 		"health": "",
@@ -182,17 +182,17 @@ func TestZfsPoolAlertUnknownToFaulted(t *testing.T) {
 }
 
 func TestZfsPoolAlertOnInitialUnhealthyState(t *testing.T) {
-	hub, user := beszelTests.GetHubWithUser(t)
+	hub, user := vigileTests.GetHubWithUser(t)
 	defer hub.Cleanup()
 
-	system, err := beszelTests.CreateRecord(hub, "systems", map[string]any{
+	system, err := vigileTests.CreateRecord(hub, "systems", map[string]any{
 		"name":  "test-system",
 		"users": []string{user.Id},
 		"host":  "127.0.0.1",
 	})
 	require.NoError(t, err)
 
-	pool, err := beszelTests.CreateRecord(hub, "zfs_pools", map[string]any{
+	pool, err := vigileTests.CreateRecord(hub, "zfs_pools", map[string]any{
 		"system": system.Id,
 		"name":   "tank",
 		"health": "DEGRADED",
@@ -211,17 +211,17 @@ func TestZfsPoolAlertOnInitialUnhealthyState(t *testing.T) {
 }
 
 func TestZfsPoolAlertWritesHistory(t *testing.T) {
-	hub, user := beszelTests.GetHubWithUser(t)
+	hub, user := vigileTests.GetHubWithUser(t)
 	defer hub.Cleanup()
 
-	system, err := beszelTests.CreateRecord(hub, "systems", map[string]any{
+	system, err := vigileTests.CreateRecord(hub, "systems", map[string]any{
 		"name":  "test-system",
 		"users": []string{user.Id},
 		"host":  "127.0.0.1",
 	})
 	assert.NoError(t, err)
 
-	pool, err := beszelTests.CreateRecord(hub, "zfs_pools", map[string]any{
+	pool, err := vigileTests.CreateRecord(hub, "zfs_pools", map[string]any{
 		"system": system.Id,
 		"name":   "tank",
 		"health": "ONLINE",
@@ -244,17 +244,17 @@ func TestZfsPoolAlertWritesHistory(t *testing.T) {
 }
 
 func TestZfsPoolAlertResolvedOnRecordDelete(t *testing.T) {
-	hub, user := beszelTests.GetHubWithUser(t)
+	hub, user := vigileTests.GetHubWithUser(t)
 	defer hub.Cleanup()
 
-	system, err := beszelTests.CreateRecord(hub, "systems", map[string]any{
+	system, err := vigileTests.CreateRecord(hub, "systems", map[string]any{
 		"name":  "test-system",
 		"users": []string{user.Id},
 		"host":  "127.0.0.1",
 	})
 	assert.NoError(t, err)
 
-	pool, err := beszelTests.CreateRecord(hub, "zfs_pools", map[string]any{
+	pool, err := vigileTests.CreateRecord(hub, "zfs_pools", map[string]any{
 		"system": system.Id,
 		"name":   "tank",
 		"health": "ONLINE",

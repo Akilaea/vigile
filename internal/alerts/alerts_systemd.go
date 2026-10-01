@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/henrygd/beszel/internal/entities/system"
-	"github.com/henrygd/beszel/internal/entities/systemd"
+	"github.com/Akilaea/vigile/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/entities/systemd"
 
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"

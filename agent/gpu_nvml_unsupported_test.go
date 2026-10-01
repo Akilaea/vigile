@@ -13,7 +13,7 @@ import (
 func TestNewGPUManagerPriorityNvmlFallbackToNvidiaSmi(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("PATH", dir)
-	t.Setenv("BESZEL_AGENT_GPU_COLLECTOR", "nvml,nvidia-smi")
+	t.Setenv("VIGILE_AGENT_GPU_COLLECTOR", "nvml,nvidia-smi")
 
 	gpuCommandFixture(t, dir, "nvidia-smi", `0, NVIDIA Fallback GPU, 41, 256, 1024, 8, 14`+"\n")
 

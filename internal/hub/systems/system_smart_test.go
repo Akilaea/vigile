@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/henrygd/beszel/internal/entities/monitor"
-	"github.com/henrygd/beszel/internal/entities/smart"
-	esystem "github.com/henrygd/beszel/internal/entities/system"
-	"github.com/henrygd/beszel/internal/hub/expirymap"
-	_ "github.com/henrygd/beszel/internal/migrations"
+	"github.com/Akilaea/vigile/internal/entities/monitor"
+	"github.com/Akilaea/vigile/internal/entities/smart"
+	esystem "github.com/Akilaea/vigile/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/hub/expirymap"
+	_ "github.com/Akilaea/vigile/internal/migrations"
 
 	"github.com/pocketbase/pocketbase/core"
 	pbtests "github.com/pocketbase/pocketbase/tests"

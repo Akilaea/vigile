@@ -2,34 +2,34 @@
 # Env vars: https://beszel.dev/guide/environment-variables
 
 services:
-  beszel:
+  vigile:
     image: henrygd/beszel:latest
-    container_name: beszel
+    container_name: vigile
     restart: unless-stopped
     environment:
       APP_URL: http://localhost:8090
     ports:
       - 8090:8090
     volumes:
-      - ./beszel_data:/beszel_data
-      - ./beszel_socket:/beszel_socket
+      - ./vigile_data:/vigile_data
+      - ./vigile_socket:/vigile_socket
     # healthcheck:
-    #   test: ['CMD', '/beszel', 'health', '--url', 'http://localhost:8090']
+    #   test: ['CMD', '/vigile', 'health', '--url', 'http://localhost:8090']
     #   interval: 120s
     #   start_period: 10s
     #   timeout: 5s
 
-  beszel-agent:
+  vigile-agent:
     image: henrygd/beszel-agent:latest
-    container_name: beszel-agent
+    container_name: vigile-agent
     restart: unless-stopped
     network_mode: host
     volumes:
-      - ./beszel_agent_data:/var/lib/beszel-agent
-      - ./beszel_socket:/beszel_socket
+      - ./vigile_agent_data:/var/lib/vigile-agent
+      - ./vigile_socket:/vigile_socket
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
-      LISTEN: /beszel_socket/beszel.sock
+      LISTEN: /vigile_socket/vigile.sock
       HUB_URL: http://localhost:8090
       TOKEN: <token>
       KEY: "<key>"

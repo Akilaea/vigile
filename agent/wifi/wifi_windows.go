@@ -6,7 +6,7 @@ import (
 	"context"
 	"unsafe"
 
-	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/entities/system"
 	"golang.org/x/sys/windows"
 )
 

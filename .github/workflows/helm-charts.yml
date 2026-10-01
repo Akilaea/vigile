@@ -37,7 +37,7 @@ jobs:
         run: |
           charts=()
 
-          for name in beszel-agent beszel-hub; do
+          for name in vigile-agent vigile-hub; do
             path="supplemental/helm/$name"
             if ! git diff --quiet "$BASE_SHA" "$GITHUB_SHA" -- "$path"; then
               charts+=("$name|$path")

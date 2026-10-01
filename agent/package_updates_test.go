@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/entities/system"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -77,8 +77,8 @@ func TestPackageUpdatesInterval(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Setenv("BESZEL_AGENT_PACKAGE_UPDATES_INTERVAL", "")
-			require.NoError(t, os.Unsetenv("BESZEL_AGENT_PACKAGE_UPDATES_INTERVAL"))
+			t.Setenv("VIGILE_AGENT_PACKAGE_UPDATES_INTERVAL", "")
+			require.NoError(t, os.Unsetenv("VIGILE_AGENT_PACKAGE_UPDATES_INTERVAL"))
 			t.Setenv("PACKAGE_UPDATES_INTERVAL", "")
 			require.NoError(t, os.Unsetenv("PACKAGE_UPDATES_INTERVAL"))
 			if tt.value != nil {
@@ -92,7 +92,7 @@ func TestPackageUpdatesInterval(t *testing.T) {
 
 	t.Run("prefixed variable takes precedence", func(t *testing.T) {
 		t.Setenv("PACKAGE_UPDATES_INTERVAL", "0")
-		t.Setenv("BESZEL_AGENT_PACKAGE_UPDATES_INTERVAL", "6h")
+		t.Setenv("VIGILE_AGENT_PACKAGE_UPDATES_INTERVAL", "6h")
 		interval, enabled := packageUpdatesInterval()
 		assert.Equal(t, 6*time.Hour, interval)
 		assert.True(t, enabled)

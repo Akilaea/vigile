@@ -8,8 +8,8 @@ import (
 	"testing/synctest"
 	"time"
 
-	"github.com/henrygd/beszel/internal/entities/system"
-	beszelTests "github.com/henrygd/beszel/internal/tests"
+	"github.com/Akilaea/vigile/internal/entities/system"
+	vigileTests "github.com/Akilaea/vigile/internal/tests"
 
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/tools/types"
@@ -21,14 +21,14 @@ import (
 // the Disk threshold alert using historical per-minute values, mirroring the
 // extra-filesystem behavior.
 func TestDiskAlertZfsPoolMultiMinute(t *testing.T) {
-	hub, user := beszelTests.GetHubWithUser(t)
+	hub, user := vigileTests.GetHubWithUser(t)
 	defer hub.Cleanup()
 
-	systems, err := beszelTests.CreateSystems(hub, 1, user.Id, "paused")
+	systems, err := vigileTests.CreateSystems(hub, 1, user.Id, "paused")
 	require.NoError(t, err)
 	systemRecord := systems[0]
 
-	diskAlert, err := beszelTests.CreateRecord(hub, "alerts", map[string]any{
+	diskAlert, err := vigileTests.CreateRecord(hub, "alerts", map[string]any{
 		"name":   "Disk",
 		"system": systemRecord.Id,
 		"user":   user.Id,
@@ -59,7 +59,7 @@ func TestDiskAlertZfsPoolMultiMinute(t *testing.T) {
 		statsJSON, _ := json.Marshal(stats)
 
 		recordTime := now.Add(offset)
-		record, err := beszelTests.CreateRecord(hub, "system_stats", map[string]any{
+		record, err := vigileTests.CreateRecord(hub, "system_stats", map[string]any{
 			"system": systemRecord.Id,
 			"type":   "1m",
 			"stats":  string(statsJSON),
@@ -106,7 +106,7 @@ func TestDiskAlertZfsPoolMultiMinute(t *testing.T) {
 		statsJSON, _ := json.Marshal(stats)
 
 		recordTime := newNow.Add(offset)
-		record, err := beszelTests.CreateRecord(hub, "system_stats", map[string]any{
+		record, err := vigileTests.CreateRecord(hub, "system_stats", map[string]any{
 			"system": systemRecord.Id,
 			"type":   "1m",
 			"stats":  string(statsJSON),
@@ -141,16 +141,16 @@ func TestDiskAlertZfsPoolMultiMinute(t *testing.T) {
 
 func TestDiskAlertIgnoresRawPool(t *testing.T) {
 	for _, minutes := range []int{0, 2} {
-		hub, user := beszelTests.GetHubWithUser(t)
-		systems, err := beszelTests.CreateSystems(hub, 1, user.Id, "paused")
+		hub, user := vigileTests.GetHubWithUser(t)
+		systems, err := vigileTests.CreateSystems(hub, 1, user.Id, "paused")
 		require.NoError(t, err)
-		alert, err := beszelTests.CreateRecord(hub, "alerts", map[string]any{"name": "Disk", "system": systems[0].Id, "user": user.Id, "value": 80, "min": minutes})
+		alert, err := vigileTests.CreateRecord(hub, "alerts", map[string]any{"name": "Disk", "system": systems[0].Id, "user": user.Id, "value": 80, "min": minutes})
 		require.NoError(t, err)
 		pools := map[string]*system.ZfsPool{"btrfs": {Total: 100, Used: 99, Raw: true}}
 		for _, offset := range []time.Duration{-180, -90, -60, -30} {
 			data, err := json.Marshal(system.Stats{ZfsPools: pools})
 			require.NoError(t, err)
-			record, err := beszelTests.CreateRecord(hub, "system_stats", map[string]any{"system": systems[0].Id, "type": "1m", "stats": string(data)})
+			record, err := vigileTests.CreateRecord(hub, "system_stats", map[string]any{"system": systems[0].Id, "type": "1m", "stats": string(data)})
 			require.NoError(t, err)
 			record.SetRaw("created", time.Now().UTC().Add(offset*time.Second).Format(types.DefaultDateLayout))
 			require.NoError(t, hub.SaveNoValidate(record))

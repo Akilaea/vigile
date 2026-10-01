@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/henrygd/beszel/internal/entities/smart"
+	"github.com/Akilaea/vigile/internal/entities/smart"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

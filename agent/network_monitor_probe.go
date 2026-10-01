@@ -8,11 +8,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/henrygd/beszel"
-	"github.com/henrygd/beszel/internal/entities/monitor"
+	"github.com/Akilaea/vigile"
+	"github.com/Akilaea/vigile/internal/entities/monitor"
 )
 
-const networkMonitorUserAgent = "Beszel-Agent/" + beszel.Version + " (+https://beszel.dev)"
+const networkMonitorUserAgent = "Vigile-Agent/" + vigile.Version + " (+https://beszel.dev)"
 
 // monitorProbe performs one check. Errors are recorded as loss by the task runner.
 // Implementations must honor cancellation and bound their execution time.

@@ -12,7 +12,7 @@ import (
 
 	"github.com/blang/semver"
 	"github.com/fxamacker/cbor/v2"
-	"github.com/henrygd/beszel/internal/common"
+	"github.com/Akilaea/vigile/internal/common"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -254,7 +254,7 @@ func (t *SSHTransport) NewSession(ctx context.Context, client *ssh.Client) (*ssh
 	return session, err
 }
 
-// extractAgentVersion extracts the beszel version from SSH server version string.
+// extractAgentVersion extracts the vigile version from SSH server version string.
 func extractAgentVersion(versionString string) (semver.Version, error) {
 	_, after, _ := strings.Cut(versionString, "_")
 	return semver.Parse(after)

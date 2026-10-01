@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/henrygd/beszel"
-	"github.com/henrygd/beszel/internal/entities/system"
-	"github.com/henrygd/beszel/internal/entities/zfs"
+	"github.com/Akilaea/vigile"
+	"github.com/Akilaea/vigile/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/entities/zfs"
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 )
@@ -21,7 +21,7 @@ type zfsFetchState struct {
 }
 
 func (sys *System) supportsZfsData() bool {
-	return sys.getAgentVersion().GTE(beszel.MinVersionZfsData)
+	return sys.getAgentVersion().GTE(vigile.MinVersionZfsData)
 }
 
 // FetchAndSaveZfsPools fetches ZFS detail data from the agent and saves it to

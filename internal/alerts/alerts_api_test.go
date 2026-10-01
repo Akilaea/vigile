@@ -13,7 +13,7 @@ import (
 	"testing"
 	"testing/synctest"
 
-	beszelTests "github.com/henrygd/beszel/internal/tests"
+	vigileTests "github.com/Akilaea/vigile/internal/tests"
 	pbTests "github.com/pocketbase/pocketbase/tests"
 
 	"github.com/pocketbase/dbx"
@@ -33,24 +33,24 @@ func jsonReader(v any) io.Reader {
 }
 
 func TestUserAlertsApi(t *testing.T) {
-	hub, _ := beszelTests.NewTestHub(t.TempDir())
+	hub, _ := vigileTests.NewTestHub(t.TempDir())
 	defer hub.Cleanup()
 
 	hub.StartHub()
 
-	user1, _ := beszelTests.CreateUser(hub, "alertstest@example.com", "password")
+	user1, _ := vigileTests.CreateUser(hub, "alertstest@example.com", "password")
 	user1Token, _ := user1.NewAuthToken()
 
-	user2, _ := beszelTests.CreateUser(hub, "alertstest2@example.com", "password")
+	user2, _ := vigileTests.CreateUser(hub, "alertstest2@example.com", "password")
 	user2Token, _ := user2.NewAuthToken()
 
-	system1, _ := beszelTests.CreateRecord(hub, "systems", map[string]any{
+	system1, _ := vigileTests.CreateRecord(hub, "systems", map[string]any{
 		"name":  "system1",
 		"users": []string{user1.Id},
 		"host":  "127.0.0.1",
 	})
 
-	system2, _ := beszelTests.CreateRecord(hub, "systems", map[string]any{
+	system2, _ := vigileTests.CreateRecord(hub, "systems", map[string]any{
 		"name":  "system2",
 		"users": []string{user1.Id, user2.Id},
 		"host":  "127.0.0.2",
@@ -66,19 +66,19 @@ func TestUserAlertsApi(t *testing.T) {
 		return hub.TestApp
 	}
 
-	scenarios := []beszelTests.ApiScenario{
+	scenarios := []vigileTests.ApiScenario{
 		// {
 		// 	Name:            "GET not implemented - returns index",
 		// 	Method:          http.MethodGet,
-		// 	URL:             "/api/beszel/user-alerts",
+		// 	URL:             "/api/vigile/user-alerts",
 		// 	ExpectedStatus:  200,
-		// 	ExpectedContent: []string{"<html ", "globalThis.BESZEL"},
+		// 	ExpectedContent: []string{"<html ", "globalThis.VIGILE"},
 		// 	TestAppFactory:  testAppFactory,
 		// },
 		{
 			Name:            "POST no auth",
 			Method:          http.MethodPost,
-			URL:             "/api/beszel/user-alerts",
+			URL:             "/api/vigile/user-alerts",
 			ExpectedStatus:  401,
 			ExpectedContent: []string{"requires valid"},
 			TestAppFactory:  testAppFactory,
@@ -86,7 +86,7 @@ func TestUserAlertsApi(t *testing.T) {
 		{
 			Name:   "POST no body",
 			Method: http.MethodPost,
-			URL:    "/api/beszel/user-alerts",
+			URL:    "/api/vigile/user-alerts",
 			Headers: map[string]string{
 				"Authorization": user1Token,
 			},
@@ -97,7 +97,7 @@ func TestUserAlertsApi(t *testing.T) {
 		{
 			Name:   "POST bad data",
 			Method: http.MethodPost,
-			URL:    "/api/beszel/user-alerts",
+			URL:    "/api/vigile/user-alerts",
 			Headers: map[string]string{
 				"Authorization": user1Token,
 			},
@@ -112,7 +112,7 @@ func TestUserAlertsApi(t *testing.T) {
 		{
 			Name:   "POST malformed JSON",
 			Method: http.MethodPost,
-			URL:    "/api/beszel/user-alerts",
+			URL:    "/api/vigile/user-alerts",
 			Headers: map[string]string{
 				"Authorization": user1Token,
 			},
@@ -124,7 +124,7 @@ func TestUserAlertsApi(t *testing.T) {
 		{
 			Name:   "POST valid alert data multiple systems",
 			Method: http.MethodPost,
-			URL:    "/api/beszel/user-alerts",
+			URL:    "/api/vigile/user-alerts",
 			Headers: map[string]string{
 				"Authorization": user1Token,
 			},
@@ -150,7 +150,7 @@ func TestUserAlertsApi(t *testing.T) {
 		{
 			Name:   "POST valid alert data single system",
 			Method: http.MethodPost,
-			URL:    "/api/beszel/user-alerts",
+			URL:    "/api/vigile/user-alerts",
 			Headers: map[string]string{
 				"Authorization": user1Token,
 			},
@@ -171,7 +171,7 @@ func TestUserAlertsApi(t *testing.T) {
 		{
 			Name:   "POST ignores systems the user cannot access",
 			Method: http.MethodPost,
-			URL:    "/api/beszel/user-alerts",
+			URL:    "/api/vigile/user-alerts",
 			Headers: map[string]string{
 				"Authorization": user2Token,
 			},
@@ -185,7 +185,7 @@ func TestUserAlertsApi(t *testing.T) {
 				"min":     10,
 			}),
 			BeforeTestFunc: func(t testing.TB, app *pbTests.TestApp, e *core.ServeEvent) {
-				require.NoError(t, beszelTests.ClearCollection(t, app, "alerts"))
+				require.NoError(t, vigileTests.ClearCollection(t, app, "alerts"))
 			},
 			AfterTestFunc: func(t testing.TB, app *pbTests.TestApp, res *http.Response) {
 				alerts, _ := app.CountRecords("alerts")
@@ -195,7 +195,7 @@ func TestUserAlertsApi(t *testing.T) {
 		{
 			Name:   "Overwrite: false, should not overwrite existing alert",
 			Method: http.MethodPost,
-			URL:    "/api/beszel/user-alerts",
+			URL:    "/api/vigile/user-alerts",
 			Headers: map[string]string{
 				"Authorization": user1Token,
 			},
@@ -210,8 +210,8 @@ func TestUserAlertsApi(t *testing.T) {
 				"overwrite": false,
 			}),
 			BeforeTestFunc: func(t testing.TB, app *pbTests.TestApp, e *core.ServeEvent) {
-				require.NoError(t, beszelTests.ClearCollection(t, app, "alerts"))
-				beszelTests.CreateRecord(app, "alerts", map[string]any{
+				require.NoError(t, vigileTests.ClearCollection(t, app, "alerts"))
+				vigileTests.CreateRecord(app, "alerts", map[string]any{
 					"name":   "CPU",
 					"system": system1.Id,
 					"user":   user1.Id,
@@ -229,7 +229,7 @@ func TestUserAlertsApi(t *testing.T) {
 		{
 			Name:   "Overwrite: true, should overwrite existing alert",
 			Method: http.MethodPost,
-			URL:    "/api/beszel/user-alerts",
+			URL:    "/api/vigile/user-alerts",
 			Headers: map[string]string{
 				"Authorization": user2Token,
 			},
@@ -244,8 +244,8 @@ func TestUserAlertsApi(t *testing.T) {
 				"overwrite": true,
 			}),
 			BeforeTestFunc: func(t testing.TB, app *pbTests.TestApp, e *core.ServeEvent) {
-				require.NoError(t, beszelTests.ClearCollection(t, app, "alerts"))
-				beszelTests.CreateRecord(app, "alerts", map[string]any{
+				require.NoError(t, vigileTests.ClearCollection(t, app, "alerts"))
+				vigileTests.CreateRecord(app, "alerts", map[string]any{
 					"name":   "CPU",
 					"system": system2.Id,
 					"user":   user2.Id,
@@ -263,7 +263,7 @@ func TestUserAlertsApi(t *testing.T) {
 		{
 			Name:            "DELETE no auth",
 			Method:          http.MethodDelete,
-			URL:             "/api/beszel/user-alerts",
+			URL:             "/api/vigile/user-alerts",
 			ExpectedStatus:  401,
 			ExpectedContent: []string{"requires valid"},
 			TestAppFactory:  testAppFactory,
@@ -272,8 +272,8 @@ func TestUserAlertsApi(t *testing.T) {
 				"systems": []string{system1.Id},
 			}),
 			BeforeTestFunc: func(t testing.TB, app *pbTests.TestApp, e *core.ServeEvent) {
-				require.NoError(t, beszelTests.ClearCollection(t, app, "alerts"))
-				beszelTests.CreateRecord(app, "alerts", map[string]any{
+				require.NoError(t, vigileTests.ClearCollection(t, app, "alerts"))
+				vigileTests.CreateRecord(app, "alerts", map[string]any{
 					"name":   "CPU",
 					"system": system1.Id,
 					"user":   user1.Id,
@@ -289,7 +289,7 @@ func TestUserAlertsApi(t *testing.T) {
 		{
 			Name:   "DELETE alert",
 			Method: http.MethodDelete,
-			URL:    "/api/beszel/user-alerts",
+			URL:    "/api/vigile/user-alerts",
 			Headers: map[string]string{
 				"Authorization": user1Token,
 			},
@@ -301,8 +301,8 @@ func TestUserAlertsApi(t *testing.T) {
 				"systems": []string{system1.Id},
 			}),
 			BeforeTestFunc: func(t testing.TB, app *pbTests.TestApp, e *core.ServeEvent) {
-				require.NoError(t, beszelTests.ClearCollection(t, app, "alerts"))
-				beszelTests.CreateRecord(app, "alerts", map[string]any{
+				require.NoError(t, vigileTests.ClearCollection(t, app, "alerts"))
+				vigileTests.CreateRecord(app, "alerts", map[string]any{
 					"name":   "CPU",
 					"system": system1.Id,
 					"user":   user1.Id,
@@ -318,7 +318,7 @@ func TestUserAlertsApi(t *testing.T) {
 		{
 			Name:   "DELETE alert multiple systems",
 			Method: http.MethodDelete,
-			URL:    "/api/beszel/user-alerts",
+			URL:    "/api/vigile/user-alerts",
 			Headers: map[string]string{
 				"Authorization": user1Token,
 			},
@@ -330,9 +330,9 @@ func TestUserAlertsApi(t *testing.T) {
 				"systems": []string{system1.Id, system2.Id},
 			}),
 			BeforeTestFunc: func(t testing.TB, app *pbTests.TestApp, e *core.ServeEvent) {
-				require.NoError(t, beszelTests.ClearCollection(t, app, "alerts"))
+				require.NoError(t, vigileTests.ClearCollection(t, app, "alerts"))
 				for _, systemId := range []string{system1.Id, system2.Id} {
-					_, err := beszelTests.CreateRecord(app, "alerts", map[string]any{
+					_, err := vigileTests.CreateRecord(app, "alerts", map[string]any{
 						"name":   "Memory",
 						"system": systemId,
 						"user":   user1.Id,
@@ -352,7 +352,7 @@ func TestUserAlertsApi(t *testing.T) {
 		{
 			Name:   "DELETE ignores systems the user cannot access",
 			Method: http.MethodDelete,
-			URL:    "/api/beszel/user-alerts",
+			URL:    "/api/vigile/user-alerts",
 			Headers: map[string]string{
 				"Authorization": user2Token,
 			},
@@ -364,8 +364,8 @@ func TestUserAlertsApi(t *testing.T) {
 				"systems": []string{system1.Id},
 			}),
 			BeforeTestFunc: func(t testing.TB, app *pbTests.TestApp, e *core.ServeEvent) {
-				require.NoError(t, beszelTests.ClearCollection(t, app, "alerts"))
-				beszelTests.CreateRecord(app, "alerts", map[string]any{
+				require.NoError(t, vigileTests.ClearCollection(t, app, "alerts"))
+				vigileTests.CreateRecord(app, "alerts", map[string]any{
 					"name": "CPU", "system": system1.Id, "user": user2.Id, "value": 80,
 				})
 			},
@@ -377,7 +377,7 @@ func TestUserAlertsApi(t *testing.T) {
 		{
 			Name:   "User 2 should not be able to delete alert of user 1",
 			Method: http.MethodDelete,
-			URL:    "/api/beszel/user-alerts",
+			URL:    "/api/vigile/user-alerts",
 			Headers: map[string]string{
 				"Authorization": user2Token,
 			},
@@ -389,9 +389,9 @@ func TestUserAlertsApi(t *testing.T) {
 				"systems": []string{system2.Id},
 			}),
 			BeforeTestFunc: func(t testing.TB, app *pbTests.TestApp, e *core.ServeEvent) {
-				require.NoError(t, beszelTests.ClearCollection(t, app, "alerts"))
+				require.NoError(t, vigileTests.ClearCollection(t, app, "alerts"))
 				for _, user := range []string{user1.Id, user2.Id} {
-					beszelTests.CreateRecord(app, "alerts", map[string]any{
+					vigileTests.CreateRecord(app, "alerts", map[string]any{
 						"name":   "CPU",
 						"system": system2.Id,
 						"user":   user,
@@ -420,7 +420,7 @@ func TestUserAlertsApi(t *testing.T) {
 	}
 }
 func TestSendTestNotification(t *testing.T) {
-	hub, user := beszelTests.GetHubWithUser(t)
+	hub, user := vigileTests.GetHubWithUser(t)
 	defer hub.Cleanup()
 
 	var delivered atomic.Int32
@@ -430,19 +430,19 @@ func TestSendTestNotification(t *testing.T) {
 	defer server.Close()
 	localURL := "generic+" + server.URL
 
-	readonlyUser, err := beszelTests.CreateUserWithRole(hub, "readonly@example.com", "password123", "readonly")
+	readonlyUser, err := vigileTests.CreateUserWithRole(hub, "readonly@example.com", "password123", "readonly")
 	require.NoError(t, err)
 	readonlyToken, err := readonlyUser.NewAuthToken()
 	require.NoError(t, err)
 	userToken, err := user.NewAuthToken()
 	require.NoError(t, err, "Failed to create user auth token")
 
-	adminUser, err := beszelTests.CreateUserWithRole(hub, "admin@example.com", "password123", "admin")
+	adminUser, err := vigileTests.CreateUserWithRole(hub, "admin@example.com", "password123", "admin")
 	require.NoError(t, err, "Failed to create admin user")
 	adminUserToken, err := adminUser.NewAuthToken()
 	require.NoError(t, err, "Failed to create admin auth token")
 
-	superuser, err := beszelTests.CreateSuperuser(hub, "superuser@example.com", "password123")
+	superuser, err := vigileTests.CreateSuperuser(hub, "superuser@example.com", "password123")
 	require.NoError(t, err, "Failed to create superuser")
 	superuserToken, err := superuser.NewAuthToken()
 	require.NoError(t, err, "Failed to create superuser auth token")
@@ -451,11 +451,11 @@ func TestSendTestNotification(t *testing.T) {
 		return hub.TestApp
 	}
 
-	scenarios := []beszelTests.ApiScenario{
+	scenarios := []vigileTests.ApiScenario{
 		{
 			Name:            "POST /test-notification - no auth should fail",
 			Method:          http.MethodPost,
-			URL:             "/api/beszel/test-notification",
+			URL:             "/api/vigile/test-notification",
 			ExpectedStatus:  401,
 			ExpectedContent: []string{"requires valid"},
 			TestAppFactory:  testAppFactory,
@@ -466,7 +466,7 @@ func TestSendTestNotification(t *testing.T) {
 		{
 			Name:           "POST /test-notification - invalid service reports error",
 			Method:         http.MethodPost,
-			URL:            "/api/beszel/test-notification",
+			URL:            "/api/vigile/test-notification",
 			TestAppFactory: testAppFactory,
 			Headers: map[string]string{
 				"Authorization": userToken,
@@ -480,7 +480,7 @@ func TestSendTestNotification(t *testing.T) {
 		{
 			Name:           "POST /test-notification - local url with user auth should fail",
 			Method:         http.MethodPost,
-			URL:            "/api/beszel/test-notification",
+			URL:            "/api/vigile/test-notification",
 			TestAppFactory: testAppFactory,
 			Headers: map[string]string{
 				"Authorization": userToken,
@@ -494,7 +494,7 @@ func TestSendTestNotification(t *testing.T) {
 		{
 			Name:           "POST /test-notification - internal url with user auth should fail",
 			Method:         http.MethodPost,
-			URL:            "/api/beszel/test-notification",
+			URL:            "/api/vigile/test-notification",
 			TestAppFactory: testAppFactory,
 			Headers: map[string]string{
 				"Authorization": userToken,
@@ -508,7 +508,7 @@ func TestSendTestNotification(t *testing.T) {
 		{
 			Name:           "POST /test-notification - internal url with admin auth should succeed",
 			Method:         http.MethodPost,
-			URL:            "/api/beszel/test-notification",
+			URL:            "/api/vigile/test-notification",
 			TestAppFactory: testAppFactory,
 			Headers: map[string]string{
 				"Authorization": adminUserToken,
@@ -522,7 +522,7 @@ func TestSendTestNotification(t *testing.T) {
 		{
 			Name:           "POST /test-notification - internal url with superuser auth should succeed",
 			Method:         http.MethodPost,
-			URL:            "/api/beszel/test-notification",
+			URL:            "/api/vigile/test-notification",
 			TestAppFactory: testAppFactory,
 			Headers: map[string]string{
 				"Authorization": superuserToken,
@@ -536,7 +536,7 @@ func TestSendTestNotification(t *testing.T) {
 	}
 
 	for _, url := range []string{localURL, "smtp://user:pass@127.0.0.1/?fromAddress=sender@example.com&toAddresses=recipient@example.com", "mqtt://127.0.0.1/topic"} {
-		scenarios = append(scenarios, beszelTests.ApiScenario{
+		scenarios = append(scenarios, vigileTests.ApiScenario{
 			BeforeTestFunc: func(tb testing.TB, _ *pbTests.TestApp, e *core.ServeEvent) {
 				if !strings.HasPrefix(url, "mqtt://") {
 					return
@@ -553,7 +553,7 @@ func TestSendTestNotification(t *testing.T) {
 			},
 			Name:            "readonly cannot send to " + url,
 			Method:          http.MethodPost,
-			URL:             "/api/beszel/test-notification",
+			URL:             "/api/vigile/test-notification",
 			TestAppFactory:  testAppFactory,
 			Headers:         map[string]string{"Authorization": readonlyToken},
 			Body:            jsonReader(map[string]any{"url": url}),

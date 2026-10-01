@@ -5,8 +5,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/henrygd/beszel"
-	"github.com/henrygd/beszel/internal/hub/utils"
+	"github.com/Akilaea/vigile"
+	"github.com/Akilaea/vigile/internal/hub/utils"
 )
 
 // PublicAppInfo defines the structure of the public app information that will be injected into the HTML
@@ -58,7 +58,7 @@ func getPublicAppInfo(hub *Hub) PublicAppInfo {
 	parsedURL, _ := url.Parse(hub.appURL)
 	info := PublicAppInfo{
 		BASE_PATH:   strings.TrimSuffix(parsedURL.Path, "/") + "/",
-		HUB_VERSION: beszel.Version,
+		HUB_VERSION: vigile.Version,
 		HUB_URL:     hub.appURL,
 	}
 	if val, _ := utils.GetEnv("OAUTH_DISABLE_POPUP"); val == "true" {

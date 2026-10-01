@@ -40,7 +40,7 @@ jobs:
           fi
 
           changed=false
-          for chart in supplemental/helm/beszel-agent supplemental/helm/beszel-hub; do
+          for chart in supplemental/helm/vigile-agent supplemental/helm/vigile-hub; do
             current_app_version=$(awk -F '"' '/^appVersion:/ { print $2 }' "$chart/Chart.yaml")
             if [[ "$current_app_version" == "$version" ]]; then
               echo "$chart already uses appVersion $version"
@@ -79,15 +79,15 @@ jobs:
         run: |
           version="${RELEASE_TAG#v}"
           title="chore(helm): update app version to ${version}"
-          body="Updates the Helm charts for [Beszel ${version}](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/${RELEASE_TAG}) and bumps their chart patch versions. Merging this pull request publishes the updated charts to GHCR."
+          body="Updates the Helm charts for [Vigile ${version}](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/${RELEASE_TAG}) and bumps their chart patch versions. Merging this pull request publishes the updated charts to GHCR."
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -B "$BRANCH"
-          git add supplemental/helm/beszel-agent/Chart.yaml \
-            supplemental/helm/beszel-agent/README.md \
-            supplemental/helm/beszel-hub/Chart.yaml \
-            supplemental/helm/beszel-hub/README.md
+          git add supplemental/helm/vigile-agent/Chart.yaml \
+            supplemental/helm/vigile-agent/README.md \
+            supplemental/helm/vigile-hub/Chart.yaml \
+            supplemental/helm/vigile-hub/README.md
           git commit -m "$title"
 
           git fetch origin "$BRANCH" || true

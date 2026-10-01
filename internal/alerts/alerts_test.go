@@ -7,15 +7,15 @@ import (
 	"testing/synctest"
 	"time"
 
-	beszelTests "github.com/henrygd/beszel/internal/tests"
+	vigileTests "github.com/Akilaea/vigile/internal/tests"
 
-	"github.com/henrygd/beszel/internal/alerts"
+	"github.com/Akilaea/vigile/internal/alerts"
 	"github.com/pocketbase/dbx"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAlertsHistory(t *testing.T) {
-	hub, user := beszelTests.GetHubWithUser(t)
+	hub, user := vigileTests.GetHubWithUser(t)
 	defer hub.Cleanup()
 
 	synctest.Test(t, func(t *testing.T) {
@@ -26,11 +26,11 @@ func TestAlertsHistory(t *testing.T) {
 		hub.GetSystemManager().ResetContextForTesting(t)
 
 		// Create systems and alerts
-		systems, err := beszelTests.CreateSystems(hub, 1, user.Id, "up")
+		systems, err := vigileTests.CreateSystems(hub, 1, user.Id, "up")
 		assert.NoError(t, err)
 		system := systems[0]
 
-		alert, err := beszelTests.CreateRecord(hub, "alerts", map[string]any{
+		alert, err := vigileTests.CreateRecord(hub, "alerts", map[string]any{
 			"name":   "Status",
 			"system": system.Id,
 			"user":   user.Id,
@@ -100,14 +100,14 @@ func TestAlertsHistory(t *testing.T) {
 
 		// Test deleting a triggered alert resolves its history
 		// Create another system and alert
-		systems2, err := beszelTests.CreateSystems(hub, 1, user.Id, "up")
+		systems2, err := vigileTests.CreateSystems(hub, 1, user.Id, "up")
 		assert.NoError(t, err)
 		system2 := systems2[0]
 		system2.Set("name", "test-system-2") // Rename for clarity
 		err = hub.SaveNoValidate(system2)
 		assert.NoError(t, err)
 
-		alert2, err := beszelTests.CreateRecord(hub, "alerts", map[string]any{
+		alert2, err := vigileTests.CreateRecord(hub, "alerts", map[string]any{
 			"name":   "Status",
 			"system": system2.Id,
 			"user":   user.Id,
@@ -150,19 +150,19 @@ func TestAlertsHistory(t *testing.T) {
 }
 
 func TestSetAlertTriggered(t *testing.T) {
-	hub, _ := beszelTests.NewTestHub(t.TempDir())
+	hub, _ := vigileTests.NewTestHub(t.TempDir())
 	defer hub.Cleanup()
 
 	hub.StartHub()
 
-	user, _ := beszelTests.CreateUser(hub, "test@example.com", "password")
-	system, _ := beszelTests.CreateRecord(hub, "systems", map[string]any{
+	user, _ := vigileTests.CreateUser(hub, "test@example.com", "password")
+	system, _ := vigileTests.CreateRecord(hub, "systems", map[string]any{
 		"name":  "test-system",
 		"users": []string{user.Id},
 		"host":  "127.0.0.1",
 	})
 
-	alertRecord, _ := beszelTests.CreateRecord(hub, "alerts", map[string]any{
+	alertRecord, _ := vigileTests.CreateRecord(hub, "alerts", map[string]any{
 		"name":      "CPU",
 		"system":    system.Id,
 		"user":      user.Id,

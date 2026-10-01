@@ -72,7 +72,7 @@ build-dotnet-conditional:
 		echo "Building .NET executable for Windows..."; \
 		if command -v dotnet >/dev/null 2>&1; then \
 			rm -rf ./agent/lhm/bin; \
-			dotnet build -c Release ./agent/lhm/beszel_lhm.csproj; \
+			dotnet build -c Release ./agent/lhm/vigile_lhm.csproj; \
 		else \
 			echo "Error: dotnet not found. Install .NET SDK to build Windows agent."; \
 			exit 1; \
@@ -87,14 +87,14 @@ fetch-smartctl-conditional:
 
 # Update build-agent to include conditional .NET build
 build-agent: tidy build-dotnet-conditional fetch-smartctl-conditional
-	GOOS=$(OS) GOARCH=$(ARCH) go build $(AGENT_GO_TAGS) -o ./build/beszel-agent_$(OS)_$(ARCH)$(EXE_EXT) -ldflags "-w -s" ./internal/cmd/agent
+	GOOS=$(OS) GOARCH=$(ARCH) go build $(AGENT_GO_TAGS) -o ./build/vigile-agent_$(OS)_$(ARCH)$(EXE_EXT) -ldflags "-w -s" ./internal/cmd/agent
 
 build-hub: tidy $(if $(filter false,$(SKIP_WEB)),build-web-ui)
-	GOOS=$(OS) GOARCH=$(ARCH) go build -o ./build/beszel_$(OS)_$(ARCH)$(EXE_EXT) -ldflags "-w -s" ./internal/cmd/hub
+	GOOS=$(OS) GOARCH=$(ARCH) go build -o ./build/vigile_$(OS)_$(ARCH)$(EXE_EXT) -ldflags "-w -s" ./internal/cmd/hub
 
 build-hub-dev: tidy
 	mkdir -p ./internal/site/dist && touch ./internal/site/dist/index.html
-	GOOS=$(OS) GOARCH=$(ARCH) go build -tags development -o ./build/beszel-dev_$(OS)_$(ARCH)$(EXE_EXT) -ldflags "-w -s" ./internal/cmd/hub
+	GOOS=$(OS) GOARCH=$(ARCH) go build -tags development -o ./build/vigile-dev_$(OS)_$(ARCH)$(EXE_EXT) -ldflags "-w -s" ./internal/cmd/hub
 
 build: build-agent build-hub
 
@@ -123,15 +123,15 @@ dev-hub:
 
 dev-agent:
 	@if command -v entr >/dev/null 2>&1; then \
-		find ./internal/cmd/agent/*.go ./agent/*.go | entr -r go run $(AGENT_GO_TAGS) github.com/henrygd/beszel/internal/cmd/agent; \
+		find ./internal/cmd/agent/*.go ./agent/*.go | entr -r go run $(AGENT_GO_TAGS) github.com/Akilaea/vigile/internal/cmd/agent; \
 	else \
-		go run $(AGENT_GO_TAGS) github.com/henrygd/beszel/internal/cmd/agent; \
+		go run $(AGENT_GO_TAGS) github.com/Akilaea/vigile/internal/cmd/agent; \
 	fi
 	
 build-dotnet:
 	@if command -v dotnet >/dev/null 2>&1; then \
 		rm -rf ./agent/lhm/bin; \
-		dotnet build -c Release ./agent/lhm/beszel_lhm.csproj; \
+		dotnet build -c Release ./agent/lhm/vigile_lhm.csproj; \
 	else \
 		echo "dotnet not found"; \
 	fi

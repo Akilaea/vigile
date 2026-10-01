@@ -17,18 +17,18 @@ RUN update-ca-certificates
 
 # Build
 ARG TARGETOS TARGETARCH
-RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags "-w -s" -o /beszel ./internal/cmd/hub
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags "-w -s" -o /vigile ./internal/cmd/hub
 
 # ? -------------------------
 FROM scratch
 
-COPY --from=builder /beszel /
+COPY --from=builder /vigile /
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 # Ensure data persistence across container recreations
-VOLUME ["/beszel_data"]
+VOLUME ["/vigile_data"]
 
 EXPOSE 8090
 
-ENTRYPOINT [ "/beszel" ]
+ENTRYPOINT [ "/vigile" ]
 CMD ["serve", "--http=0.0.0.0:8090"]

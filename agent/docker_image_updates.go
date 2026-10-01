@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/distribution/reference"
-	"github.com/henrygd/beszel/internal/entities/container"
+	"github.com/Akilaea/vigile/internal/entities/container"
 )
 
 const imageUpdateInterval = time.Hour

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"unsafe"
 
-	"github.com/henrygd/beszel/agent/utils"
+	"github.com/Akilaea/vigile/agent/utils"
 	"golang.org/x/sys/unix"
 )
 

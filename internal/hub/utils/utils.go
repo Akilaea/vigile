@@ -7,9 +7,9 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 )
 
-// GetEnv retrieves an environment variable with a "BESZEL_HUB_" prefix, or falls back to the unprefixed key.
+// GetEnv retrieves an environment variable with a "VIGILE_HUB_" prefix, or falls back to the unprefixed key.
 func GetEnv(key string) (value string, exists bool) {
-	if value, exists = os.LookupEnv("BESZEL_HUB_" + key); exists {
+	if value, exists = os.LookupEnv("VIGILE_HUB_" + key); exists {
 		return value, exists
 	}
 	return os.LookupEnv(key)

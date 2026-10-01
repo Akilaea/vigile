@@ -12,10 +12,10 @@ import (
 	"time"
 
 	"github.com/fxamacker/cbor/v2"
-	"github.com/henrygd/beszel/internal/common"
-	"github.com/henrygd/beszel/internal/entities/monitor"
-	esystem "github.com/henrygd/beszel/internal/entities/system"
-	"github.com/henrygd/beszel/internal/hub/expirymap"
+	"github.com/Akilaea/vigile/internal/common"
+	"github.com/Akilaea/vigile/internal/entities/monitor"
+	esystem "github.com/Akilaea/vigile/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/hub/expirymap"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/crypto/ssh"
@@ -31,7 +31,7 @@ func TestSSHNetworkMonitorReconnectSync(t *testing.T) {
 	require.NoError(t, err)
 	signer, err := ssh.NewSignerFromKey(key)
 	require.NoError(t, err)
-	config := &ssh.ServerConfig{NoClientAuth: true, ServerVersion: "SSH-2.0-beszel_0.20.0"}
+	config := &ssh.ServerConfig{NoClientAuth: true, ServerVersion: "SSH-2.0-vigile_0.20.0"}
 	config.AddHostKey(signer)
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)

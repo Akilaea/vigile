@@ -1,0 +1,27 @@
+[Unit]
+Description=Vigile Agent Service
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Environment="PORT=45876"
+# Port number can be overridden in vigile-agent.conf if needed
+EnvironmentFile=/etc/vigile-agent.conf
+ExecStart=/usr/bin/vigile-agent
+User=vigile
+Restart=on-failure
+StateDirectory=vigile-agent
+
+# Security/sandboxing settings
+KeyringMode=private
+LockPersonality=yes
+ProtectClock=yes
+ProtectHome=read-only
+ProtectHostname=yes
+ProtectKernelLogs=yes
+ProtectSystem=strict
+RemoveIPC=yes
+RestrictSUIDSGID=true
+
+[Install]
+WantedBy=multi-user.target

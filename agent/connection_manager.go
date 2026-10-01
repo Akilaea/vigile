@@ -12,9 +12,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/henrygd/beszel/agent/health"
-	"github.com/henrygd/beszel/agent/utils"
-	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/Akilaea/vigile/agent/health"
+	"github.com/Akilaea/vigile/agent/utils"
+	"github.com/Akilaea/vigile/internal/entities/system"
 )
 
 // ConnectionManager manages the connection state and events for the agent.

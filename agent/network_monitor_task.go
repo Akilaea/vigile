@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/henrygd/beszel/internal/entities/monitor"
+	"github.com/Akilaea/vigile/internal/entities/monitor"
 )
 
 const monitorFailureLogInterval = 5 * time.Minute

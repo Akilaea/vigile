@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/henrygd/beszel/agent/utils"
-	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/Akilaea/vigile/agent/utils"
+	"github.com/Akilaea/vigile/internal/entities/system"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -1368,7 +1368,7 @@ func TestCollectorStartHelpers(t *testing.T) {
 func TestNewGPUManagerPriorityNvtopFallback(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("PATH", dir)
-	t.Setenv("BESZEL_AGENT_GPU_COLLECTOR", "nvtop,nvidia-smi")
+	t.Setenv("VIGILE_AGENT_GPU_COLLECTOR", "nvtop,nvidia-smi")
 
 	gpuCommandFixture(t, dir, "nvtop", `not-json`+"\n")
 
@@ -1390,7 +1390,7 @@ func TestNewGPUManagerPriorityNvtopFallback(t *testing.T) {
 func TestNewGPUManagerPriorityMixedCollectors(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("PATH", dir)
-	t.Setenv("BESZEL_AGENT_GPU_COLLECTOR", "intel_gpu_top,rocm-smi")
+	t.Setenv("VIGILE_AGENT_GPU_COLLECTOR", "intel_gpu_top,rocm-smi")
 
 	intelOutput := intelJSONStream(true,
 		intelJSONSample(2, 2.69, map[string]float64{"Render/3D": 0, "Video": 0}),
@@ -1418,7 +1418,7 @@ func TestNewGPUManagerConfiguredCollectorsMustStart(t *testing.T) {
 	t.Setenv("PATH", dir)
 
 	t.Run("configured valid collector unavailable", func(t *testing.T) {
-		t.Setenv("BESZEL_AGENT_GPU_COLLECTOR", "nvidia-smi")
+		t.Setenv("VIGILE_AGENT_GPU_COLLECTOR", "nvidia-smi")
 		gm, err := NewGPUManager()
 		require.Nil(t, gm)
 		require.Error(t, err)
@@ -1426,7 +1426,7 @@ func TestNewGPUManagerConfiguredCollectorsMustStart(t *testing.T) {
 	})
 
 	t.Run("configured collector list has only unknown entries", func(t *testing.T) {
-		t.Setenv("BESZEL_AGENT_GPU_COLLECTOR", "bad,unknown")
+		t.Setenv("VIGILE_AGENT_GPU_COLLECTOR", "bad,unknown")
 		gm, err := NewGPUManager()
 		require.Nil(t, gm)
 		require.Error(t, err)
@@ -1444,7 +1444,7 @@ func TestCollectorDefinitionsNvmlDoesNotRequireNvidiaSmi(t *testing.T) {
 func TestNewGPUManagerConfiguredNvmlBypassesCapabilityGate(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("PATH", dir)
-	t.Setenv("BESZEL_AGENT_GPU_COLLECTOR", "nvml")
+	t.Setenv("VIGILE_AGENT_GPU_COLLECTOR", "nvml")
 
 	gm, err := NewGPUManager()
 	if err == nil {
@@ -1460,7 +1460,7 @@ func TestNewGPUManagerConfiguredNvmlBypassesCapabilityGate(t *testing.T) {
 func TestNewGPUManagerJetsonIgnoresCollectorConfig(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("PATH", dir)
-	t.Setenv("BESZEL_AGENT_GPU_COLLECTOR", "nvidia-smi")
+	t.Setenv("VIGILE_AGENT_GPU_COLLECTOR", "nvidia-smi")
 
 	gpuCommandFixture(t, dir, "tegrastats", `11-14-2024 22:54:33 RAM 1024/4096MB GR3D_FREQ 80% tj@70C VDD_GPU_SOC 1000mW`+"\n")
 
@@ -1936,7 +1936,7 @@ func TestIntelCollectorDeviceEnv(t *testing.T) {
 	argsFile := gpuCommandFixture(t, dir, intelGpuStatsCmd, output)
 
 	// Set device selector via prefixed env var
-	t.Setenv("BESZEL_AGENT_INTEL_GPU_DEVICE", "sriov")
+	t.Setenv("VIGILE_AGENT_INTEL_GPU_DEVICE", "sriov")
 
 	gm := &GPUManager{GpuDataMap: make(map[string]*system.GPUData)}
 	if err := gm.collectIntelStats(); err != nil {

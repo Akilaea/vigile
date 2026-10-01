@@ -29,7 +29,7 @@ body:
     id: component
     attributes:
       label: Component
-      description: Which part of Beszel is this about?
+      description: Which part of Vigile is this about?
       options:
         - Hub
         - Agent
@@ -92,7 +92,7 @@ body:
   - type: input
     id: version
     attributes:
-      label: Beszel version
+      label: Vigile version
       placeholder: 0.9.1
     validations:
       required: true

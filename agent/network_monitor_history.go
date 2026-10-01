@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/henrygd/beszel/internal/entities/monitor"
+	"github.com/Akilaea/vigile/internal/entities/monitor"
 )
 
 // Monitors run at user-defined intervals (e.g., every 10s).

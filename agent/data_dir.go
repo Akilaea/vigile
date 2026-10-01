@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/henrygd/beszel/agent/utils"
+	"github.com/Akilaea/vigile/agent/utils"
 )
 
 // GetDataDir returns the path to the data directory for the agent and an error
@@ -25,13 +25,13 @@ func GetDataDir(dataDirs ...string) (string, error) {
 
 	if runtime.GOOS == "windows" {
 		dataDirs = append(dataDirs,
-			filepath.Join(os.Getenv("APPDATA"), "beszel-agent"),
-			filepath.Join(os.Getenv("LOCALAPPDATA"), "beszel-agent"),
+			filepath.Join(os.Getenv("APPDATA"), "vigile-agent"),
+			filepath.Join(os.Getenv("LOCALAPPDATA"), "vigile-agent"),
 		)
 	} else {
-		dataDirs = append(dataDirs, "/var/lib/beszel-agent")
+		dataDirs = append(dataDirs, "/var/lib/vigile-agent")
 		if homeDir, err := os.UserHomeDir(); err == nil {
-			dataDirs = append(dataDirs, filepath.Join(homeDir, ".config", "beszel"))
+			dataDirs = append(dataDirs, filepath.Join(homeDir, ".config", "vigile"))
 		}
 	}
 	return testDataDirs(dataDirs)

@@ -6,8 +6,8 @@ node_modules/
 build
 dist
 *.exe
-beszel-agent
-beszel_data*
+vigile-agent
+vigile_data*
 pb_data
 data
 temp

@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/henrygd/beszel/internal/alerts"
-	"github.com/henrygd/beszel/internal/entities/monitor"
-	beszelTests "github.com/henrygd/beszel/internal/tests"
+	"github.com/Akilaea/vigile/internal/alerts"
+	"github.com/Akilaea/vigile/internal/entities/monitor"
+	vigileTests "github.com/Akilaea/vigile/internal/tests"
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 	pbTests "github.com/pocketbase/pocketbase/tests"
@@ -18,7 +18,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func networkAlertSetup(t *testing.T) (*beszelTests.TestHub, *core.Record, *core.Record, []*core.Record) {
+func networkAlertSetup(t *testing.T) (*vigileTests.TestHub, *core.Record, *core.Record, []*core.Record) {
 	t.Helper()
 	hub, system, alert := systemdTestSetup(t, false)
 	t.Cleanup(hub.Cleanup)
@@ -27,7 +27,7 @@ func networkAlertSetup(t *testing.T) (*beszelTests.TestHub, *core.Record, *core.
 	require.NoError(t, hub.Save(alert))
 	var monitors []*core.Record
 	for _, name := range []string{"gateway", "website"} {
-		record, err := beszelTests.CreateRecord(hub, "network_monitors", map[string]any{
+		record, err := vigileTests.CreateRecord(hub, "network_monitors", map[string]any{
 			"system": system.Id, "target": name + ".example.com", "protocol": "icmp", "interval": 60, "enabled": true,
 		})
 		require.NoError(t, err)
@@ -215,9 +215,9 @@ func TestNetworkMonitorAlertCleanup(t *testing.T) {
 
 func TestNetworkMonitorAlertPerUserThresholds(t *testing.T) {
 	hub, system, alert, monitors := networkAlertSetup(t)
-	user, err := beszelTests.CreateUser(hub, "monitor2@example.com", "password")
+	user, err := vigileTests.CreateUser(hub, "monitor2@example.com", "password")
 	require.NoError(t, err)
-	other, err := beszelTests.CreateRecord(hub, "alerts", map[string]any{"name": "NetworkMonitorLoss", "system": system.Id, "user": user.Id, "value": 20})
+	other, err := vigileTests.CreateRecord(hub, "alerts", map[string]any{"name": "NetworkMonitorLoss", "system": system.Id, "user": user.Id, "value": 20})
 	require.NoError(t, err)
 	am := alerts.NewTestAlertManagerWithoutWorker(hub)
 	results := map[string]monitor.Result{monitors[0].Id: monitorResult(10)}
@@ -254,27 +254,27 @@ func TestNetworkMonitorAlertAPI(t *testing.T) {
 		{name: "patch preserves state", value: 10, direct: true, patch: true, status: 200},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			hub, user := beszelTests.GetHubWithUser(t)
+			hub, user := vigileTests.GetHubWithUser(t)
 			defer hub.Cleanup()
 			owner := user.Id
 			if tc.denied {
-				other, err := beszelTests.CreateUser(hub, "other@example.com", "password")
+				other, err := vigileTests.CreateUser(hub, "other@example.com", "password")
 				require.NoError(t, err)
 				owner = other.Id
 			}
-			systems, err := beszelTests.CreateSystems(hub, 1, owner, "paused")
+			systems, err := vigileTests.CreateSystems(hub, 1, owner, "paused")
 			require.NoError(t, err)
 			token, err := user.NewAuthToken()
 			require.NoError(t, err)
 			body := map[string]any{"name": "NetworkMonitorLoss", "value": tc.value, "min": 60, "systems": []string{systems[0].Id}, "overwrite": true}
-			url, method := "/api/beszel/user-alerts", "POST"
+			url, method := "/api/vigile/user-alerts", "POST"
 			if tc.direct {
 				url = "/api/collections/alerts/records"
 				body["system"], body["user"] = systems[0].Id, user.Id
 				body["state"], body["triggered"] = map[string]any{"monitors": map[string]string{"fake": "fake"}}, true
 			}
 			if tc.patch {
-				alert, err := beszelTests.CreateRecord(hub, "alerts", map[string]any{"name": "NetworkMonitorLoss", "system": systems[0].Id, "user": user.Id, "value": 5, "triggered": true, "state": map[string]any{"monitors": map[string]string{"real": "history"}}})
+				alert, err := vigileTests.CreateRecord(hub, "alerts", map[string]any{"name": "NetworkMonitorLoss", "system": systems[0].Id, "user": user.Id, "value": 5, "triggered": true, "state": map[string]any{"monitors": map[string]string{"real": "history"}}})
 				require.NoError(t, err)
 				url += "/" + alert.Id
 				method = "PATCH"
@@ -287,7 +287,7 @@ func TestNetworkMonitorAlertAPI(t *testing.T) {
 			if tc.status == 400 {
 				content = `"status":400`
 			}
-			scenario := beszelTests.ApiScenario{
+			scenario := vigileTests.ApiScenario{
 				Name: tc.name, Method: method, URL: url, Body: jsonReader(body),
 				Headers: map[string]string{"Authorization": token}, ExpectedStatus: tc.status, ExpectedContent: []string{content},
 				TestAppFactory: func(testing.TB) *pbTests.TestApp { return hub.TestApp },
@@ -319,7 +319,7 @@ func TestNetworkMonitorAlertAPI(t *testing.T) {
 }
 
 type monitorCountingHub struct {
-	*beszelTests.TestHub
+	*vigileTests.TestHub
 	transactions      atomic.Int64
 	beforeTransaction func()
 }
@@ -417,7 +417,7 @@ func TestNetworkMonitorAlertConfigCacheInvalidation(t *testing.T) {
 	require.NoError(t, am.HandleNetworkMonitorAlerts(system, results))
 	assert.Equal(t, count+2, hub.TestMailer.TotalSend())
 	// A new monitor must also become eligible without restarting the hub.
-	created, err := beszelTests.CreateRecord(hub, "network_monitors", map[string]any{
+	created, err := vigileTests.CreateRecord(hub, "network_monitors", map[string]any{
 		"system": system.Id, "name": "new", "target": "new.example.com", "protocol": "icmp", "interval": 60, "enabled": true,
 	})
 	require.NoError(t, err)

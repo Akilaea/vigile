@@ -109,7 +109,7 @@ func TestParseScanLine(t *testing.T) {
 }
 
 func TestCommandOutputForcesLocaleAndTimesOut(t *testing.T) {
-	t.Setenv("BESZEL_ZFS_COMMAND_HELPER", "1")
+	t.Setenv("VIGILE_ZFS_COMMAND_HELPER", "1")
 	out, err := commandOutput(os.Args[0], "-test.run=TestZfsCommandHelperProcess", "--", "locale")
 	require.NoError(t, err)
 	assert.Equal(t, "C/C", string(out))
@@ -123,7 +123,7 @@ func TestCommandOutputForcesLocaleAndTimesOut(t *testing.T) {
 }
 
 func TestZfsCommandHelperProcess(t *testing.T) {
-	if os.Getenv("BESZEL_ZFS_COMMAND_HELPER") != "1" {
+	if os.Getenv("VIGILE_ZFS_COMMAND_HELPER") != "1" {
 		return
 	}
 	mode := ""

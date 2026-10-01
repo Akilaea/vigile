@@ -22,9 +22,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/henrygd/beszel"
+	"github.com/Akilaea/vigile"
 
-	"github.com/henrygd/beszel/internal/common"
+	"github.com/Akilaea/vigile/internal/common"
 
 	"github.com/fxamacker/cbor/v2"
 	"github.com/lxzan/gws"
@@ -42,11 +42,11 @@ func TestNewWebSocketClientNoHubURL(t *testing.T) {
 
 	// t.Setenv registers restoration of the original value; unset afterwards so
 	// GetEnv's LookupEnv reports the variable as absent rather than empty.
-	t.Setenv("BESZEL_AGENT_HUB_URL", "")
-	os.Unsetenv("BESZEL_AGENT_HUB_URL")
+	t.Setenv("VIGILE_AGENT_HUB_URL", "")
+	os.Unsetenv("VIGILE_AGENT_HUB_URL")
 	t.Setenv("HUB_URL", "")
 	os.Unsetenv("HUB_URL")
-	t.Setenv("BESZEL_AGENT_TOKEN", "test-token")
+	t.Setenv("VIGILE_AGENT_TOKEN", "test-token")
 
 	client, err := newWebSocketClient(agent)
 
@@ -112,10 +112,10 @@ func TestNewWebSocketClient(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			// Set up environment
 			if tc.hubURL != "" {
-				t.Setenv("BESZEL_AGENT_HUB_URL", tc.hubURL)
+				t.Setenv("VIGILE_AGENT_HUB_URL", tc.hubURL)
 			}
 			if tc.token != "" {
-				t.Setenv("BESZEL_AGENT_TOKEN", tc.token)
+				t.Setenv("VIGILE_AGENT_TOKEN", tc.token)
 			}
 
 			client, err := newWebSocketClient(agent)
@@ -153,27 +153,27 @@ func TestWebSocketClient_GetOptions(t *testing.T) {
 			name:           "http to ws conversion",
 			inputURL:       "http://localhost:8080",
 			expectedScheme: "ws",
-			expectedPath:   "/api/beszel/agent-connect",
+			expectedPath:   "/api/vigile/agent-connect",
 		},
 		{
 			name:           "https to wss conversion",
 			inputURL:       "https://hub.example.com",
 			expectedScheme: "wss",
-			expectedPath:   "/api/beszel/agent-connect",
+			expectedPath:   "/api/vigile/agent-connect",
 		},
 		{
 			name:           "existing path preservation",
 			inputURL:       "http://localhost:8080/custom/path",
 			expectedScheme: "ws",
-			expectedPath:   "/custom/path/api/beszel/agent-connect",
+			expectedPath:   "/custom/path/api/vigile/agent-connect",
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			// Set up environment
-			t.Setenv("BESZEL_AGENT_HUB_URL", tc.inputURL)
-			t.Setenv("BESZEL_AGENT_TOKEN", "test-token")
+			t.Setenv("VIGILE_AGENT_HUB_URL", tc.inputURL)
+			t.Setenv("VIGILE_AGENT_TOKEN", "test-token")
 
 			client, err := newWebSocketClient(agent)
 			require.NoError(t, err)
@@ -189,7 +189,7 @@ func TestWebSocketClient_GetOptions(t *testing.T) {
 
 			// Check headers
 			assert.Equal(t, "test-token", options.RequestHeader.Get("X-Token"))
-			assert.Equal(t, beszel.Version, options.RequestHeader.Get("X-Beszel"))
+			assert.Equal(t, vigile.Version, options.RequestHeader.Get("X-Vigile"))
 			assert.Contains(t, options.RequestHeader.Get("User-Agent"), "Mozilla/5.0")
 
 			// Test options caching
@@ -218,9 +218,9 @@ func TestWebSocketClient_TLSVerification(t *testing.T) {
 
 	newClient := func(t *testing.T, caCertFile string) *WebSocketClient {
 		t.Helper()
-		t.Setenv("BESZEL_AGENT_HUB_URL", server.URL)
-		t.Setenv("BESZEL_AGENT_TOKEN", "test-token")
-		t.Setenv("BESZEL_AGENT_CA_CERT_FILE", caCertFile)
+		t.Setenv("VIGILE_AGENT_HUB_URL", server.URL)
+		t.Setenv("VIGILE_AGENT_TOKEN", "test-token")
+		t.Setenv("VIGILE_AGENT_CA_CERT_FILE", caCertFile)
 		client, err := newWebSocketClient(agent)
 		require.NoError(t, err)
 		return client
@@ -265,9 +265,9 @@ func TestWebSocketClient_NonTLSConnection(t *testing.T) {
 	}))
 	t.Cleanup(server.Close)
 
-	t.Setenv("BESZEL_AGENT_HUB_URL", server.URL)
-	t.Setenv("BESZEL_AGENT_TOKEN", "test-token")
-	t.Setenv("BESZEL_AGENT_CA_CERT_FILE", "")
+	t.Setenv("VIGILE_AGENT_HUB_URL", server.URL)
+	t.Setenv("VIGILE_AGENT_TOKEN", "test-token")
+	t.Setenv("VIGILE_AGENT_CA_CERT_FILE", "")
 	client, err := newWebSocketClient(agent)
 	require.NoError(t, err)
 	assert.Nil(t, client.getOptions().TlsConfig)
@@ -314,7 +314,7 @@ func TestGetTLSConfigErrors(t *testing.T) {
 			if tc.contents != nil {
 				require.NoError(t, os.WriteFile(tc.path, tc.contents, 0600))
 			}
-			t.Setenv("BESZEL_AGENT_CA_CERT_FILE", tc.path)
+			t.Setenv("VIGILE_AGENT_CA_CERT_FILE", tc.path)
 
 			tlsConfig, err := getTLSConfig()
 			require.Error(t, err)
@@ -367,8 +367,8 @@ func TestWebSocketClient_VerifySignature(t *testing.T) {
 	require.NoError(t, err)
 
 	// Set up environment
-	t.Setenv("BESZEL_AGENT_HUB_URL", "http://localhost:8080")
-	t.Setenv("BESZEL_AGENT_TOKEN", "test-token")
+	t.Setenv("VIGILE_AGENT_HUB_URL", "http://localhost:8080")
+	t.Setenv("VIGILE_AGENT_TOKEN", "test-token")
 
 	client, err := newWebSocketClient(agent)
 	require.NoError(t, err)
@@ -436,8 +436,8 @@ func TestWebSocketClient_HandleHubRequest(t *testing.T) {
 	agent := createTestAgent(t)
 
 	// Set up environment
-	t.Setenv("BESZEL_AGENT_HUB_URL", "http://localhost:8080")
-	t.Setenv("BESZEL_AGENT_TOKEN", "test-token")
+	t.Setenv("VIGILE_AGENT_HUB_URL", "http://localhost:8080")
+	t.Setenv("VIGILE_AGENT_TOKEN", "test-token")
 
 	client, err := newWebSocketClient(agent)
 	require.NoError(t, err)
@@ -524,8 +524,8 @@ func TestGetUserAgent(t *testing.T) {
 func TestWebSocketClient_Close(t *testing.T) {
 	agent := createTestAgent(t)
 
-	t.Setenv("BESZEL_AGENT_HUB_URL", "http://localhost:8080")
-	t.Setenv("BESZEL_AGENT_TOKEN", "test-token")
+	t.Setenv("VIGILE_AGENT_HUB_URL", "http://localhost:8080")
+	t.Setenv("VIGILE_AGENT_TOKEN", "test-token")
 
 	client, err := newWebSocketClient(agent)
 	require.NoError(t, err)
@@ -540,8 +540,8 @@ func TestWebSocketClient_Close(t *testing.T) {
 func TestWebSocketClient_ConnectRateLimit(t *testing.T) {
 	agent := createTestAgent(t)
 
-	t.Setenv("BESZEL_AGENT_HUB_URL", "http://localhost:8080")
-	t.Setenv("BESZEL_AGENT_TOKEN", "test-token")
+	t.Setenv("VIGILE_AGENT_HUB_URL", "http://localhost:8080")
+	t.Setenv("VIGILE_AGENT_TOKEN", "test-token")
 
 	client, err := newWebSocketClient(agent)
 	require.NoError(t, err)
@@ -567,10 +567,10 @@ func TestGetToken(t *testing.T) {
 		assert.Equal(t, expectedToken, token)
 	})
 
-	t.Run("token from BESZEL_AGENT_TOKEN environment variable", func(t *testing.T) {
-		// Set BESZEL_AGENT_TOKEN env var (should take precedence)
-		expectedToken := "test-token-from-beszel-env"
-		t.Setenv("BESZEL_AGENT_TOKEN", expectedToken)
+	t.Run("token from VIGILE_AGENT_TOKEN environment variable", func(t *testing.T) {
+		// Set VIGILE_AGENT_TOKEN env var (should take precedence)
+		expectedToken := "test-token-from-vigile-env"
+		t.Setenv("VIGILE_AGENT_TOKEN", expectedToken)
 
 		token, err := getToken()
 		assert.NoError(t, err)
@@ -631,9 +631,9 @@ func TestGetToken(t *testing.T) {
 		assert.Equal(t, "", token)
 	})
 
-	t.Run("token from BESZEL_AGENT_TOKEN_FILE", func(t *testing.T) {
+	t.Run("token from VIGILE_AGENT_TOKEN_FILE", func(t *testing.T) {
 		// Create a temporary token file
-		expectedToken := "test-token-from-beszel-file"
+		expectedToken := "test-token-from-vigile-file"
 		tokenFile, err := os.CreateTemp("", "token-test-*.txt")
 		require.NoError(t, err)
 		defer os.Remove(tokenFile.Name())
@@ -642,8 +642,8 @@ func TestGetToken(t *testing.T) {
 		require.NoError(t, err)
 		tokenFile.Close()
 
-		// Set BESZEL_AGENT_TOKEN_FILE env var (should take precedence)
-		t.Setenv("BESZEL_AGENT_TOKEN_FILE", tokenFile.Name())
+		// Set VIGILE_AGENT_TOKEN_FILE env var (should take precedence)
+		t.Setenv("VIGILE_AGENT_TOKEN_FILE", tokenFile.Name())
 
 		token, err := getToken()
 		assert.NoError(t, err)
@@ -672,9 +672,9 @@ func TestGetToken(t *testing.T) {
 	})
 
 	t.Run("error when neither TOKEN nor TOKEN_FILE is set", func(t *testing.T) {
-		t.Setenv("BESZEL_AGENT_TOKEN", "")
+		t.Setenv("VIGILE_AGENT_TOKEN", "")
 		t.Setenv("TOKEN", "")
-		t.Setenv("BESZEL_AGENT_TOKEN_FILE", "")
+		t.Setenv("VIGILE_AGENT_TOKEN_FILE", "")
 		t.Setenv("TOKEN_FILE", "")
 
 		token, err := getToken()

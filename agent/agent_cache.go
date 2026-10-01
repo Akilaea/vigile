@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/entities/system"
 )
 
 type systemDataCache struct {

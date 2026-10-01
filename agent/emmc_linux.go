@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/henrygd/beszel/agent/utils"
-	"github.com/henrygd/beszel/internal/entities/smart"
+	"github.com/Akilaea/vigile/agent/utils"
+	"github.com/Akilaea/vigile/internal/entities/smart"
 )
 
 // emmcSysfsRoot is a test hook; production value is "/sys".

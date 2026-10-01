@@ -526,7 +526,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 				const system = info.row.original
 				let color = "text-red-500"
 				if (system.status === SystemStatus.Up) {
-					color = version === globalThis.BESZEL.HUB_VERSION ? "text-green-500" : "text-yellow-500"
+					color = version === globalThis.VIGILE.HUB_VERSION ? "text-green-500" : "text-yellow-500"
 				} else if (system.status === SystemStatus.Paused) {
 					color = "text-primary/40"
 				}

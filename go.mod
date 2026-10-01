@@ -1,4 +1,4 @@
-module github.com/henrygd/beszel
+module github.com/Akilaea/vigile
 
 go 1.27.1
 

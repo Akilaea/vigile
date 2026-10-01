@@ -9,7 +9,7 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/entities/system"
 )
 
 // JXA exposes the system CoreWLAN framework without cgo, private airport tools,

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/henrygd/beszel/internal/entities/systemd"
+	"github.com/Akilaea/vigile/internal/entities/systemd"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -294,7 +294,7 @@ func TestGetServicePatterns(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set up environment variables
 			if tt.prefixedEnv != "" {
-				t.Setenv("BESZEL_AGENT_SERVICE_PATTERNS", tt.prefixedEnv)
+				t.Setenv("VIGILE_AGENT_SERVICE_PATTERNS", tt.prefixedEnv)
 			}
 			if tt.unprefixedEnv != "" {
 				t.Setenv("SERVICE_PATTERNS", tt.unprefixedEnv)

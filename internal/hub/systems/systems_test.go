@@ -9,10 +9,10 @@ import (
 	"testing/synctest"
 	"time"
 
-	"github.com/henrygd/beszel/internal/entities/container"
-	"github.com/henrygd/beszel/internal/entities/system"
-	"github.com/henrygd/beszel/internal/hub/systems"
-	"github.com/henrygd/beszel/internal/tests"
+	"github.com/Akilaea/vigile/internal/entities/container"
+	"github.com/Akilaea/vigile/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/hub/systems"
+	"github.com/Akilaea/vigile/internal/tests"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -549,8 +549,8 @@ func TestHasUser(t *testing.T) {
 		assert.True(t, sys.HasUser(hub, user2))
 	})
 
-	t.Run("BESZEL_HUB_SHARE_ALL_SYSTEMS=true grants access to non-member", func(t *testing.T) {
-		t.Setenv("BESZEL_HUB_SHARE_ALL_SYSTEMS", "true")
+	t.Run("VIGILE_HUB_SHARE_ALL_SYSTEMS=true grants access to non-member", func(t *testing.T) {
+		t.Setenv("VIGILE_HUB_SHARE_ALL_SYSTEMS", "true")
 		assert.True(t, sys.HasUser(hub, user2))
 	})
 

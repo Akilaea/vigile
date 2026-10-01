@@ -8,7 +8,7 @@ import (
 	"testing/synctest"
 	"time"
 
-	"github.com/henrygd/beszel/internal/entities/systemd"
+	"github.com/Akilaea/vigile/internal/entities/systemd"
 	"github.com/stretchr/testify/assert"
 )
 

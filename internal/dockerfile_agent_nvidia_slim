@@ -114,8 +114,8 @@ COPY --from=zfsutils-builder /out/rootfs/ /
 # - /usr/bin/nvidia-smi:/usr/bin/nvidia-smi:ro
 
 # Ensure data persistence across container recreations
-VOLUME ["/var/lib/beszel-agent"]
+VOLUME ["/var/lib/vigile-agent"]
 
-WORKDIR /var/lib/beszel-agent
+WORKDIR /var/lib/vigile-agent
 
 ENTRYPOINT ["/agent"]

@@ -40,17 +40,17 @@ func TestIsAppRoute(t *testing.T) {
 		{"/containersx", "/", false},
 
 		// base path, prefix not stripped by proxy
-		{"/beszel", "/beszel/", true},
-		{"/beszel/", "/beszel/", true},
-		{"/beszel/containers", "/beszel/", true},
-		{"/beszel/system/abc123", "/beszel/", true},
-		{"/beszel/.env", "/beszel/", false},
-		{"/beszelx", "/beszel/", false},
+		{"/vigile", "/vigile/", true},
+		{"/vigile/", "/vigile/", true},
+		{"/vigile/containers", "/vigile/", true},
+		{"/vigile/system/abc123", "/vigile/", true},
+		{"/vigile/.env", "/vigile/", false},
+		{"/vigilex", "/vigile/", false},
 
 		// base path, prefix stripped by proxy
-		{"/", "/beszel/", true},
-		{"/containers", "/beszel/", true},
-		{"/.env", "/beszel/", false},
+		{"/", "/vigile/", true},
+		{"/containers", "/vigile/", true},
+		{"/.env", "/vigile/", false},
 	}
 
 	for _, tt := range tests {

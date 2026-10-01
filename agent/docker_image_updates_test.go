@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/henrygd/beszel/internal/entities/container"
+	"github.com/Akilaea/vigile/internal/entities/container"
 	"github.com/stretchr/testify/require"
 )
 
@@ -28,7 +28,7 @@ func waitForImageUpdates(t *testing.T, dm *dockerManager) {
 }
 
 func TestDisableDockerImageUpdateCheck(t *testing.T) {
-	t.Setenv("BESZEL_AGENT_DOCKER_IMAGE_CHECK", "false")
+	t.Setenv("VIGILE_AGENT_DOCKER_IMAGE_CHECK", "false")
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/version" {
 			fmt.Fprint(w, `{"Version":"25.0.0"}`)
@@ -37,7 +37,7 @@ func TestDisableDockerImageUpdateCheck(t *testing.T) {
 		http.NotFound(w, r)
 	}))
 	defer server.Close()
-	t.Setenv("BESZEL_AGENT_DOCKER_HOST", server.URL)
+	t.Setenv("VIGILE_AGENT_DOCKER_HOST", server.URL)
 
 	dm := newDockerManager(nil)
 	require.True(t, dm.imageUpdatesDisabled)

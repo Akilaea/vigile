@@ -3,7 +3,7 @@ import { memo } from "react"
 import { copyToClipboard, getHubURL } from "@/lib/utils"
 import { DropdownMenuContent, DropdownMenuItem } from "./ui/dropdown-menu"
 
-// const isbeta = beszel.hub_version.includes("beta")
+// const isbeta = vigile.hub_version.includes("beta")
 // const imagetag = isbeta ? ":edge" : ""
 
 /**
@@ -24,16 +24,16 @@ const getScriptUrl = (path: string = "") => {
 
 export function copyDockerCompose(port = "45876", publicKey: string, token: string) {
 	copyToClipboard(`services:
-  beszel-agent:
+  vigile-agent:
     image: henrygd/beszel-agent
-    container_name: beszel-agent
+    container_name: vigile-agent
     restart: unless-stopped
     network_mode: host
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./beszel_agent_data:/var/lib/beszel-agent
+      - ./vigile_agent_data:/var/lib/vigile-agent
       # monitor other disks / partitions by mounting a folder in /extra-filesystems
-      # - /mnt/disk/.beszel:/extra-filesystems/sda1:ro
+      # - /mnt/disk/.vigile:/extra-filesystems/sda1:ro
     environment:
       LISTEN: ${port}
       KEY: '${publicKey}'
@@ -43,7 +43,7 @@ export function copyDockerCompose(port = "45876", publicKey: string, token: stri
 
 export function copyDockerRun(port = "45876", publicKey: string, token: string) {
 	copyToClipboard(
-		`docker run -d --name beszel-agent --network host --restart unless-stopped -v /var/run/docker.sock:/var/run/docker.sock:ro -v beszel_agent_data:/var/lib/beszel-agent -e KEY="${publicKey}" -e LISTEN=${port} -e TOKEN="${token}" -e HUB_URL="${getHubURL()}" henrygd/beszel-agent`
+		`docker run -d --name vigile-agent --network host --restart unless-stopped -v /var/run/docker.sock:/var/run/docker.sock:ro -v vigile_agent_data:/var/lib/vigile-agent -e KEY="${publicKey}" -e LISTEN=${port} -e TOKEN="${token}" -e HUB_URL="${getHubURL()}" henrygd/beszel-agent`
 	)
 }
 

@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/henrygd/beszel/internal/migrations"
-	beszelTests "github.com/henrygd/beszel/internal/tests"
-	"github.com/henrygd/beszel/internal/users"
+	"github.com/Akilaea/vigile/internal/migrations"
+	vigileTests "github.com/Akilaea/vigile/internal/tests"
+	"github.com/Akilaea/vigile/internal/users"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/router"
 	"github.com/stretchr/testify/require"
@@ -36,13 +36,13 @@ func (b *blockedBody) Read(p []byte) (int, error) {
 func TestCreateFirstUserAtomic(t *testing.T) {
 	for _, scenario := range []string{"parked body", "concurrent requests", "rollback"} {
 		t.Run(scenario, func(t *testing.T) {
-			h, err := beszelTests.NewTestHub(t.TempDir())
+			h, err := vigileTests.NewTestHub(t.TempDir())
 			require.NoError(t, err)
 			defer h.Cleanup()
 			h.StartHub()
 			um := users.NewUserManager(h.App)
 			invoke := func(body io.Reader) int {
-				req := httptest.NewRequest("POST", "/api/beszel/create-user", body)
+				req := httptest.NewRequest("POST", "/api/vigile/create-user", body)
 				req.Header.Set("Content-Type", "application/json")
 				res := httptest.NewRecorder()
 				if err := um.CreateFirstUser(&core.RequestEvent{App: h.App, Event: router.Event{Request: req, Response: res}}); err != nil {

@@ -14,8 +14,8 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/henrygd/beszel/agent/utils"
-	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/Akilaea/vigile/agent/utils"
+	"github.com/Akilaea/vigile/internal/entities/system"
 
 	"github.com/shirou/gopsutil/v4/common"
 	"github.com/shirou/gopsutil/v4/sensors"
@@ -307,7 +307,7 @@ func isGpuThermalZone(zoneType string) bool {
 // buildNonGpuSysShadow links non-GPU sensor directories into a temp dir. Only
 // static chip names and thermal-zone types are read; no sensor values are touched.
 func buildNonGpuSysShadow(sysRoot string) (string, error) {
-	shadow, err := os.MkdirTemp("", "beszel-sensors-*")
+	shadow, err := os.MkdirTemp("", "vigile-sensors-*")
 	if err != nil {
 		return "", err
 	}

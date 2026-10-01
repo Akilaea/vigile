@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/henrygd/beszel/internal/entities/container"
-	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/entities/container"
+	"github.com/Akilaea/vigile/internal/entities/system"
 
 	"github.com/pocketbase/pocketbase/core"
 )

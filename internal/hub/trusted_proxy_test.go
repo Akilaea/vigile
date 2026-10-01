@@ -84,7 +84,7 @@ func TestParseTrustedProxies(t *testing.T) {
 
 	t.Run("prefixed env var takes precedence", func(t *testing.T) {
 		t.Setenv("TRUSTED_PROXY_IPS", "10.0.0.0/8")
-		t.Setenv("BESZEL_HUB_TRUSTED_PROXY_IPS", "192.168.0.0/16")
+		t.Setenv("VIGILE_HUB_TRUSTED_PROXY_IPS", "192.168.0.0/16")
 		prefixes, restricted := parseTrustedProxies()
 		assert.True(t, restricted)
 		require.Len(t, prefixes, 1)

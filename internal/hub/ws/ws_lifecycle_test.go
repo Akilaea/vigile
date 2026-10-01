@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/blang/semver"
-	"github.com/henrygd/beszel/internal/common"
+	"github.com/Akilaea/vigile/internal/common"
 	"github.com/lxzan/gws"
 	"github.com/stretchr/testify/require"
 )

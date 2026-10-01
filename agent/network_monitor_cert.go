@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/henrygd/beszel/internal/entities/monitor"
+	"github.com/Akilaea/vigile/internal/entities/monitor"
 )
 
 const (

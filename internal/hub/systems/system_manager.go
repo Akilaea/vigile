@@ -7,15 +7,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/henrygd/beszel/internal/hub/ws"
+	"github.com/Akilaea/vigile/internal/hub/ws"
 
-	"github.com/henrygd/beszel/internal/entities/monitor"
-	"github.com/henrygd/beszel/internal/entities/system"
-	"github.com/henrygd/beszel/internal/hub/expirymap"
+	"github.com/Akilaea/vigile/internal/entities/monitor"
+	"github.com/Akilaea/vigile/internal/entities/system"
+	"github.com/Akilaea/vigile/internal/hub/expirymap"
 
-	"github.com/henrygd/beszel/internal/common"
+	"github.com/Akilaea/vigile/internal/common"
 
-	"github.com/henrygd/beszel"
+	"github.com/Akilaea/vigile"
 
 	"github.com/blang/semver"
 	"github.com/pocketbase/dbx"
@@ -413,7 +413,7 @@ func (sm *SystemManager) createSSHClientConfig() error {
 			MACs:         common.DefaultMACs,
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-		ClientVersion:   fmt.Sprintf("SSH-2.0-%s_%s", beszel.AppName, beszel.Version),
+		ClientVersion:   fmt.Sprintf("SSH-2.0-%s_%s", vigile.AppName, vigile.Version),
 		Timeout:         sessionTimeout,
 	}
 	return nil

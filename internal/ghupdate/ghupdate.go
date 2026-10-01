@@ -16,7 +16,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/henrygd/beszel"
+	"github.com/Akilaea/vigile"
 
 	"github.com/blang/semver"
 )
@@ -83,7 +83,7 @@ type updater struct {
 
 func Update(config Config) (updated bool, err error) {
 	p := &updater{
-		currentVersion: beszel.Version,
+		currentVersion: vigile.Version,
 		config:         config,
 	}
 
@@ -98,11 +98,11 @@ func (p *updater) update() (updated bool, err error) {
 	}
 
 	if p.config.Owner == "" {
-		p.config.Owner = "henrygd"
+		p.config.Owner = "Akilaea"
 	}
 
 	if p.config.Repo == "" {
-		p.config.Repo = "beszel"
+		p.config.Repo = "vigile"
 	}
 
 	if p.config.Context == nil {
@@ -142,7 +142,7 @@ func (p *updater) update() (updated bool, err error) {
 	if err := os.MkdirAll(p.config.DataDir, 0755); err != nil {
 		return false, fmt.Errorf("failed to create update data directory: %w", err)
 	}
-	releaseDir, err := os.MkdirTemp(p.config.DataDir, ".beszel_update-")
+	releaseDir, err := os.MkdirTemp(p.config.DataDir, ".vigile_update-")
 	if err != nil {
 		return false, fmt.Errorf("failed to create update directory: %w", err)
 	}
@@ -236,7 +236,7 @@ func (p *updater) update() (updated bool, err error) {
 
 func FetchLatestRelease(ctx context.Context, client HttpClient, url string) (*release, error) {
 	if url == "" {
-		url = getApiURL(false, "henrygd", "beszel")
+		url = getApiURL(false, "Akilaea", "vigile")
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
@@ -355,11 +355,11 @@ func archiveSuffix(binaryName, goos, goarch, goarm string) string {
 		return fmt.Sprintf("%s_%s_%s.zip", binaryName, goos, goarch)
 	}
 	// Use glibc build for agent on glibc systems (includes NVML support via purego)
-	if binaryName == "beszel-agent" && goos == "linux" && goarch == "amd64" && isGlibc() {
+	if binaryName == "vigile-agent" && goos == "linux" && goarch == "amd64" && isGlibc() {
 		return fmt.Sprintf("%s_%s_%s_glibc.tar.gz", binaryName, goos, goarch)
 	}
 	armSuffix := ""
-	if binaryName == "beszel-agent" && goarch == "arm" && (goarm == "5" || goarm == "7") {
+	if binaryName == "vigile-agent" && goarch == "arm" && (goarm == "5" || goarm == "7") {
 		armSuffix = "v" + goarm
 	}
 	return fmt.Sprintf("%s_%s_%s%s.tar.gz", binaryName, goos, goarch, armSuffix)

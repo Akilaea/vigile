@@ -14,14 +14,14 @@ func TestArchiveSuffix(t *testing.T) {
 		binary, goos, goarch string
 		goarm, want          string
 	}{
-		{"armv5 agent", "beszel-agent", "linux", "arm", "5", "beszel-agent_linux_armv5.tar.gz"},
-		{"armv6 keeps legacy name", "beszel-agent", "linux", "arm", "6", "beszel-agent_linux_arm.tar.gz"},
-		{"hub keeps legacy arm name", "beszel", "linux", "arm", "6", "beszel_linux_arm.tar.gz"},
-		{"armv7 agent", "beszel-agent", "linux", "arm", "7", "beszel-agent_linux_armv7.tar.gz"},
-		{"newer arm keeps legacy name", "beszel-agent", "linux", "arm", "8", "beszel-agent_linux_arm.tar.gz"},
-		{"unknown arm keeps legacy name", "beszel-agent", "linux", "arm", "", "beszel-agent_linux_arm.tar.gz"},
-		{"amd64 hub", "beszel", "linux", "amd64", "", "beszel_linux_amd64.tar.gz"},
-		{"windows", "beszel-agent", "windows", "amd64", "", "beszel-agent_windows_amd64.zip"},
+		{"armv5 agent", "vigile-agent", "linux", "arm", "5", "vigile-agent_linux_armv5.tar.gz"},
+		{"armv6 keeps legacy name", "vigile-agent", "linux", "arm", "6", "vigile-agent_linux_arm.tar.gz"},
+		{"hub keeps legacy arm name", "vigile", "linux", "arm", "6", "vigile_linux_arm.tar.gz"},
+		{"armv7 agent", "vigile-agent", "linux", "arm", "7", "vigile-agent_linux_armv7.tar.gz"},
+		{"newer arm keeps legacy name", "vigile-agent", "linux", "arm", "8", "vigile-agent_linux_arm.tar.gz"},
+		{"unknown arm keeps legacy name", "vigile-agent", "linux", "arm", "", "vigile-agent_linux_arm.tar.gz"},
+		{"amd64 hub", "vigile", "linux", "amd64", "", "vigile_linux_amd64.tar.gz"},
+		{"windows", "vigile-agent", "windows", "amd64", "", "vigile-agent_windows_amd64.zip"},
 	}
 
 	for _, tt := range tests {

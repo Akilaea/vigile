@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/henrygd/beszel"
-	"github.com/henrygd/beszel/internal/common"
-	"github.com/henrygd/beszel/internal/entities/monitor"
+	"github.com/Akilaea/vigile"
+	"github.com/Akilaea/vigile/internal/common"
+	"github.com/Akilaea/vigile/internal/entities/monitor"
 )
 
 // syncPendingNetworkMonitors runs on WebSocket connect and after successful stats
@@ -64,7 +64,7 @@ func (sys *System) DeleteNetworkMonitor(id string) error {
 }
 
 func (sys *System) syncNetworkMonitors(req monitor.SyncRequest) (monitor.SyncResponse, error) {
-	if sys.getAgentVersion().LT(beszel.MinVersionNetworkMonitors) {
+	if sys.getAgentVersion().LT(vigile.MinVersionNetworkMonitors) {
 		return monitor.SyncResponse{}, nil
 	}
 	timeout := 5 * time.Second

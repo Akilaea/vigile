@@ -6,21 +6,21 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/henrygd/beszel/internal/alerts"
-	beszelTests "github.com/henrygd/beszel/internal/tests"
+	"github.com/Akilaea/vigile/internal/alerts"
+	vigileTests "github.com/Akilaea/vigile/internal/tests"
 	"github.com/stretchr/testify/require"
 )
 
 func TestStandaloneAlertManagerStopsBeforeDatabaseCleanup(t *testing.T) {
 	for _, state := range []string{"pending", "already stopped", "delivered"} {
 		t.Run(state, func(t *testing.T) {
-			hub, user := beszelTests.GetHubWithUser(t)
+			hub, user := vigileTests.GetHubWithUser(t)
 			cleanup := sync.OnceFunc(hub.Cleanup)
 			defer cleanup()
 			setStatusAlertEmail(t, hub, user.Id, "shutdown@example.com")
-			systems, err := beszelTests.CreateSystems(hub, 1, user.Id, "paused")
+			systems, err := vigileTests.CreateSystems(hub, 1, user.Id, "paused")
 			require.NoError(t, err)
-			_, err = beszelTests.CreateRecord(hub, "alerts", map[string]any{
+			_, err = vigileTests.CreateRecord(hub, "alerts", map[string]any{
 				"name": "Status", "system": systems[0].Id, "user": user.Id, "min": 1,
 			})
 			require.NoError(t, err)

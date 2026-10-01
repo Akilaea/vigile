@@ -8,14 +8,14 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/henrygd/beszel/internal/alerts"
-	beszelTests "github.com/henrygd/beszel/internal/tests"
+	"github.com/Akilaea/vigile/internal/alerts"
+	vigileTests "github.com/Akilaea/vigile/internal/tests"
 	"github.com/pocketbase/dbx"
 	"github.com/stretchr/testify/require"
 )
 
 func TestPersistedWebhooksUseCurrentOwnerRole(t *testing.T) {
-	hub, user := beszelTests.GetHubWithUser(t)
+	hub, user := vigileTests.GetHubWithUser(t)
 	defer hub.Cleanup()
 	am := alerts.NewTestAlertManagerWithoutWorker(hub)
 

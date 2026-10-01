@@ -8,10 +8,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/henrygd/beszel/agent/btrfs"
-	"github.com/henrygd/beszel/agent/zfs"
-	"github.com/henrygd/beszel/internal/entities/system"
-	zfsentity "github.com/henrygd/beszel/internal/entities/zfs"
+	"github.com/Akilaea/vigile/agent/btrfs"
+	"github.com/Akilaea/vigile/agent/zfs"
+	"github.com/Akilaea/vigile/internal/entities/system"
+	zfsentity "github.com/Akilaea/vigile/internal/entities/zfs"
 )
 
 // zfsDatasetUsage holds usage values for a ZFS dataset mountpoint.

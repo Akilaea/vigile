@@ -14,7 +14,7 @@ import (
 
 	"github.com/blang/semver"
 	"github.com/fxamacker/cbor/v2"
-	"github.com/henrygd/beszel/internal/common"
+	"github.com/Akilaea/vigile/internal/common"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/crypto/ssh"
 )
@@ -28,7 +28,7 @@ func newSSHTestTransport(t *testing.T, stage string) (*SSHTransport, <-chan stru
 	require.NoError(t, err)
 	signer, err := ssh.NewSignerFromKey(key)
 	require.NoError(t, err)
-	config := &ssh.ServerConfig{NoClientAuth: true, ServerVersion: "SSH-2.0-beszel_0.20.0"}
+	config := &ssh.ServerConfig{NoClientAuth: true, ServerVersion: "SSH-2.0-vigile_0.20.0"}
 	config.AddHostKey(signer)
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)

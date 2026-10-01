@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/henrygd/beszel/agent/utils"
+	"github.com/Akilaea/vigile/agent/utils"
 )
 
 var batteryRoot = "/sys/class/power_supply"

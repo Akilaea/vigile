@@ -10,10 +10,10 @@ import (
 	"testing/synctest"
 	"time"
 
-	"github.com/henrygd/beszel/internal/alerts"
-	"github.com/henrygd/beszel/internal/entities/monitor"
-	"github.com/henrygd/beszel/internal/entities/system"
-	beszelTests "github.com/henrygd/beszel/internal/tests"
+	"github.com/Akilaea/vigile/internal/alerts"
+	"github.com/Akilaea/vigile/internal/entities/monitor"
+	"github.com/Akilaea/vigile/internal/entities/system"
+	vigileTests "github.com/Akilaea/vigile/internal/tests"
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
@@ -21,7 +21,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func alertAPIRouter(t *testing.T, hub *beszelTests.TestHub) http.Handler {
+func alertAPIRouter(t *testing.T, hub *vigileTests.TestHub) http.Handler {
 	t.Helper()
 	router, err := apis.NewRouter(hub)
 	require.NoError(t, err)
@@ -47,20 +47,20 @@ func alertAPIRequest(t *testing.T, handler http.Handler, token, method, path str
 func TestAlertRecordSystemAccess(t *testing.T) {
 	for _, shareAll := range []string{"false", "true"} {
 		t.Run("share_all="+shareAll, func(t *testing.T) {
-			t.Setenv("BESZEL_HUB_SHARE_ALL_SYSTEMS", shareAll)
-			hub, err := beszelTests.NewTestHub(t.TempDir())
+			t.Setenv("VIGILE_HUB_SHARE_ALL_SYSTEMS", shareAll)
+			hub, err := vigileTests.NewTestHub(t.TempDir())
 			require.NoError(t, err)
 			defer hub.Cleanup()
 			hub.StartHub()
-			user, err := beszelTests.CreateUser(hub, "subscriber@example.com", "password")
+			user, err := vigileTests.CreateUser(hub, "subscriber@example.com", "password")
 			require.NoError(t, err)
-			other, err := beszelTests.CreateUser(hub, "owner@example.com", "password")
+			other, err := vigileTests.CreateUser(hub, "owner@example.com", "password")
 			require.NoError(t, err)
 			token, err := user.NewAuthToken()
 			require.NoError(t, err)
-			own, err := beszelTests.CreateSystems(hub, 2, user.Id, "paused")
+			own, err := vigileTests.CreateSystems(hub, 2, user.Id, "paused")
 			require.NoError(t, err)
-			foreign, err := beszelTests.CreateSystems(hub, 1, other.Id, "paused")
+			foreign, err := vigileTests.CreateSystems(hub, 1, other.Id, "paused")
 			require.NoError(t, err)
 			handler := alertAPIRouter(t, hub)
 			const records = "/api/collections/alerts/records"
@@ -119,20 +119,20 @@ func TestAlertRecordSystemAccess(t *testing.T) {
 			alertAPIRequest(t, handler, token, "POST", records, map[string]any{"name": "CPU", "user": user.Id, "system": "missing00000000"}, 400)
 			alertAPIRequest(t, handler, "", "POST", records, map[string]any{"name": "CPU", "user": user.Id, "system": own[0].Id}, 400)
 			// An old subscription must still be checked when PATCH omits the relation.
-			oldAlert, err := beszelTests.CreateRecord(hub, "alerts", map[string]any{
+			oldAlert, err := vigileTests.CreateRecord(hub, "alerts", map[string]any{
 				"name": "CPU", "user": user.Id, "system": foreign[0].Id, "value": 50,
 			})
 			require.NoError(t, err)
 			alertAPIRequest(t, handler, token, "PATCH", records+"/"+oldAlert.Id, map[string]any{"value": 51}, updateStatus)
 			require.NoError(t, hub.Delete(oldAlert))
-			otherAlert, err := beszelTests.CreateRecord(hub, "alerts", map[string]any{
+			otherAlert, err := vigileTests.CreateRecord(hub, "alerts", map[string]any{
 				"name": "CPU", "user": other.Id, "system": foreign[0].Id,
 			})
 			require.NoError(t, err)
 			alertAPIRequest(t, handler, token, "PATCH", records+"/"+otherAlert.Id, map[string]any{"system": own[0].Id}, 404)
 			require.NoError(t, hub.Delete(otherAlert))
 			// Alerts cannot be handed to another user.
-			ownAlert, err := beszelTests.CreateRecord(hub, "alerts", map[string]any{
+			ownAlert, err := vigileTests.CreateRecord(hub, "alerts", map[string]any{
 				"name": "CPU", "user": user.Id, "system": own[0].Id,
 			})
 			require.NoError(t, err)
@@ -150,7 +150,7 @@ func TestAlertRecordSystemAccess(t *testing.T) {
 			record, err := hub.FindRecordById("alerts", result["id"].(string))
 			require.NoError(t, err)
 			require.NoError(t, hub.Delete(record))
-			superuser, err := beszelTests.CreateSuperuser(hub, "superuser@example.com", "password123")
+			superuser, err := vigileTests.CreateSuperuser(hub, "superuser@example.com", "password123")
 			require.NoError(t, err)
 			superToken, err := superuser.NewAuthToken()
 			require.NoError(t, err)
@@ -159,7 +159,7 @@ func TestAlertRecordSystemAccess(t *testing.T) {
 			require.NoError(t, err)
 			require.NoError(t, hub.Delete(record))
 			// Bulk requests continue to skip inaccessible systems and accept accessible ones.
-			alertAPIRequest(t, handler, token, "POST", "/api/beszel/user-alerts", map[string]any{
+			alertAPIRequest(t, handler, token, "POST", "/api/vigile/user-alerts", map[string]any{
 				"name": "CPU", "systems": []string{own[0].Id, foreign[0].Id}, "value": 50,
 			}, 200)
 			count, err := hub.CountRecords("alerts")
@@ -174,22 +174,22 @@ func TestAlertRecordSystemAccess(t *testing.T) {
 }
 
 func TestAlertRecordForeignSystemDelivery(t *testing.T) {
-	t.Setenv("BESZEL_HUB_SHARE_ALL_SYSTEMS", "false")
-	hub, err := beszelTests.NewTestHub(t.TempDir())
+	t.Setenv("VIGILE_HUB_SHARE_ALL_SYSTEMS", "false")
+	hub, err := vigileTests.NewTestHub(t.TempDir())
 	require.NoError(t, err)
 	defer hub.Cleanup()
 	hub.StartHub()
-	user, err := beszelTests.CreateUser(hub, "subscriber@example.com", "password")
+	user, err := vigileTests.CreateUser(hub, "subscriber@example.com", "password")
 	require.NoError(t, err)
-	owner, err := beszelTests.CreateUser(hub, "owner@example.com", "password")
+	owner, err := vigileTests.CreateUser(hub, "owner@example.com", "password")
 	require.NoError(t, err)
 	for _, recipient := range []*core.Record{user, owner} {
-		_, err := beszelTests.CreateRecord(hub, "user_settings", map[string]any{
+		_, err := vigileTests.CreateRecord(hub, "user_settings", map[string]any{
 			"user": recipient.Id, "settings": map[string]any{"emails": []string{recipient.GetString("email")}, "webhooks": []string{}},
 		})
 		require.NoError(t, err)
 	}
-	foreign, err := beszelTests.CreateSystems(hub, 1, owner.Id, "paused")
+	foreign, err := vigileTests.CreateSystems(hub, 1, owner.Id, "paused")
 	require.NoError(t, err)
 	foreign[0].Set("name", "private-system")
 	require.NoError(t, hub.Save(foreign[0]))
@@ -229,19 +229,19 @@ func TestAlertRecordForeignSystemDelivery(t *testing.T) {
 func TestAlertStoredSubscriptionAccess(t *testing.T) {
 	for _, mode := range []string{"foreign", "revoked", "shared", "share_all", "revoked_active"} {
 		t.Run(mode, func(t *testing.T) {
-			t.Setenv("BESZEL_HUB_SHARE_ALL_SYSTEMS", "false")
+			t.Setenv("VIGILE_HUB_SHARE_ALL_SYSTEMS", "false")
 			if mode == "share_all" {
-				t.Setenv("BESZEL_HUB_SHARE_ALL_SYSTEMS", "true")
+				t.Setenv("VIGILE_HUB_SHARE_ALL_SYSTEMS", "true")
 			}
-			hub, err := beszelTests.NewTestHub(t.TempDir())
+			hub, err := vigileTests.NewTestHub(t.TempDir())
 			require.NoError(t, err)
 			defer hub.Cleanup()
 			hub.StartHub()
-			owner, err := beszelTests.CreateUser(hub, "owner@example.com", "password")
+			owner, err := vigileTests.CreateUser(hub, "owner@example.com", "password")
 			require.NoError(t, err)
-			subscriber, err := beszelTests.CreateUser(hub, "subscriber@example.com", "password")
+			subscriber, err := vigileTests.CreateUser(hub, "subscriber@example.com", "password")
 			require.NoError(t, err)
-			systems, err := beszelTests.CreateSystems(hub, 1, owner.Id, "paused")
+			systems, err := vigileTests.CreateSystems(hub, 1, owner.Id, "paused")
 			require.NoError(t, err)
 			systemRecord := systems[0]
 			if mode == "revoked" || mode == "shared" || mode == "revoked_active" {
@@ -249,12 +249,12 @@ func TestAlertStoredSubscriptionAccess(t *testing.T) {
 				require.NoError(t, hub.Save(systemRecord))
 			}
 			for _, user := range []*core.Record{owner, subscriber} {
-				_, err = beszelTests.CreateRecord(hub, "user_settings", map[string]any{
+				_, err = vigileTests.CreateRecord(hub, "user_settings", map[string]any{
 					"user": user.Id, "settings": map[string]any{"emails": []string{user.GetString("email")}, "webhooks": []string{}},
 				})
 				require.NoError(t, err)
 				// Direct saves model records already stored before the request-hook fix.
-				_, err = beszelTests.CreateRecord(hub, "alerts", map[string]any{
+				_, err = vigileTests.CreateRecord(hub, "alerts", map[string]any{
 					"name": "CPU", "user": user.Id, "system": systemRecord.Id, "value": 50, "min": 1,
 				})
 				require.NoError(t, err)
@@ -308,22 +308,22 @@ func TestAlertStoredSubscriptionAccess(t *testing.T) {
 }
 
 func TestAlertPendingStatusAccessRevoked(t *testing.T) {
-	t.Setenv("BESZEL_HUB_SHARE_ALL_SYSTEMS", "false")
-	hub, err := beszelTests.NewTestHub(t.TempDir())
+	t.Setenv("VIGILE_HUB_SHARE_ALL_SYSTEMS", "false")
+	hub, err := vigileTests.NewTestHub(t.TempDir())
 	require.NoError(t, err)
 	defer hub.Cleanup()
 	hub.StartHub()
-	user, err := beszelTests.CreateUser(hub, "subscriber@example.com", "password")
+	user, err := vigileTests.CreateUser(hub, "subscriber@example.com", "password")
 	require.NoError(t, err)
-	owner, err := beszelTests.CreateUser(hub, "owner@example.com", "password")
+	owner, err := vigileTests.CreateUser(hub, "owner@example.com", "password")
 	require.NoError(t, err)
-	_, err = beszelTests.CreateRecord(hub, "user_settings", map[string]any{
+	_, err = vigileTests.CreateRecord(hub, "user_settings", map[string]any{
 		"user": user.Id, "settings": map[string]any{"emails": []string{"subscriber@example.com"}, "webhooks": []string{}},
 	})
 	require.NoError(t, err)
-	systems, err := beszelTests.CreateSystems(hub, 1, user.Id, "paused")
+	systems, err := vigileTests.CreateSystems(hub, 1, user.Id, "paused")
 	require.NoError(t, err)
-	_, err = beszelTests.CreateRecord(hub, "alerts", map[string]any{
+	_, err = vigileTests.CreateRecord(hub, "alerts", map[string]any{
 		"name": "Status", "user": user.Id, "system": systems[0].Id, "min": 1,
 	})
 	require.NoError(t, err)
@@ -343,11 +343,11 @@ func TestAlertPendingStatusAccessRevoked(t *testing.T) {
 }
 
 func TestAlertStoredNetworkMonitorAccess(t *testing.T) {
-	t.Setenv("BESZEL_HUB_SHARE_ALL_SYSTEMS", "false")
+	t.Setenv("VIGILE_HUB_SHARE_ALL_SYSTEMS", "false")
 	hub, systemRecord, _, monitors := networkAlertSetup(t)
-	other, err := beszelTests.CreateUser(hub, "foreign@example.com", "password")
+	other, err := vigileTests.CreateUser(hub, "foreign@example.com", "password")
 	require.NoError(t, err)
-	foreign, err := beszelTests.CreateRecord(hub, "alerts", map[string]any{
+	foreign, err := vigileTests.CreateRecord(hub, "alerts", map[string]any{
 		"name": "NetworkMonitorLoss", "user": other.Id, "system": systemRecord.Id, "value": 5,
 	})
 	require.NoError(t, err)

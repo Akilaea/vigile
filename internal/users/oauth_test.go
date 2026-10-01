@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	beszelTests "github.com/henrygd/beszel/internal/tests"
+	vigileTests "github.com/Akilaea/vigile/internal/tests"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/auth"
@@ -29,13 +29,13 @@ func (p *roleTestProvider) FetchAuthUser(*oauth2.Token) (*auth.AuthUser, error) 
 
 func TestOAuthUserRole(t *testing.T) {
 	t.Setenv("USER_CREATION", "true")
-	const provider = "beszel-role-test"
+	const provider = "vigile-role-test"
 	auth.Providers[provider] = func() auth.Provider { return &roleTestProvider{} }
 	t.Cleanup(func() { delete(auth.Providers, provider) })
 
 	for _, createData := range []string{`{}`, `{"role":"admin"}`, `{"role":"readonly"}`} {
 		t.Run(createData, func(t *testing.T) {
-			h, err := beszelTests.NewTestHub(t.TempDir())
+			h, err := vigileTests.NewTestHub(t.TempDir())
 			require.NoError(t, err)
 			defer h.Cleanup()
 			h.StartHub()
@@ -78,7 +78,7 @@ func TestOAuthUserRole(t *testing.T) {
 func TestInternalUserRole(t *testing.T) {
 	for _, role := range []string{"", "user", "admin", "readonly"} {
 		t.Run("role="+role, func(t *testing.T) {
-			h, err := beszelTests.NewTestHub(t.TempDir())
+			h, err := vigileTests.NewTestHub(t.TempDir())
 			require.NoError(t, err)
 			defer h.Cleanup()
 			h.StartHub()
